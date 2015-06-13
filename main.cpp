@@ -81,27 +81,15 @@ bool MyApp::OnInit()
 {
     wxInitAllImageHandlers();
 
-    MyFrame *frame = new MyFrame( "Hello World", wxPoint(50, 50), wxSize(450, 340) );
+    MyFrame *frame = new MyFrame( "Hello World", wxPoint(50, 50), wxSize(1024, 500) );
 
-    wxImagePanel *impanel = new wxImagePanel(frame, &image);
+    wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 
-    frame->Show( true );
-    return true;
-}
-
-MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-        : wxFrame(NULL, wxID_ANY, title, pos, size)
-{
-    int fd, outfd;
+    int fd;
     fftwf_complex *input;
-    float *output;
 
     fd = open("/home/mike/projects/hubsan/name-f2.431000e+09-s2.000000e+07-t20150524002153.cfile", O_RDONLY);
     input = (fftwf_complex*)mmap(NULL, 2022340, PROT_READ, MAP_SHARED, fd, 0);
-
-    char temp[] = "/tmp/merryXXXXXX";
-    outfd = mkstemp(temp);
-    output = (float*)malloc(252792 * sizeof(float)); //mmap(NULL, 252792 * sizeof(float), PROT_READ | PROT_WRITE, MAP_PRIVATE, outfd, 0);
 
     fftwf_complex *in, *out;
     fftwf_plan p;
@@ -127,13 +115,21 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
         }
     }
 
-
-
-    printf("done\n");
-
     fftwf_destroy_plan(p);
     fftwf_free(in); fftwf_free(out);
 
+    wxImagePanel *impanel = new wxImagePanel(frame, &image);
+    sizer->Add(impanel, 1, wxEXPAND);
+
+    frame->SetSizer(sizer);
+
+    frame->Show( true );
+    return true;
+}
+
+MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
+        : wxFrame(NULL, wxID_ANY, title, pos, size)
+{
     CreateStatusBar();
 }
 
