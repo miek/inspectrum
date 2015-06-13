@@ -78,7 +78,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
     int row_start = y * FFT_SIZE;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < FFT_SIZE; j++) {
-            pix.Blue() = image_data[row_start + j] * -2;
+            pix.Blue() = 256 - image_data[row_start + j] * -2;
             pix.Red() = 0;
             pix.Green() = 0;
             pix++;
