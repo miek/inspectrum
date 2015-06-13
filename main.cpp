@@ -126,9 +126,11 @@ bool MyApp::OnInit()
         fftwf_execute(p);
 
         for (int j = 0; j < FFT_SIZE; j++) {
+            // Centre spectrum (start from centre and loop round)
+            int k = (j + FFT_SIZE / 2) % FFT_SIZE;
             float re, im, mag, magdb;
-            re = out[j][0];
-            im = out[j][1];
+            re = out[k][0];
+            im = out[k][1];
             mag = sqrt(re * re + im * im) / FFT_SIZE;
             magdb = 10 * log(mag);
             *output_ptr = magdb;
