@@ -5,8 +5,9 @@
 #include <wx/rawbmp.h>
 
 #include <cstdlib>
-#include <sys/mman.h>
 #include <fftw3.h>
+#include <stdint.h>
+#include <sys/mman.h>
 
 #define FFT_SIZE 1024
 
@@ -56,7 +57,6 @@ wxImagePanel::wxImagePanel(wxFrame *parent, float *image_data) : wxScrolled<wxPa
 {
     this->image_data = image_data;
     SetScrollRate(10, 10);
-    SetVirtualSize(FFT_SIZE, 25885879);
 }
 
 void wxImagePanel::OnDraw(wxDC &dc)
@@ -99,10 +99,19 @@ bool MyApp::OnInit()
     int fd;
     fftwf_complex *input;
     float *output;
+    struct stat sb;
+    uint64_t file_size;
+    uint64_t sample_count;
+    uint64_t line_count;
 
     fd = open("/home/mike/projects/hubsan/name-f2.431000e+09-s2.000000e+07-t20150524002153.cfile", O_RDONLY);
-    input = (fftwf_complex*)mmap(NULL, 2070870320, PROT_READ, MAP_SHARED, fd, 0);
-    output = (float*)malloc(258858790 * sizeof(float));
+    fstat(fd, &sb);
+    file_size = sb.st_size;
+    sample_count = file_size / 8;
+    line_count = sample_count / FFT_SIZE;
+
+    input = (fftwf_complex*)mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd, 0);
+    output = (float*)malloc(sample_count * sizeof(float));
 
     fftwf_complex *in, *out;
     fftwf_plan p;
@@ -112,7 +121,7 @@ bool MyApp::OnInit()
     p = fftwf_plan_dft_1d(FFT_SIZE, in, out, FFTW_FORWARD, FFTW_MEASURE);
 
     float *output_ptr = output;
-    for (int i = 0; i < 25885879 - FFT_SIZE; i += FFT_SIZE) {
+    for (int i = 0; i < sample_count - FFT_SIZE; i += FFT_SIZE) {
         memcpy(in, input[i], sizeof(fftwf_complex) * FFT_SIZE);
         fftwf_execute(p);
 
@@ -131,6 +140,7 @@ bool MyApp::OnInit()
     fftwf_free(in); fftwf_free(out);
 
     wxImagePanel *impanel = new wxImagePanel(frame, output);
+    impanel->SetVirtualSize(FFT_SIZE, sample_count / FFT_SIZE);
     sizer->Add(impanel, 1, wxALL | wxEXPAND, 0);
     frame->SetSizer(sizer);
 
