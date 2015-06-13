@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <sys/mman.h>
 
+#define M_TAU 6.28318530717958647693
+
 #define FFT_SIZE 1024
 
 class wxImagePanel : public wxScrolled<wxPanel>
@@ -120,9 +122,19 @@ bool MyApp::OnInit()
     out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * FFT_SIZE);
     p = fftwf_plan_dft_1d(FFT_SIZE, in, out, FFTW_FORWARD, FFTW_MEASURE);
 
+    float window[FFT_SIZE];
+    for (int i = 0; i < FFT_SIZE; i++) {
+        window[i] = 0.5f * (1.0f - cos(M_TAU * i / (FFT_SIZE - 1)));
+    }
+
     float *output_ptr = output;
     for (int i = 0; i < sample_count - FFT_SIZE; i += FFT_SIZE) {
         memcpy(in, input[i], sizeof(fftwf_complex) * FFT_SIZE);
+        for (int j = 0; j < FFT_SIZE; j++) {
+            in[j][0] *= window[j];
+            in[j][1] *= window[j];
+        }
+
         fftwf_execute(p);
 
         for (int j = 0; j < FFT_SIZE; j++) {
