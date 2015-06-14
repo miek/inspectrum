@@ -100,7 +100,8 @@ bool MyApp::OnInit()
 
     if (argc < 2)
     {
-        printf("merry-supernova: missing filename\n");
+        printf("Missing filename\n");
+        printf("Usage: %s <filename>\n", argv[0].mb_str().data());
         return false;
     }
 
