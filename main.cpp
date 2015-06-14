@@ -98,6 +98,12 @@ bool MyApp::OnInit()
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
     MyFrame *frame = new MyFrame( "merry supernova", wxPoint(50, 50), wxSize(1024, 500) );
 
+    if (argc < 2)
+    {
+        printf("merry-supernova: missing filename\n");
+        return false;
+    }
+
     int fd;
     fftwf_complex *input;
     float *output;
@@ -106,7 +112,7 @@ bool MyApp::OnInit()
     uint64_t sample_count;
     uint64_t line_count;
 
-    fd = open("/home/mike/projects/hubsan/name-f2.431000e+09-s2.000000e+07-t20150524002153.cfile", O_RDONLY);
+    fd = open(argv[1], O_RDONLY);
     fstat(fd, &sb);
     file_size = sb.st_size;
     sample_count = file_size / 8;
