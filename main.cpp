@@ -96,7 +96,7 @@ bool MyApp::OnInit()
 {
     wxInitAllImageHandlers();
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
-    MyFrame *frame = new MyFrame( "merry supernova", wxPoint(50, 50), wxSize(1024, 500) );
+    MyFrame *frame = new MyFrame( "inspectrum", wxPoint(50, 50), wxSize(1024, 500) );
 
     if (argc < 2)
     {
