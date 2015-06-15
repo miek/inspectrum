@@ -8,7 +8,7 @@ Currently very early and rough, but usable.
 ### Building on Debian-based distros
 
     sudo apt-get install libwxgtk3.0-dev libfftw3-dev
-    git clone git@github.com:miek/inspectrum.git
+    git clone https://github.com/miek/inspectrum.git
     cd inspectrum
     make
 
