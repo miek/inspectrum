@@ -6,8 +6,6 @@
 
 #include "inputsource.h"
 
-#define FFT_SIZE 1024
-
 class wxImagePanel : public wxScrolled<wxPanel>
 {
 private:
@@ -107,11 +105,18 @@ bool MyApp::OnInit()
     if (argc < 2)
     {
         printf("Missing filename\n");
-        printf("Usage: %s <filename>\n", argv[0].mb_str().data());
+        printf("Usage: %s <filename> [fft size]\n", argv[0].mb_str().data());
         return false;
     }
 
-    InputSource *is = new InputSource(argv[1], FFT_SIZE);
+    int fft_size = 1024;
+    if (argc > 2) {
+        int size = atoi(argv[2]);
+        if (size > 0)
+            fft_size = size;
+    }
+
+    InputSource *is = new InputSource(argv[1], fft_size);
 
     wxImagePanel *impanel = new wxImagePanel(frame, is);
     sizer->Add(impanel, 1, wxALL | wxEXPAND, 0);
