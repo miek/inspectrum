@@ -16,6 +16,11 @@ private:
     fftwf_plan m_fftw_plan;
 
     float *m_window;
+
+    int m_zoom;
+    int m_max_zoom;
+
+    int GetOverlap();
     
 
 public:
@@ -25,6 +30,9 @@ public:
     void GetViewport(float *dest, int x, int y, int width, int height, int zoom);
     int GetHeight();
     int GetWidth();
+
+    void ZoomIn();
+    void ZoomOut();
 };
 
 #endif
