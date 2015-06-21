@@ -18,7 +18,7 @@ Currently `inspectrum` can only read files with interleaved (complex) 32-bit flo
     ./inspectrum <path-to-cfile>
 
 ## Features
- * Spectrogram with <s>zoom</s>/pan
+ * Spectrogram with zoom/pan
  * Large (multi-gigabyte) file support
 
 ## Goals
