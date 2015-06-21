@@ -81,12 +81,12 @@ void wxImagePanel::OnDraw(wxDC &dc)
     float input_data[width * height];
     input_source->GetViewport(input_data, 0, y, width, height, 0);
 
-    wxBitmap image(FFT_SIZE, height, 24);
+    wxBitmap image(width, height, 24);
     wxNativePixelData pixel_data(image);
     wxNativePixelData::Iterator pix(pixel_data);
 
     for (int i = 0; i < height; i++) {
-        for (int j = 0; j < FFT_SIZE; j++) {
+        for (int j = 0; j < width; j++) {
             pix.Blue() = clamp(256 - input_data[i*width + j] * -2, 0, 255);
             pix.Red() = 0;
             pix.Green() = 0;
