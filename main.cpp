@@ -18,11 +18,13 @@ public:
     void paintNow();
 
     void OnDraw(wxDC &dc);
+    void OnMouseWheel(wxMouseEvent &event);
 
     wxDECLARE_EVENT_TABLE();
 };
 
 wxBEGIN_EVENT_TABLE(wxImagePanel, wxScrolled<wxPanel>)
+    EVT_MOUSEWHEEL(wxImagePanel::OnMouseWheel)
 wxEND_EVENT_TABLE()
 
 class MyApp: public wxApp
@@ -93,6 +95,22 @@ void wxImagePanel::OnDraw(wxDC &dc)
     }
 
     dc.DrawBitmap(image, 0, y, false);
+}
+
+void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
+{
+    if (event.ControlDown() && event.GetWheelRotation() != 0) {
+        bool forward = event.GetWheelRotation() > 0;
+        if (forward) {
+            input_source->ZoomIn();
+        } else {
+            input_source->ZoomOut();
+        }
+
+        Refresh();
+    } else {
+        event.Skip();
+    }
 }
 
 
