@@ -31,8 +31,8 @@ public:
     int GetHeight();
     int GetWidth();
 
-    void ZoomIn();
-    void ZoomOut();
+    bool ZoomIn();
+    bool ZoomOut();
 };
 
 #endif
