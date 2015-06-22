@@ -78,7 +78,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
     x *= xunit;
     y *= yunit;
 
-    float input_data[width * height];
+    float *input_data = (float*)malloc(width * height * sizeof(float));
     input_source->GetViewport(input_data, 0, y, width, height, 0);
 
     wxBitmap image(width, height, 24);
