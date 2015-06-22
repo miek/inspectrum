@@ -101,10 +101,16 @@ void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
 {
     if (event.ControlDown() && event.GetWheelRotation() != 0) {
         bool forward = event.GetWheelRotation() > 0;
+        int x, y;
+        GetViewStart(&x, &y);
         if (forward) {
-            input_source->ZoomIn();
+            if (input_source->ZoomIn()) {
+                Scroll(x, y*2);
+            }
         } else {
-            input_source->ZoomOut();
+            if (input_source->ZoomOut()) {
+                Scroll(x, y/2);
+            }
         }
 
         Refresh();
