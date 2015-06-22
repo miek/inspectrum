@@ -113,6 +113,7 @@ void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
             }
         }
 
+        SetVirtualSize(input_source->GetWidth(), input_source->GetHeight());
         Refresh();
     } else {
         event.Skip();
