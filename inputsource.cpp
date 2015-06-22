@@ -85,7 +85,7 @@ int InputSource::GetWidth() {
 
 bool InputSource::ZoomIn() {
     m_zoom++;
-    if (m_max_zoom > m_max_zoom) {
+    if (m_zoom > m_max_zoom) {
         m_zoom = m_max_zoom;
         return false;
     }
@@ -102,5 +102,5 @@ bool InputSource::ZoomOut() {
 }
 
 int InputSource::GetOverlap() {
-    int increment = m_fft_size / pow(2, m_zoom);
+    return m_fft_size / pow(2, m_zoom);
 }
