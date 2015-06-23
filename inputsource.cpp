@@ -6,7 +6,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-#define M_TAU 6.28318530717958647693
+static const double Tau = M_PI * 2.0;
 
 InputSource::InputSource(const char *filename, int fft_size) {
     m_fft_size = fft_size;
@@ -28,7 +28,7 @@ InputSource::InputSource(const char *filename, int fft_size) {
 
     m_window = new float[m_fft_size];
     for (int i = 0; i < m_fft_size; i++) {
-        m_window[i] = 0.5f * (1.0f - cos(M_TAU * i / (m_fft_size - 1)));
+        m_window[i] = 0.5f * (1.0f - cos(Tau * i / (m_fft_size - 1)));
     }
 
     m_zoom = 0;

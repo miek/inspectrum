@@ -1,7 +1,5 @@
+#pragma once
 #include <fftw3.h>
-
-#ifndef _INPUTSOURCE_H
-#define _INPUTSOURCE_H
 
 class InputSource
 {
@@ -34,5 +32,3 @@ public:
     bool ZoomIn();
     bool ZoomOut();
 };
-
-#endif
