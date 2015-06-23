@@ -1,5 +1,6 @@
 #pragma once
 #include <fftw3.h>
+#include <memory>
 
 class InputSource
 {
@@ -13,7 +14,7 @@ private:
     fftwf_complex *m_fftw_out;
     fftwf_plan m_fftw_plan;
 
-    float *m_window;
+    std::unique_ptr<float[]> m_window;
 
     int m_zoom;
     int m_max_zoom;

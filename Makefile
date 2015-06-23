@@ -1,5 +1,5 @@
 all:
-	g++ -g -o inspectrum inputsource.cpp main.cpp `wx-config --cxxflags --libs` -lfftw3f
+	g++ -std=c++11 -g -o inspectrum inputsource.cpp main.cpp `wx-config --cxxflags --libs` -lfftw3f
 
 clean:
 	rm inspectrum

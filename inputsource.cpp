@@ -26,7 +26,7 @@ InputSource::InputSource(const char *filename, int fft_size) {
     m_fftw_out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
     m_fftw_plan = fftwf_plan_dft_1d(m_fft_size, m_fftw_in, m_fftw_out, FFTW_FORWARD, FFTW_MEASURE);
 
-    m_window = new float[m_fft_size];
+    m_window.reset(new float[m_fft_size]);
     for (int i = 0; i < m_fft_size; i++) {
         m_window[i] = 0.5f * (1.0f - cos(Tau * i / (m_fft_size - 1)));
     }
@@ -36,8 +36,6 @@ InputSource::InputSource(const char *filename, int fft_size) {
 }
 
 InputSource::~InputSource() {
-    delete[] m_window;
-
     fftwf_destroy_plan(m_fftw_plan);
     fftwf_free(m_fftw_in);
     fftwf_free(m_fftw_out);
