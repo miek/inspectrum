@@ -9,10 +9,14 @@
 class wxImagePanel : public wxScrolled<wxPanel>
 {
 private:
-    InputSource *input_source;
+    InputSource *input_source = nullptr;
+    float *input_data = nullptr;
+    int old_width;
+    int old_height;
 
 public:
     wxImagePanel(wxFrame *parent, InputSource *input_source);
+    ~wxImagePanel();
 
     void paintEvent(wxPaintEvent &evt);
     void paintNow();
@@ -57,6 +61,11 @@ wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrol
     SetScrollRate(10, 10);
 }
 
+wxImagePanel::~wxImagePanel()
+{
+    free(input_data);
+}
+
 int clamp(int a, int b, int c) {
     if (a < b) return b;
     if (a > c) return c;
@@ -78,8 +87,11 @@ void wxImagePanel::OnDraw(wxDC &dc)
     x *= xunit;
     y *= yunit;
 
-    float *input_data = (float*)malloc(width * height * sizeof(float));
+    if (input_data == nullptr || width != old_width || height != old_height)
+        input_data = (float*)realloc(input_data, width * height * sizeof(float));
     input_source->GetViewport(input_data, 0, y, width, height, 0);
+    old_width = width;
+    old_height = height;
 
     wxBitmap image(width, height, 24);
     wxNativePixelData pixel_data(image);
