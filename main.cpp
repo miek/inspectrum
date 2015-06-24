@@ -17,6 +17,8 @@ public:
     wxImagePanel(wxFrame *parent, InputSource *input_source);
     ~wxImagePanel();
 
+    void AllocateBuffers();
+
     void OnDraw(wxDC &dc);
     void OnMouseWheel(wxMouseEvent &event);
     void OnSize(wxSizeEvent &event);
@@ -55,18 +57,8 @@ wxIMPLEMENT_APP(MyApp);
 wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrolled<wxPanel>(parent)
 {
     this->input_source = input_source;
-
     SetVirtualSize(input_source->GetWidth(), input_source->GetHeight());
-
-    int width, height;
-    GetClientSize(&width, &height);
-
-    // TODO: maybe change this
-    width = input_source->GetWidth();
-
-    input_data = (float*)malloc(width * height * sizeof(float));
-    wxBitmap *image = new wxBitmap(width, height, 24);
-
+    AllocateBuffers();
     SetScrollRate(10, 10);
 }
 
@@ -74,6 +66,20 @@ wxImagePanel::~wxImagePanel()
 {
     free(input_data);
     delete image;
+}
+
+void wxImagePanel::AllocateBuffers()
+{
+    int width, height;
+    GetClientSize(&width, &height);
+
+    // TODO: maybe change this
+    width = input_source->GetWidth();
+
+    input_data = (float*)realloc(input_data, width * height * sizeof(float));
+
+    delete image;
+    image = new wxBitmap(width, height, 24);
 }
 
 int clamp(int a, int b, int c) {
@@ -139,16 +145,7 @@ void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
 
 void wxImagePanel::OnSize(wxSizeEvent &event)
 {
-    int width, height;
-    GetClientSize(&width, &height);
-
-    // TODO: maybe change this
-    width = input_source->GetWidth();
-
-    input_data = (float*)realloc(input_data, width * height * sizeof(float));
-
-    delete image;
-    image = new wxBitmap(width, height, 24);
+    AllocateBuffers();
 }
 
 
