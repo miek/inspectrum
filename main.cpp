@@ -17,9 +17,6 @@ public:
     wxImagePanel(wxFrame *parent, InputSource *input_source);
     ~wxImagePanel();
 
-    void paintEvent(wxPaintEvent &evt);
-    void paintNow();
-
     void OnDraw(wxDC &dc);
     void OnMouseWheel(wxMouseEvent &event);
     void OnSize(wxSizeEvent &event);
