@@ -11,6 +11,7 @@ class wxImagePanel : public wxScrolled<wxPanel>
 private:
     InputSource *input_source = nullptr;
     float *input_data = nullptr;
+    wxBitmap *image = nullptr;
 
 public:
     wxImagePanel(wxFrame *parent, InputSource *input_source);
@@ -67,6 +68,7 @@ wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrol
     width = input_source->GetWidth();
 
     input_data = (float*)malloc(width * height * sizeof(float));
+    wxBitmap *image = new wxBitmap(width, height, 24);
 
     SetScrollRate(10, 10);
 }
@@ -74,6 +76,7 @@ wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrol
 wxImagePanel::~wxImagePanel()
 {
     free(input_data);
+    delete image;
 }
 
 int clamp(int a, int b, int c) {
@@ -99,8 +102,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
 
     input_source->GetViewport(input_data, 0, y, width, height, 0);
 
-    wxBitmap image(width, height, 24);
-    wxNativePixelData pixel_data(image);
+    wxNativePixelData pixel_data(*image);
     wxNativePixelData::Iterator pix(pixel_data);
 
     for (int i = 0; i < height; i++) {
@@ -112,7 +114,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
         }
     }
 
-    dc.DrawBitmap(image, 0, y, false);
+    dc.DrawBitmap(*image, 0, y, false);
 }
 
 void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
@@ -147,6 +149,9 @@ void wxImagePanel::OnSize(wxSizeEvent &event)
     width = input_source->GetWidth();
 
     input_data = (float*)realloc(input_data, width * height * sizeof(float));
+
+    delete image;
+    image = new wxBitmap(width, height, 24);
 }
 
 
