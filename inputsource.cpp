@@ -45,7 +45,7 @@ InputSource::~InputSource() {
 }
 
 void InputSource::GetViewport(float *dest, int x, int y, int width, int height, int zoom) {
-    fftwf_complex *sample_ptr = &m_data[y * GetOverlap()];
+    fftwf_complex *sample_ptr = &m_data[y * GetFFTStride()];
 
     for (int i = 0; i < height; i++) {
         memcpy(m_fftw_in, sample_ptr, m_fft_size * sizeof(fftw_complex));
@@ -67,14 +67,14 @@ void InputSource::GetViewport(float *dest, int x, int y, int width, int height, 
             *dest = magdb;
             dest++;
         }
-        sample_ptr += GetOverlap();
+        sample_ptr += GetFFTStride();
     }
 }
 
 int InputSource::GetHeight() {
-    int lines = m_file_size / sizeof(fftwf_complex) / GetOverlap();
+    int lines = m_file_size / sizeof(fftwf_complex) / GetFFTStride();
     // Force height to be a multiple of overlap size
-    return (lines / GetOverlap()) * GetOverlap();
+    return (lines / GetFFTStride()) * GetFFTStride();
 }
 
 int InputSource::GetWidth() {
@@ -99,6 +99,6 @@ bool InputSource::ZoomOut() {
     return true;
 }
 
-int InputSource::GetOverlap() {
+int InputSource::GetFFTStride() {
     return m_fft_size / pow(2, m_zoom);
 }

@@ -19,7 +19,7 @@ private:
     int m_zoom;
     int m_max_zoom;
 
-    int GetOverlap();
+    int GetFFTStride();
     
 
 public:
