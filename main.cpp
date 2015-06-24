@@ -11,7 +11,7 @@ class wxImagePanel : public wxScrolled<wxPanel>
 private:
     InputSource *input_source = nullptr;
     float *input_data = nullptr;
-    wxBitmap *image = nullptr;
+    std::unique_ptr<wxBitmap> image;
 
 public:
     wxImagePanel(wxFrame *parent, InputSource *input_source);
@@ -65,7 +65,6 @@ wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrol
 wxImagePanel::~wxImagePanel()
 {
     free(input_data);
-    delete image;
 }
 
 void wxImagePanel::AllocateBuffers()
@@ -78,8 +77,7 @@ void wxImagePanel::AllocateBuffers()
 
     input_data = (float*)realloc(input_data, width * height * sizeof(float));
 
-    delete image;
-    image = new wxBitmap(width, height, 24);
+    image.reset(new wxBitmap(width, height, 24));
 }
 
 int clamp(int a, int b, int c) {
