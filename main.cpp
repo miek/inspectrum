@@ -11,8 +11,6 @@ class wxImagePanel : public wxScrolled<wxPanel>
 private:
     InputSource *input_source = nullptr;
     float *input_data = nullptr;
-    int old_width;
-    int old_height;
 
 public:
     wxImagePanel(wxFrame *parent, InputSource *input_source);
@@ -23,12 +21,14 @@ public:
 
     void OnDraw(wxDC &dc);
     void OnMouseWheel(wxMouseEvent &event);
+    void OnSize(wxSizeEvent &event);
 
     wxDECLARE_EVENT_TABLE();
 };
 
 wxBEGIN_EVENT_TABLE(wxImagePanel, wxScrolled<wxPanel>)
     EVT_MOUSEWHEEL(wxImagePanel::OnMouseWheel)
+    EVT_SIZE(wxImagePanel::OnSize)
 wxEND_EVENT_TABLE()
 
 class MyApp: public wxApp
@@ -57,7 +57,17 @@ wxIMPLEMENT_APP(MyApp);
 wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrolled<wxPanel>(parent)
 {
     this->input_source = input_source;
+
     SetVirtualSize(input_source->GetWidth(), input_source->GetHeight());
+
+    int width, height;
+    GetClientSize(&width, &height);
+
+    // TODO: maybe change this
+    width = input_source->GetWidth();
+
+    input_data = (float*)malloc(width * height * sizeof(float));
+
     SetScrollRate(10, 10);
 }
 
@@ -87,11 +97,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
     x *= xunit;
     y *= yunit;
 
-    if (input_data == nullptr || width != old_width || height != old_height)
-        input_data = (float*)realloc(input_data, width * height * sizeof(float));
     input_source->GetViewport(input_data, 0, y, width, height, 0);
-    old_width = width;
-    old_height = height;
 
     wxBitmap image(width, height, 24);
     wxNativePixelData pixel_data(image);
@@ -130,6 +136,17 @@ void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
     } else {
         event.Skip();
     }
+}
+
+void wxImagePanel::OnSize(wxSizeEvent &event)
+{
+    int width, height;
+    GetClientSize(&width, &height);
+
+    // TODO: maybe change this
+    width = input_source->GetWidth();
+
+    input_data = (float*)realloc(input_data, width * height * sizeof(float));
 }
 
 
