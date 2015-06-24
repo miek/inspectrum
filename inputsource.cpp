@@ -63,7 +63,7 @@ void InputSource::GetViewport(float *dest, int x, int y, int width, int height, 
             float re = m_fftw_out[k][0];
             float im = m_fftw_out[k][1];
             float mag = sqrt(re * re + im * im) / m_fft_size;
-            float magdb = 10 * log(mag);
+            float magdb = 10 * log2(mag) / log2(10);
             *dest = magdb;
             dest++;
         }

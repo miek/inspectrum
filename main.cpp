@@ -108,7 +108,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
 
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            pix.Blue() = clamp(256 - input_data[i*width + j] * -2, 0, 255);
+            pix.Blue() = clamp((input_data[i*width + j] + 20) * 5 + 255, 0, 255);
             pix.Red() = 0;
             pix.Green() = 0;
             pix++;
