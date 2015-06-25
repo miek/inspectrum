@@ -40,6 +40,7 @@ InputSource::~InputSource() {
     fftwf_free(m_fftw_in);
     fftwf_free(m_fftw_out);
 
+    free(m_output_cache);
     munmap(m_data, m_file_size);
     fclose(m_file);
 }
