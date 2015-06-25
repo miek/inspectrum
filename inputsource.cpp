@@ -12,15 +12,17 @@ InputSource::InputSource(const char *filename, int fft_size) {
     m_fft_size = fft_size;
 
     m_file = fopen(filename, "rb");
-    // TODO: throw exception if failed
+    if (m_file == nullptr)
+        throw "Error opening file";
 
     struct stat sb;
-    fstat(fileno(m_file), &sb);
-    // TODO: throw exception if failed
+    if (fstat(fileno(m_file), &sb) != 0)
+        throw "Error fstating file";
     m_file_size = sb.st_size;
 
     m_data = (fftwf_complex*)mmap(NULL, m_file_size, PROT_READ, MAP_SHARED, fileno(m_file), 0);
-    // TODO: throw exception if failed
+    if (m_data == 0)
+        throw "Error mmapping file";
 
     m_fftw_in = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
     m_fftw_out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);

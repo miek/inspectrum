@@ -8,6 +8,8 @@
 
 class MyApp: public wxApp
 {
+private:
+    InputSource *m_input_source;
 public:
     virtual bool OnInit();
 };
@@ -49,9 +51,14 @@ bool MyApp::OnInit()
             fft_size = size;
     }
 
-    InputSource *is = new InputSource(argv[1], fft_size);
+    try {
+        m_input_source = new InputSource(argv[1], fft_size);
+    } catch (const char *msg) {
+        printf("%s\n", msg);
+        return false;
+    }
 
-    wxImagePanel *impanel = new wxImagePanel(frame, is);
+    wxImagePanel *impanel = new wxImagePanel(frame, m_input_source);
     sizer->Add(impanel, 1, wxALL | wxEXPAND, 0);
     frame->SetSizer(sizer);
 
