@@ -70,7 +70,7 @@ wxImagePanel::~wxImagePanel()
 void wxImagePanel::AllocateBuffers()
 {
     int width, height;
-    GetClientSize(&width, &height);
+    GetSize(&width, &height);
 
     // TODO: maybe change this
     width = input_source->GetWidth();
@@ -93,7 +93,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
     int width, height;
     GetViewStart(&x, &y);
     GetScrollPixelsPerUnit(&xunit, &yunit);
-    GetClientSize(&width, &height);
+    GetSize(&width, &height);
 
     // TODO: maybe change this
     width = input_source->GetWidth();
