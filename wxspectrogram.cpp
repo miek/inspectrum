@@ -1,11 +1,11 @@
-#include "wximagepanel.h"
+#include "wxspectrogram.h"
 
-wxBEGIN_EVENT_TABLE(wxImagePanel, wxScrolled<wxPanel>)
-    EVT_MOUSEWHEEL(wxImagePanel::OnMouseWheel)
-    EVT_SIZE(wxImagePanel::OnSize)
+wxBEGIN_EVENT_TABLE(wxSpectrogram, wxScrolled<wxPanel>)
+    EVT_MOUSEWHEEL(wxSpectrogram::OnMouseWheel)
+    EVT_SIZE(wxSpectrogram::OnSize)
 wxEND_EVENT_TABLE()
 
-wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrolled<wxPanel>(parent)
+wxSpectrogram::wxSpectrogram(wxFrame *parent, InputSource *input_source) : wxScrolled<wxPanel>(parent)
 {
     this->input_source = input_source;
     SetVirtualSize(input_source->GetWidth(), input_source->GetHeight());
@@ -13,12 +13,12 @@ wxImagePanel::wxImagePanel(wxFrame *parent, InputSource *input_source) : wxScrol
     SetScrollRate(10, 10);
 }
 
-wxImagePanel::~wxImagePanel()
+wxSpectrogram::~wxSpectrogram()
 {
     free(input_data);
 }
 
-void wxImagePanel::AllocateBuffers()
+void wxSpectrogram::AllocateBuffers()
 {
     int width, height;
     GetSize(&width, &height);
@@ -37,7 +37,7 @@ int clamp(int a, int b, int c) {
     return a;
 }
 
-void wxImagePanel::OnDraw(wxDC &dc)
+void wxSpectrogram::OnDraw(wxDC &dc)
 {
     int x, y;
     int xunit, yunit;
@@ -69,7 +69,7 @@ void wxImagePanel::OnDraw(wxDC &dc)
     dc.DrawBitmap(*image, 0, y, false);
 }
 
-void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
+void wxSpectrogram::OnMouseWheel(wxMouseEvent &event)
 {
     if (event.ControlDown() && event.GetWheelRotation() != 0) {
         bool forward = event.GetWheelRotation() > 0;
@@ -97,7 +97,7 @@ void wxImagePanel::OnMouseWheel(wxMouseEvent &event)
     }
 }
 
-void wxImagePanel::OnSize(wxSizeEvent &event)
+void wxSpectrogram::OnSize(wxSizeEvent &event)
 {
     AllocateBuffers();
 }

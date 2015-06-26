@@ -4,7 +4,7 @@
 #endif
 
 #include "inputsource.h"
-#include "wximagepanel.h"
+#include "wxspectrogram.h"
 
 class MyApp: public wxApp
 {
@@ -58,7 +58,7 @@ bool MyApp::OnInit()
         return false;
     }
 
-    wxImagePanel *impanel = new wxImagePanel(frame, m_input_source);
+    wxSpectrogram *impanel = new wxSpectrogram(frame, m_input_source);
     sizer->Add(impanel, 1, wxALL | wxEXPAND, 0);
     frame->SetSizer(sizer);
 

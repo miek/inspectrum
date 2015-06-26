@@ -8,7 +8,7 @@
 
 #include "inputsource.h"
 
-class wxImagePanel : public wxScrolled<wxPanel>
+class wxSpectrogram : public wxScrolled<wxPanel>
 {
 private:
     InputSource *input_source = nullptr;
@@ -16,8 +16,8 @@ private:
     std::unique_ptr<wxBitmap> image;
 
 public:
-    wxImagePanel(wxFrame *parent, InputSource *input_source);
-    ~wxImagePanel();
+    wxSpectrogram(wxFrame *parent, InputSource *input_source);
+    ~wxSpectrogram();
 
     void AllocateBuffers();
 
