@@ -93,7 +93,7 @@ void InputSource::GetViewport(float *dest, int x, int y, int width, int height, 
     fftwf_complex *sample_ptr = &m_data[y * GetFFTStride()];
 
     for (int i = 0; i < height; i++) {
-        memcpy(m_fftw_in, sample_ptr, m_fft_size * sizeof(fftw_complex));
+        memcpy(m_fftw_in, sample_ptr, m_fft_size * sizeof(fftwf_complex));
 
         // Apply window
         for (int j = 0; j < m_fft_size; j++) {
