@@ -4,4 +4,5 @@ TARGET = inspectrum
 TEMPLATE = app
 
 LIBS += -lfftw3f
-SOURCES += main.cpp inputsource.cpp
+HEADERS += mainwindow.h inputsource.h spectrogram.h
+SOURCES += main.cpp mainwindow.cpp inputsource.cpp spectrogram.cpp
