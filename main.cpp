@@ -53,8 +53,8 @@ bool MyApp::OnInit()
 
     try {
         m_input_source = new InputSource(argv[1], fft_size);
-    } catch (const char *msg) {
-        printf("%s\n", msg);
+    } catch (std::exception const& msg) {
+        printf("%s\n", msg.what());
         return false;
     }
 
