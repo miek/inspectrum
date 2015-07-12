@@ -10,11 +10,6 @@ private:
     fftwf_complex *m_data;
     int m_fft_size;
 
-    float *m_output_cache = nullptr;
-    bool m_cache_valid = false;
-    int m_prev_y = -1;
-    int m_prev_height = -1;
-
     fftwf_complex *m_fftw_in;
     fftwf_complex *m_fftw_out;
     fftwf_plan m_fftw_plan;

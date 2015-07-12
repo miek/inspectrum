@@ -42,53 +42,11 @@ InputSource::~InputSource() {
     fftwf_free(m_fftw_in);
     fftwf_free(m_fftw_out);
 
-    free(m_output_cache);
     munmap(m_data, m_file_size);
     fclose(m_file);
 }
 
 void InputSource::GetViewport(float *dest, int x, int y, int width, int height, int zoom) {
-    int crossover_start_lines = 0;
-    int crossover_end_lines = 0;
-    if (m_output_cache != nullptr && m_cache_valid) {
-        // Scroll down, with at least some of previous cache still in view
-        if (m_prev_y <= y && y < m_prev_y + m_prev_height) {
-            float *crossover_start = m_output_cache + (y - m_prev_y) * m_fft_size;
-            int crossover_lines;
-            // This covers the case of a window size reduction
-            if (y + height < m_prev_y + m_prev_height) {
-                crossover_lines = (m_prev_y + height - y);
-            } else {
-                crossover_lines = (m_prev_y + m_prev_height - y);
-            }
-            int crossover_length = crossover_lines * m_fft_size * sizeof(float);
-            memcpy(dest, crossover_start, crossover_length);
-
-            crossover_start_lines = crossover_lines;
-        // Scroll up
-        } else if (y <= m_prev_y && m_prev_y < y + height) {
-            float *crossover_start = dest + (m_prev_y - y) * m_fft_size;
-            int crossover_lines = y + height - m_prev_y;
-            int crossover_length = crossover_lines * m_fft_size * sizeof(float);
-            memcpy(crossover_start, m_output_cache, crossover_length);
-
-            crossover_end_lines = crossover_lines;
-        }
-    }
-
-    if (m_output_cache == nullptr || height != m_prev_height) {
-        m_output_cache = (float*)realloc(m_output_cache, m_fft_size * height * sizeof(float));
-    }
-
-    m_prev_y = y;
-    m_prev_height = height;
-
-    float *cache_ptr = m_output_cache;
-    y += crossover_start_lines;
-    height -= crossover_start_lines;
-    height -= crossover_end_lines;
-    dest += crossover_start_lines * m_fft_size;
-    cache_ptr += crossover_start_lines * m_fft_size;
 
     fftwf_complex *sample_ptr = &m_data[y * GetFFTStride()];
 
@@ -115,12 +73,9 @@ void InputSource::GetViewport(float *dest, int x, int y, int width, int height, 
             float magdb = 10 * log2(mag) / log2(10);
             *dest = magdb;
             dest++;
-            *cache_ptr = magdb;
-            cache_ptr++;
         }
         sample_ptr += GetFFTStride();
     }
-    m_cache_valid = true;
 }
 
 int InputSource::GetHeight() {
@@ -139,7 +94,6 @@ bool InputSource::ZoomIn() {
         m_zoom = m_max_zoom;
         return false;
     }
-    m_cache_valid = false;
     return true;
 }
 
@@ -149,7 +103,6 @@ bool InputSource::ZoomOut() {
         m_zoom = 0;
         return false;
     }
-    m_cache_valid = false;
     return true;
 }
 
