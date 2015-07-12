@@ -1,5 +1,7 @@
 #include "spectrogram.h"
 
+#include <QDebug>
+#include <QElapsedTimer>
 #include <QPainter>
 #include <QPaintEvent>
 #include <QRect>
@@ -17,6 +19,9 @@ Spectrogram::~Spectrogram()
 
 void Spectrogram::paintEvent(QPaintEvent *event)
 {
+	QElapsedTimer timer;
+	timer.start();
+
 	QRect rect = event->rect();
 	QPainter painter(this);
 	painter.fillRect(rect, Qt::black);
@@ -42,4 +47,6 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 		free(data);
 	}
+
+	qDebug() << "Paint: " << timer.elapsed() << "ms";
 }
