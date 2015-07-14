@@ -9,8 +9,6 @@
 static const double Tau = M_PI * 2.0;
 
 InputSource::InputSource(const char *filename, int fft_size) {
-    m_fft_size = fft_size;
-
     m_file = fopen(filename, "rb");
     if (m_file == nullptr)
         throw std::runtime_error("Error opening file");
@@ -24,26 +22,19 @@ InputSource::InputSource(const char *filename, int fft_size) {
     if (m_data == 0)
         throw std::runtime_error("Error mmapping file");
 
-    m_fftw_in = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
-    m_fftw_out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
-    m_fftw_plan = fftwf_plan_dft_1d(m_fft_size, m_fftw_in, m_fftw_out, FFTW_FORWARD, FFTW_MEASURE);
-
-    m_window.reset(new float[m_fft_size]);
-    for (int i = 0; i < m_fft_size; i++) {
-        m_window[i] = 0.5f * (1.0f - cos(Tau * i / (m_fft_size - 1)));
-    }
-
-    m_zoom = 0;
-    m_max_zoom = floor(log2(m_fft_size));
+    setFFTSize(fft_size);
 }
 
 InputSource::~InputSource() {
-    fftwf_destroy_plan(m_fftw_plan);
-    fftwf_free(m_fftw_in);
-    fftwf_free(m_fftw_out);
-
+    cleanupFFTW();
     munmap(m_data, m_file_size);
     fclose(m_file);
+}
+
+void InputSource::cleanupFFTW() {
+    if (m_fftw_plan != nullptr) fftwf_destroy_plan(m_fftw_plan);
+    if (m_fftw_in != nullptr) fftwf_free(m_fftw_in);
+    if (m_fftw_out != nullptr) fftwf_free(m_fftw_out);
 }
 
 void InputSource::GetViewport(float *dest, int x, int y, int width, int height, int zoom) {
@@ -86,6 +77,23 @@ int InputSource::GetHeight() {
 
 int InputSource::GetWidth() {
     return m_fft_size;
+}
+
+void InputSource::setFFTSize(int size) {
+    cleanupFFTW();
+    m_fft_size = size;
+
+    m_fftw_in = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
+    m_fftw_out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
+    m_fftw_plan = fftwf_plan_dft_1d(m_fft_size, m_fftw_in, m_fftw_out, FFTW_FORWARD, FFTW_MEASURE);
+
+    m_window.reset(new float[m_fft_size]);
+    for (int i = 0; i < m_fft_size; i++) {
+        m_window[i] = 0.5f * (1.0f - cos(Tau * i / (m_fft_size - 1)));
+    }
+
+    m_zoom = 0;
+    m_max_zoom = floor(log2(m_fft_size));
 }
 
 bool InputSource::ZoomIn() {

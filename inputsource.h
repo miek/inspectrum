@@ -10,9 +10,9 @@ private:
     fftwf_complex *m_data;
     int m_fft_size;
 
-    fftwf_complex *m_fftw_in;
-    fftwf_complex *m_fftw_out;
-    fftwf_plan m_fftw_plan;
+    fftwf_complex *m_fftw_in = nullptr;
+    fftwf_complex *m_fftw_out = nullptr;
+    fftwf_plan m_fftw_plan = nullptr;
 
     std::unique_ptr<float[]> m_window;
 
@@ -20,6 +20,7 @@ private:
     int m_max_zoom;
 
     int GetFFTStride();
+    void cleanupFFTW();
     
 
 public:
@@ -29,6 +30,7 @@ public:
     void GetViewport(float *dest, int x, int y, int width, int height, int zoom);
     int GetHeight();
     int GetWidth();
+    void setFFTSize(int size);
 
     bool ZoomIn();
     bool ZoomOut();
