@@ -1,0 +1,5 @@
+# Build outputs
+inspectrum
+Makefile
+moc_*
+*.o
