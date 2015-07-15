@@ -20,4 +20,7 @@ private:
 	QWidget *widget;
 	QFormLayout *layout;
 	QSlider *fftSizeSlider;
+public:
+	QSlider *powerMaxSlider;
+	QSlider *powerRangeSlider;
 };

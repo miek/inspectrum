@@ -12,6 +12,8 @@ public:
 
 public slots:
 	void setFFTSize(int size);
+	void setPowerMax(int power);
+	void setPowerRange(int power);
 
 protected:
 	void paintEvent(QPaintEvent *event);

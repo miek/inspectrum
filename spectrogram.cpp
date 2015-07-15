@@ -120,3 +120,15 @@ void Spectrogram::setFFTSize(int size)
 	update();
 	resize(inputSource->GetWidth(), inputSource->GetHeight());
 }
+
+void Spectrogram::setPowerMax(int power)
+{
+	powerMax = power;
+	update();
+}
+
+void Spectrogram::setPowerRange(int power)
+{
+	powerRange = power;
+	update();
+}
