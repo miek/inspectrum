@@ -19,4 +19,7 @@ protected:
 
 private:
 	InputSource *inputSource;
+
+	float powerMax;
+	float powerRange;
 };
