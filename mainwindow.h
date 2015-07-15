@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QScrollArea>
 #include "spectrogram.h"
+#include "spectrogramcontrols.h"
 
 class MainWindow : public QMainWindow
 {
@@ -14,4 +15,5 @@ public:
 private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
+    SpectrogramControls *dock;
 };

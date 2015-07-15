@@ -50,3 +50,10 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 	qDebug() << "Paint: " << timer.elapsed() << "ms";
 }
+
+void Spectrogram::setFFTSize(int size)
+{
+	inputSource->setFFTSize(size);
+	update();
+	resize(inputSource->GetWidth(), inputSource->GetHeight());
+}
