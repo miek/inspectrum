@@ -13,7 +13,7 @@ public:
 public slots:
 	void setFFTSize(int size);
 	void setPowerMax(int power);
-	void setPowerRange(int power);
+	void setPowerMin(int power);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -23,5 +23,5 @@ private:
 	InputSource *inputSource;
 
 	float powerMax;
-	float powerRange;
+	float powerMin;
 };

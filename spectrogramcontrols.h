@@ -22,5 +22,5 @@ private:
 	QSlider *fftSizeSlider;
 public:
 	QSlider *powerMaxSlider;
-	QSlider *powerRangeSlider;
+	QSlider *powerMinSlider;
 };

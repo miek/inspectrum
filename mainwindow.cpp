@@ -14,5 +14,5 @@ MainWindow::MainWindow()
 
     connect(dock, SIGNAL(fftSizeChanged(int)), &spectrogram, SLOT(setFFTSize(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
-    connect(dock->powerRangeSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerRange(int)));
+    connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
 }

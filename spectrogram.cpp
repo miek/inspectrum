@@ -10,7 +10,7 @@ Spectrogram::Spectrogram()
 {
 	inputSource = new InputSource("/home/mike/Downloads/hubsan-chopped.cfile", 1024);
 	powerMax = 0.0f;
-	powerRange = 40.0f;
+	powerMin = -50.0f;
 	resize(inputSource->GetWidth(), inputSource->GetHeight());
 }
 
@@ -95,6 +95,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 		QImage image(width, height, QImage::Format_RGB32);
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
+				float powerRange = std::abs(powerMin - powerMax);
 				float normPower = (data[y*width + x] - powerMax) * -1.0f / powerRange;
 				normPower = clamp(normPower, 0.0f, 1.0f);
 
@@ -127,8 +128,8 @@ void Spectrogram::setPowerMax(int power)
 	update();
 }
 
-void Spectrogram::setPowerRange(int power)
+void Spectrogram::setPowerMin(int power)
 {
-	powerRange = power;
+	powerMin = power;
 	update();
 }
