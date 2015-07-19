@@ -19,7 +19,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
 	powerMinSlider = new QSlider(Qt::Horizontal, widget);
 	powerMinSlider->setRange(-100, 20);
-	powerMinSlider->setValue(40);
+	powerMinSlider->setValue(-50);
 	layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
 	widget->setLayout(layout);
