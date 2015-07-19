@@ -1,6 +1,8 @@
 # inspectrum
 inspectrum is a tool for analysing captured signals, primarily from software-defined radio receivers.
 
+![inspectrum screenshot](/screenshot.jpg)
+
 ## Status
 Currently very early and rough, but usable.
 
