@@ -11,6 +11,7 @@ public:
 	~Spectrogram();
 
 public slots:
+	void pickFile();
 	void setFFTSize(int size);
 	void setPowerMax(int power);
 	void setPowerMin(int power);

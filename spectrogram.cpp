@@ -2,21 +2,39 @@
 
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QFileDialog>
 #include <QPainter>
 #include <QPaintEvent>
 #include <QRect>
 
 Spectrogram::Spectrogram()
 {
-	inputSource = new InputSource("/home/mike/Downloads/hubsan-chopped.cfile", 1024);
+	inputSource = nullptr;
 	powerMax = 0.0f;
 	powerMin = -50.0f;
-	resize(inputSource->GetWidth(), inputSource->GetHeight());
 }
 
 Spectrogram::~Spectrogram()
 {
 	delete inputSource;
+}
+
+void Spectrogram::pickFile()
+{
+	QString fileName = QFileDialog::getOpenFileName(
+		this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*.*)")
+	);
+	if (fileName != nullptr) {
+		try {
+			InputSource *newFile = new InputSource(fileName.toUtf8().constData(), (inputSource != nullptr) ? inputSource->GetWidth() : 1024);
+			delete inputSource;
+			inputSource = newFile;
+			resize(inputSource->GetWidth(), inputSource->GetHeight());
+		} catch (std::runtime_error e) {
+			// TODO: display error
+			return;
+		}
+	}
 }
 
 template <class T> const T& clamp (const T& value, const T& min, const T& max) {

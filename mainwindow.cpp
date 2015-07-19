@@ -13,6 +13,7 @@ MainWindow::MainWindow()
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     connect(dock, SIGNAL(fftSizeChanged(int)), &spectrogram, SLOT(setFFTSize(int)));
+    connect(dock->fileOpenButton, SIGNAL(clicked()), &spectrogram, SLOT(pickFile()));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
 }

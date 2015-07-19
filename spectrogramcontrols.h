@@ -2,6 +2,7 @@
 
 #include <QDockWidget>
 #include <QFormLayout>
+#include <QPushButton>
 #include <QSlider>
 
 class SpectrogramControls : public QDockWidget {
@@ -21,6 +22,7 @@ private:
 	QFormLayout *layout;
 	QSlider *fftSizeSlider;
 public:
+	QPushButton *fileOpenButton;
 	QSlider *powerMaxSlider;
 	QSlider *powerMinSlider;
 };

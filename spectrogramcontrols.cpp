@@ -7,6 +7,9 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	widget = new QWidget(this);
 	layout = new QFormLayout(widget);
 
+	fileOpenButton = new QPushButton("Open file...", widget);
+	layout->addRow(fileOpenButton);
+
 	fftSizeSlider = new QSlider(Qt::Horizontal, widget);
 	fftSizeSlider->setRange(7, 13);
 	fftSizeSlider->setValue(10);
