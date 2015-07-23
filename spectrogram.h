@@ -23,6 +23,7 @@ protected:
 private:
 	InputSource *inputSource;
 
+	int fftSize;
 	float powerMax;
 	float powerMin;
 };

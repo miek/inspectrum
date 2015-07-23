@@ -10,6 +10,7 @@
 Spectrogram::Spectrogram()
 {
 	inputSource = nullptr;
+	fftSize = 1024;
 	powerMax = 0.0f;
 	powerMin = -50.0f;
 }
@@ -26,7 +27,7 @@ void Spectrogram::pickFile()
 	);
 	if (fileName != nullptr) {
 		try {
-			InputSource *newFile = new InputSource(fileName.toUtf8().constData(), (inputSource != nullptr) ? inputSource->GetWidth() : 1024);
+			InputSource *newFile = new InputSource(fileName.toUtf8().constData(), fftSize);
 			delete inputSource;
 			inputSource = newFile;
 			resize(inputSource->GetWidth(), inputSource->GetHeight());
@@ -135,9 +136,12 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 void Spectrogram::setFFTSize(int size)
 {
-	inputSource->setFFTSize(size);
-	update();
-	resize(inputSource->GetWidth(), inputSource->GetHeight());
+	fftSize = size;
+	if (inputSource != nullptr) {
+		inputSource->setFFTSize(size);
+		update();
+		resize(inputSource->GetWidth(), inputSource->GetHeight());
+	}
 }
 
 void Spectrogram::setPowerMax(int power)
