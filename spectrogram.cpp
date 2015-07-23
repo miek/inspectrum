@@ -30,7 +30,7 @@ void Spectrogram::pickFile()
 			InputSource *newFile = new InputSource(fileName.toUtf8().constData(), fftSize);
 			delete inputSource;
 			inputSource = newFile;
-			resize(inputSource->GetWidth(), inputSource->GetHeight());
+			resize(inputSource->getWidth(), inputSource->getHeight());
 		} catch (std::runtime_error e) {
 			// TODO: display error
 			return;
@@ -104,12 +104,12 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 	painter.fillRect(rect, Qt::black);
 
 	if (inputSource != nullptr) {
-		int width = inputSource->GetWidth();
+		int width = inputSource->getWidth();
 		int height = rect.height();
 
 		float *data = (float*)malloc(width * height * sizeof(float));
 
-		inputSource->GetViewport(data, 0, rect.y(), width, height, 0);
+		inputSource->getViewport(data, 0, rect.y(), width, height, 0);
 
 		QImage image(width, height, QImage::Format_RGB32);
 		for (int y = 0; y < height; y++) {
@@ -140,7 +140,7 @@ void Spectrogram::setFFTSize(int size)
 	if (inputSource != nullptr) {
 		inputSource->setFFTSize(size);
 		update();
-		resize(inputSource->GetWidth(), inputSource->GetHeight());
+		resize(inputSource->getWidth(), inputSource->getHeight());
 	}
 }
 

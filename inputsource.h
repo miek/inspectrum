@@ -19,7 +19,7 @@ private:
     int m_zoom;
     int m_max_zoom;
 
-    int GetFFTStride();
+    int getFFTStride();
     void cleanupFFTW();
     
 
@@ -27,11 +27,11 @@ public:
     InputSource(const char *filename, int fft_size);
     ~InputSource();
 
-    void GetViewport(float *dest, int x, int y, int width, int height, int zoom);
-    int GetHeight();
-    int GetWidth();
+    void getViewport(float *dest, int x, int y, int width, int height, int zoom);
+    int getHeight();
+    int getWidth();
     void setFFTSize(int size);
 
-    bool ZoomIn();
-    bool ZoomOut();
+    bool zoomIn();
+    bool zoomOut();
 };
