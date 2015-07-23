@@ -70,9 +70,7 @@ void InputSource::getViewport(float *dest, int x, int y, int width, int height, 
 }
 
 int InputSource::getHeight() {
-    int lines = m_file_size / sizeof(fftwf_complex) / getFFTStride();
-    // Force height to be a multiple of overlap size
-    return (lines / getFFTStride()) * getFFTStride();
+    return m_file_size / sizeof(fftwf_complex) / getFFTStride();
 }
 
 int InputSource::getWidth() {
