@@ -9,6 +9,7 @@ class Spectrogram : public QWidget {
 public:
 	Spectrogram();
 	~Spectrogram();
+	QSize sizeHint() const;
 
 public slots:
 	void pickFile();

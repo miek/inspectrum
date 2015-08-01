@@ -20,6 +20,10 @@ Spectrogram::~Spectrogram()
 	delete inputSource;
 }
 
+QSize Spectrogram::sizeHint() const {
+	return QSize(1024, 2048);
+}
+
 void Spectrogram::pickFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(
