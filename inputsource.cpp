@@ -17,6 +17,7 @@ InputSource::InputSource(const char *filename, int fft_size) {
     if (fstat(fileno(m_file), &sb) != 0)
         throw std::runtime_error("Error fstating file");
     m_file_size = sb.st_size;
+    sampleCount = m_file_size / sizeof(fftwf_complex);
 
     m_data = (fftwf_complex*)mmap(NULL, m_file_size, PROT_READ, MAP_SHARED, fileno(m_file), 0);
     if (m_data == 0)
@@ -35,6 +36,15 @@ void InputSource::cleanupFFTW() {
     if (m_fftw_plan != nullptr) fftwf_destroy_plan(m_fftw_plan);
     if (m_fftw_in != nullptr) fftwf_free(m_fftw_in);
     if (m_fftw_out != nullptr) fftwf_free(m_fftw_out);
+}
+
+bool InputSource::getSamples(fftwf_complex *dest, int start, int length)
+{
+    if (start + length >= sampleCount)
+        return false;
+
+    memcpy(dest, &m_data[start], length * sizeof(fftwf_complex));
+    return true;
 }
 
 void InputSource::getViewport(float *dest, int x, int y, int width, int height, int zoom) {
