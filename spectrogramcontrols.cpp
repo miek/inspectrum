@@ -15,6 +15,11 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	fftSizeSlider->setValue(10);
 	layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
+	zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
+	zoomLevelSlider->setRange(0, 5);
+	zoomLevelSlider->setValue(0);
+	layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
+
 	powerMaxSlider = new QSlider(Qt::Horizontal, widget);
 	powerMaxSlider->setRange(-100, 20);
 	powerMaxSlider->setValue(0);

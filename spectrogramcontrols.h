@@ -23,6 +23,7 @@ private:
 	QSlider *fftSizeSlider;
 public:
 	QPushButton *fileOpenButton;
+	QSlider *zoomLevelSlider;
 	QSlider *powerMaxSlider;
 	QSlider *powerMinSlider;
 };

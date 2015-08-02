@@ -141,7 +141,7 @@ void Spectrogram::getLine(float *dest, int y)
 {
 	if (inputSource && fft) {
 		fftwf_complex buffer[fftSize];
-		inputSource->getSamples(buffer, y * fftSize, fftSize);
+		inputSource->getSamples(buffer, y * getStride(), fftSize);
 
 		for (int i = 0; i < fftSize; i++) {
 			buffer[i][0] *= window[i];
@@ -187,10 +187,21 @@ void Spectrogram::setPowerMin(int power)
 	update();
 }
 
+void Spectrogram::setZoomLevel(int zoom)
+{
+	zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
+	update();
+}
+
 int Spectrogram::getHeight()
 {
 	if (!inputSource)
 		return 0;
 
-	return inputSource->getSampleCount() / fftSize;
+	return inputSource->getSampleCount() / getStride();
+}
+
+int Spectrogram::getStride()
+{
+	return fftSize / pow(2, zoomLevel);
 }

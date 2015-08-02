@@ -19,6 +19,7 @@ public slots:
 	void setFFTSize(int size);
 	void setPowerMax(int power);
 	void setPowerMin(int power);
+	void setZoomLevel(int zoom);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -37,4 +38,5 @@ private:
 
 	void getLine(float *dest, int y);
 	int getHeight();
+	int getStride();
 };
