@@ -27,15 +27,9 @@ InputSource::InputSource(const char *filename, int fft_size) {
 }
 
 InputSource::~InputSource() {
-    cleanupFFTW();
+    delete fft;
     munmap(m_data, m_file_size);
     fclose(m_file);
-}
-
-void InputSource::cleanupFFTW() {
-    if (m_fftw_plan != nullptr) fftwf_destroy_plan(m_fftw_plan);
-    if (m_fftw_in != nullptr) fftwf_free(m_fftw_in);
-    if (m_fftw_out != nullptr) fftwf_free(m_fftw_out);
 }
 
 bool InputSource::getSamples(fftwf_complex *dest, int start, int length)
@@ -48,7 +42,7 @@ bool InputSource::getSamples(fftwf_complex *dest, int start, int length)
 }
 
 void InputSource::getViewport(float *dest, int x, int y, int width, int height, int zoom) {
-
+    fftwf_complex buffer[m_fft_size];
     fftwf_complex *sample_ptr = &m_data[y * getFFTStride()];
 
     for (int i = 0; i < height; i++) {
@@ -56,20 +50,20 @@ void InputSource::getViewport(float *dest, int x, int y, int width, int height, 
         if (sample_ptr > m_data + (m_file_size/sizeof(fftwf_complex)))
             break;
 
-        memcpy(m_fftw_in, sample_ptr, m_fft_size * sizeof(fftwf_complex));
+        memcpy(buffer, sample_ptr, m_fft_size * sizeof(fftwf_complex));
 
         // Apply window
         for (int j = 0; j < m_fft_size; j++) {
-            m_fftw_in[j][0] *= m_window[j];
-            m_fftw_in[j][1] *= m_window[j];
+            buffer[j][0] *= m_window[j];
+            buffer[j][1] *= m_window[j];
         }
 
-        fftwf_execute(m_fftw_plan);
+        fft->process(buffer, buffer);
 
         for (int j = x; j < width; j++) {
             int k = (j + m_fft_size / 2) % m_fft_size;
-            float re = m_fftw_out[k][0];
-            float im = m_fftw_out[k][1];
+            float re = buffer[k][0];
+            float im = buffer[k][1];
             float mag = sqrt(re * re + im * im) / m_fft_size;
             float magdb = 10 * log2(mag) / log2(10);
             *dest = magdb;
@@ -88,12 +82,9 @@ int InputSource::getWidth() {
 }
 
 void InputSource::setFFTSize(int size) {
-    cleanupFFTW();
+    delete fft;
+    fft = new FFT(size);
     m_fft_size = size;
-
-    m_fftw_in = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
-    m_fftw_out = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * m_fft_size);
-    m_fftw_plan = fftwf_plan_dft_1d(m_fft_size, m_fftw_in, m_fftw_out, FFTW_FORWARD, FFTW_MEASURE);
 
     m_window.reset(new float[m_fft_size]);
     for (int i = 0; i < m_fft_size; i++) {

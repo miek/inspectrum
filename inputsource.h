@@ -1,4 +1,6 @@
 #pragma once
+
+#include "fft.h"
 #include <fftw3.h>
 #include <memory>
 
@@ -11,9 +13,7 @@ private:
     fftwf_complex *m_data;
     int m_fft_size;
 
-    fftwf_complex *m_fftw_in = nullptr;
-    fftwf_complex *m_fftw_out = nullptr;
-    fftwf_plan m_fftw_plan = nullptr;
+    FFT *fft = nullptr;
 
     std::unique_ptr<float[]> m_window;
 
@@ -21,7 +21,6 @@ private:
     int m_max_zoom;
 
     int getFFTStride();
-    void cleanupFFTW();
     
 
 public:
