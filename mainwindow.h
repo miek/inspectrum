@@ -13,6 +13,7 @@ public:
     MainWindow();
 
 public slots:
+	void setFFTSize(int size);
 	void setZoomLevel(int zoom);
 
 private:

@@ -13,10 +13,17 @@ MainWindow::MainWindow()
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     connect(dock->fileOpenButton, SIGNAL(clicked()), &spectrogram, SLOT(pickFile()));
-    connect(dock, SIGNAL(fftSizeChanged(int)), &spectrogram, SLOT(setFFTSize(int)));
+    connect(dock, SIGNAL(fftSizeChanged(int)), this, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
+}
+
+void MainWindow::setFFTSize(int size)
+{
+    off_t sample = getCenterSample();
+    spectrogram.setFFTSize(size);
+    scrollArea.verticalScrollBar()->setValue(getScrollPos(sample));
 }
 
 void MainWindow::setZoomLevel(int zoom)
