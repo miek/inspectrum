@@ -16,4 +16,7 @@ private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
     SpectrogramControls *dock;
+
+	off_t getCenterSample();
+	int getScrollPos(off_t sample);
 };

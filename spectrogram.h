@@ -13,6 +13,8 @@ public:
 	Spectrogram();
 	~Spectrogram();
 	QSize sizeHint() const;
+	int getHeight();
+	int getStride();
 
 public slots:
 	void pickFile();
@@ -37,6 +39,4 @@ private:
 	float powerMin;
 
 	void getLine(float *dest, int y);
-	int getHeight();
-	int getStride();
 };

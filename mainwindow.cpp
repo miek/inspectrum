@@ -18,3 +18,15 @@ MainWindow::MainWindow()
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
 }
+
+off_t MainWindow::getCenterSample()
+{
+    int height = scrollArea.height();
+    return (scrollArea.verticalScrollBar()->value() + height / 2) * spectrogram.getStride();
+}
+
+int MainWindow::getScrollPos(off_t sample)
+{
+    int height = scrollArea.height();
+    return sample / spectrogram.getStride() - height / 2;
+}
