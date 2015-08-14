@@ -14,9 +14,16 @@ MainWindow::MainWindow()
 
     connect(dock->fileOpenButton, SIGNAL(clicked()), &spectrogram, SLOT(pickFile()));
     connect(dock, SIGNAL(fftSizeChanged(int)), &spectrogram, SLOT(setFFTSize(int)));
-    connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setZoomLevel(int)));
+    connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
+}
+
+void MainWindow::setZoomLevel(int zoom)
+{
+    off_t sample = getCenterSample();
+    spectrogram.setZoomLevel(zoom);
+    scrollArea.verticalScrollBar()->setValue(getScrollPos(sample));
 }
 
 off_t MainWindow::getCenterSample()

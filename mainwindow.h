@@ -12,6 +12,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
 
+public slots:
+	void setZoomLevel(int zoom);
+
 private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
