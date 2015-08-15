@@ -23,9 +23,14 @@ MainWindow::MainWindow()
 bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
 {
     if (event->type() == QEvent::Wheel) {
+        QWheelEvent *wheelEvent = (QWheelEvent*)event;
+        QSlider *slider = nullptr;
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-            QWheelEvent *wheelEvent = (QWheelEvent*)event;
-            QSlider *slider = dock->zoomLevelSlider;
+            slider = dock->zoomLevelSlider;
+        } else if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+            slider = dock->fftSizeSlider;
+        }
+        if (slider != nullptr) {
             if (wheelEvent->angleDelta().y() > 0) {
                 slider->setValue(slider->value() + 1);
             } else if (wheelEvent->angleDelta().y() < 0) {

@@ -20,9 +20,9 @@ private slots:
 private:
 	QWidget *widget;
 	QFormLayout *layout;
-	QSlider *fftSizeSlider;
 public:
 	QPushButton *fileOpenButton;
+	QSlider *fftSizeSlider;
 	QSlider *zoomLevelSlider;
 	QSlider *powerMaxSlider;
 	QSlider *powerMinSlider;
