@@ -190,7 +190,7 @@ void Spectrogram::setPowerMin(int power)
 void Spectrogram::setZoomLevel(int zoom)
 {
 	zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
-	update();
+	resize(fftSize, getHeight());
 }
 
 int Spectrogram::getHeight()
