@@ -6,6 +6,7 @@ MainWindow::MainWindow()
 {
     setWindowTitle(tr("inspectrum"));
     scrollArea.setWidget(&spectrogram);
+    scrollArea.viewport()->installEventFilter(this);
     setCentralWidget(&scrollArea);
 
     dock = new SpectrogramControls(tr("Controls"), this);
@@ -17,6 +18,23 @@ MainWindow::MainWindow()
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
+}
+
+bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
+{
+    if (event->type() == QEvent::Wheel) {
+        if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+            QWheelEvent *wheelEvent = (QWheelEvent*)event;
+            QSlider *slider = dock->zoomLevelSlider;
+            if (wheelEvent->angleDelta().y() > 0) {
+                slider->setValue(slider->value() + 1);
+            } else if (wheelEvent->angleDelta().y() < 0) {
+                slider->setValue(slider->value() - 1);
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 void MainWindow::setFFTSize(int size)

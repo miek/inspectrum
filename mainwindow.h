@@ -16,6 +16,9 @@ public slots:
 	void setFFTSize(int size);
 	void setZoomLevel(int zoom);
 
+protected:
+	bool eventFilter(QObject *obj, QEvent *event);
+
 private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
