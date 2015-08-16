@@ -14,6 +14,7 @@ MainWindow::MainWindow()
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     connect(dock->fileOpenButton, SIGNAL(clicked()), &spectrogram, SLOT(pickFile()));
+    connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
     connect(dock, SIGNAL(fftSizeChanged(int)), this, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
@@ -40,6 +41,11 @@ bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
         }
     }
     return false;
+}
+
+void MainWindow::setSampleRate(QString rate)
+{
+    spectrogram.setSampleRate(rate.toInt());
 }
 
 void MainWindow::setFFTSize(int size)

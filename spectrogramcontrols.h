@@ -2,6 +2,7 @@
 
 #include <QDockWidget>
 #include <QFormLayout>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
 
@@ -22,6 +23,7 @@ private:
 	QFormLayout *layout;
 public:
 	QPushButton *fileOpenButton;
+	QLineEdit *sampleRate;
 	QSlider *fftSizeSlider;
 	QSlider *zoomLevelSlider;
 	QSlider *powerMaxSlider;

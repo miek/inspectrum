@@ -18,6 +18,7 @@ public:
 
 public slots:
 	void pickFile();
+	void setSampleRate(int rate);
 	void setFFTSize(int size);
 	void setPowerMax(int power);
 	void setPowerMin(int power);
@@ -33,6 +34,7 @@ private:
 	std::unique_ptr<float[]> window;
 	fftwf_complex *lineBuffer = nullptr;
 
+	int sampleRate;
 	int fftSize;
 	int zoomLevel;
 	float powerMax;

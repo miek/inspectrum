@@ -9,6 +9,7 @@
 
 Spectrogram::Spectrogram()
 {
+	sampleRate = 8000000;
 	setFFTSize(1024);
 	zoomLevel = 0;
 	powerMax = 0.0f;
@@ -159,6 +160,12 @@ void Spectrogram::getLine(float *dest, int y)
 			dest++;
 		}
 	}
+}
+
+void Spectrogram::setSampleRate(int rate)
+{
+	sampleRate = rate;
+	update();
 }
 
 void Spectrogram::setFFTSize(int size)

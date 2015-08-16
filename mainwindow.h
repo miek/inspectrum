@@ -13,6 +13,7 @@ public:
     MainWindow();
 
 public slots:
+	void setSampleRate(QString rate);
 	void setFFTSize(int size);
 	void setZoomLevel(int zoom);
 

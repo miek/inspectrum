@@ -1,4 +1,5 @@
 #include "spectrogramcontrols.h"
+#include <QIntValidator>
 #include <QLabel>
 
 SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent)
@@ -9,6 +10,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
 	fileOpenButton = new QPushButton("Open file...", widget);
 	layout->addRow(fileOpenButton);
+
+	sampleRate = new QLineEdit("8000000");
+	sampleRate->setValidator(new QIntValidator(this));
+	layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
 	fftSizeSlider = new QSlider(Qt::Horizontal, widget);
 	fftSizeSlider->setRange(7, 13);
