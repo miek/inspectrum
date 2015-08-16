@@ -133,6 +133,8 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 		painter.drawPixmap(QRect(0, rect.y(), fftSize, height), pixmap);
 
 		free(line);
+
+		paintTimeAxis(&painter, rect);
 	}
 
 	qDebug() << "Paint: " << timer.elapsed() << "ms";
@@ -160,6 +162,24 @@ void Spectrogram::getLine(float *dest, int y)
 			dest++;
 		}
 	}
+}
+
+void Spectrogram::paintTimeAxis(QPainter *painter, QRect rect)
+{
+	// Round up for firstLine and round each to nearest linesPerGraduation
+	int firstLine = ((rect.y() + linesPerGraduation - 1) / linesPerGraduation) * linesPerGraduation;
+	int lastLine = ((rect.y() + rect.height()) / linesPerGraduation) * linesPerGraduation;
+
+	painter->save();
+	QPen pen(Qt::white, 1, Qt::SolidLine);
+	painter->setPen(pen);
+	QFontMetrics fm(painter->font());
+	int textOffset = fm.ascent() / 2 - 1;
+	for (int line = firstLine; line <= lastLine; line += linesPerGraduation) {
+		painter->drawLine(0, line, 10, line);
+		painter->drawText(12, line + textOffset, sampleToTime(lineToSample(line)));
+	}
+	painter->restore();
 }
 
 void Spectrogram::setSampleRate(int rate)
@@ -211,4 +231,13 @@ int Spectrogram::getHeight()
 int Spectrogram::getStride()
 {
 	return fftSize / pow(2, zoomLevel);
+}
+
+off_t Spectrogram::lineToSample(int line) {
+	return line * getStride();
+}
+
+QString Spectrogram::sampleToTime(off_t sample)
+{
+	return QString::number((float)sample / sampleRate).append("s");
 }

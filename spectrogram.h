@@ -29,6 +29,8 @@ protected:
 
 
 private:
+	const int linesPerGraduation = 50;
+
 	InputSource *inputSource = nullptr;
 	FFT *fft = nullptr;
 	std::unique_ptr<float[]> window;
@@ -41,4 +43,7 @@ private:
 	float powerMin;
 
 	void getLine(float *dest, int y);
+	void paintTimeAxis(QPainter *painter, QRect rect);
+	off_t lineToSample(int line);
+	QString sampleToTime(off_t sample);
 };
