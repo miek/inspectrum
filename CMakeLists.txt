@@ -19,7 +19,7 @@ INCLUDE(FindPkgConfig)
 
 find_package(Qt5Widgets)
 pkg_check_modules(FFTW REQUIRED fftw3f)
-include_directories(${QT_INCLUDES} ${FFTW_INCLUDES})
+include_directories(${QT_INCLUDES} ${FFTW_INCLUDEDIR})
 
 add_executable(inspectrum ${inspectrum_sources})
 qt5_use_modules(inspectrum Widgets)
