@@ -1,6 +1,7 @@
 #include "spectrogramcontrols.h"
 #include <QIntValidator>
 #include <QLabel>
+#include <cmath>
 
 SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent)
 	: QDockWidget::QDockWidget(title, parent)

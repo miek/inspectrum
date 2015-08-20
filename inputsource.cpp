@@ -6,6 +6,8 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+#include <stdexcept>
+
 InputSource::InputSource(const char *filename) {
     m_file = fopen(filename, "rb");
     if (m_file == nullptr)

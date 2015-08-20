@@ -7,6 +7,9 @@
 #include <QPaintEvent>
 #include <QRect>
 
+#include <cstdlib>
+
+
 Spectrogram::Spectrogram()
 {
 	sampleRate = 8000000;
@@ -118,7 +121,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 		for (int y = 0; y < height; y++) {
 			getLine(line, rect.y() + y);
 			for (int x = 0; x < fftSize; x++) {
-				float powerRange = std::abs(powerMin - powerMax);
+				float powerRange = std::abs(int(powerMin - powerMax)); // Cast to remove overload ambiguity
 				float normPower = (line[x] - powerMax) * -1.0f / powerRange;
 				normPower = clamp(normPower, 0.0f, 1.0f);
 
