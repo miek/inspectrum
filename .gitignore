@@ -1,4 +1,5 @@
 # Build outputs
+build/
 inspectrum
 Makefile
 moc_*
