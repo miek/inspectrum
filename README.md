@@ -7,12 +7,18 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 Currently very early and rough, but usable.
 
 ## Try it
+### Prerequisites
+
+ * qt5
+ * cmake
+ * fftw
+
 ### Building on Debian-based distros
 
-    sudo apt-get install qt5-default
-    git clone https://github.com/miek/inspectrum.git
-    cd inspectrum
-    qmake
+    sudo apt-get install qt5-default cmake libfftw3-dev
+    mkdir build
+    cd build
+    cmake ..
     make
 
 

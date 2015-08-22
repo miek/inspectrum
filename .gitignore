@@ -1,6 +1,2 @@
 # Build outputs
 build/
-inspectrum
-Makefile
-moc_*
-*.o
