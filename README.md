@@ -24,10 +24,10 @@ Currently very early and rough, but usable.
 
 ## Building on OSX
 
-	brew install qt5
-	mkdir build
-	cd build
-	CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake cmake ..
+    brew install qt5 cmake fftw pkg-config
+    mkdir build
+    cd build
+    CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake cmake ..
 
 
 ### Run
