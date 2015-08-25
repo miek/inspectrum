@@ -3,9 +3,6 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 
 ![inspectrum screenshot](/screenshot.jpg)
 
-## Status
-Currently very early and rough, but usable.
-
 ## Try it
 ### Prerequisites
 
