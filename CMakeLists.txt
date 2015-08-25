@@ -15,6 +15,7 @@ list(APPEND inspectrum_sources
 	fft.cpp
 	mainwindow.cpp
 	inputsource.cpp
+	qxtspanslider.cpp
 	spectrogram.cpp
 	spectrogramcontrols.cpp
 )
