@@ -7,24 +7,27 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 ### Prerequisites
 
  * qt5
- * cmake
  * fftw 3.x
+ * cmake
+ * pkg-config
 
 ### Building on Debian-based distros
 
-    sudo apt-get install qt5-default cmake libfftw3-dev
+    sudo apt-get install qt5-default libfftw3-dev cmake pkg-config
     mkdir build
     cd build
     cmake ..
     make
+    sudo make install
 
 
 ## Building on OSX
 
-    brew install qt5 cmake fftw pkg-config
+    brew install qt5 fftw cmake pkg-config
     mkdir build
     cd build
     CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake cmake ..
+    make install
 
 
 ### Run
