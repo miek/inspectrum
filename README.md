@@ -8,7 +8,7 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 
  * qt5
  * cmake
- * fftw
+ * fftw 3.x
 
 ### Building on Debian-based distros
 
