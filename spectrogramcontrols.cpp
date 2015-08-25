@@ -26,15 +26,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	zoomLevelSlider->setValue(0);
 	layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
-	powerMaxSlider = new QSlider(Qt::Horizontal, widget);
-	powerMaxSlider->setRange(-100, 20);
-	powerMaxSlider->setValue(0);
-	layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
-
-	powerMinSlider = new QSlider(Qt::Horizontal, widget);
-	powerMinSlider->setRange(-100, 20);
-	powerMinSlider->setValue(-50);
-	layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
+	powerSlider = new QxtSpanSlider(Qt::Horizontal);
+	powerSlider->setRange(-100, 20);
+	powerSlider->setSpan(-50, 0);
+	layout->addRow(new QLabel(tr("Power range:")), powerSlider);
 
 	widget->setLayout(layout);
 	setWidget(widget);

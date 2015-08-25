@@ -17,8 +17,8 @@ MainWindow::MainWindow()
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
     connect(dock, SIGNAL(fftSizeChanged(int)), this, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
-    connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
-    connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
+    connect(dock->powerSlider, SIGNAL(upperValueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
+    connect(dock->powerSlider, SIGNAL(lowerValueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
 }
 
 bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)

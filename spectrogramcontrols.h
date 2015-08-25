@@ -5,6 +5,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
+#include "qxtspanslider.h"
 
 class SpectrogramControls : public QDockWidget {
 	Q_OBJECT
@@ -26,6 +27,5 @@ public:
 	QLineEdit *sampleRate;
 	QSlider *fftSizeSlider;
 	QSlider *zoomLevelSlider;
-	QSlider *powerMaxSlider;
-	QSlider *powerMinSlider;
+	QxtSpanSlider *powerSlider;
 };
