@@ -705,8 +705,8 @@ void QxtSpanSlider::paintEvent(QPaintEvent* event)
     // groove & ticks
     QStyleOptionSlider opt;
     qxt_d().initStyleOption(&opt);
-    opt.sliderValue = 0;
-    opt.sliderPosition = 0;
+    opt.sliderValue = minimum();
+    opt.sliderPosition = minimum();
     opt.subControls = QStyle::SC_SliderGroove | QStyle::SC_SliderTickmarks;
     painter.drawComplexControl(QStyle::CC_Slider, opt);
 
