@@ -31,3 +31,13 @@ target_link_libraries(inspectrum ${QT_LIBRARIES} ${FFTW_LIBRARIES})
 set(INSTALL_DEFAULT_BINDIR "bin" CACHE STRING "Appended to CMAKE_INSTALL_PREFIX")
 
 install(TARGETS inspectrum RUNTIME DESTINATION ${INSTALL_DEFAULT_BINDIR})
+
+# Create uninstall target
+configure_file(
+    ${PROJECT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+@ONLY)
+
+add_custom_target(uninstall
+    ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+)
