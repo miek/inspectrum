@@ -32,7 +32,7 @@ QSize Spectrogram::sizeHint() const {
 void Spectrogram::pickFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(
-		this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*.*)")
+		this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*)")
 	);
 	if (fileName != nullptr) {
 		try {
