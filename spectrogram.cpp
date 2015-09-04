@@ -51,58 +51,6 @@ template <class T> const T& clamp (const T& value, const T& min, const T& max) {
     return std::min(max, std::max(min, value));
 }
 
-void HSVtoRGB( float *r, float *g, float *b, float h, float s, float v )
-{
-    int i;
-    float f, p, q, t;
-
-    if( s == 0 ) {
-        // achromatic (grey)
-        *r = *g = *b = v;
-        return;
-    }
-
-    h /= 60;            // sector 0 to 5
-    i = floor( h );
-    f = h - i;          // factorial part of h
-    p = v * ( 1 - s );
-    q = v * ( 1 - s * f );
-    t = v * ( 1 - s * ( 1 - f ) );
-
-    switch( i ) {
-        case 0:
-            *r = v;
-            *g = t;
-            *b = p;
-            break;
-        case 1:
-            *r = q;
-            *g = v;
-            *b = p;
-            break;
-        case 2:
-            *r = p;
-            *g = v;
-            *b = t;
-            break;
-        case 3:
-            *r = p;
-            *g = q;
-            *b = v;
-            break;
-        case 4:
-            *r = t;
-            *g = p;
-            *b = v;
-            break;
-        default:        // case 5:
-            *r = v;
-            *g = p;
-            *b = q;
-            break;
-    }
-}
-
 void Spectrogram::paintEvent(QPaintEvent *event)
 {
 	QElapsedTimer timer;
@@ -125,10 +73,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 				float normPower = (line[x] - powerMax) * -1.0f / powerRange;
 				normPower = clamp(normPower, 0.0f, 1.0f);
 
-				float red, green, blue;
-				HSVtoRGB(&red, &green, &blue, normPower * 300.0f, 1, 1 - normPower);
-
-				image.setPixel(x, y, qRgb(red * 255, green * 255, blue * 255));
+				image.setPixel(x, y, QColor::fromHsvF(normPower * 0.83f, 1.0, 1.0 - normPower).rgba());
 			}
 		}
 
