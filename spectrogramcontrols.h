@@ -14,9 +14,11 @@ public:
 
 signals:
 	void fftSizeChanged(int size);
+	void openFile(QString fileName);
 
 private slots:
 	void fftSizeSliderChanged(int size);
+	void fileOpenButtonClicked();
 
 private:
 	QWidget *widget;

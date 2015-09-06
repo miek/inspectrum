@@ -2,7 +2,6 @@
 
 #include <QDebug>
 #include <QElapsedTimer>
-#include <QFileDialog>
 #include <QPainter>
 #include <QPaintEvent>
 #include <QRect>
@@ -29,11 +28,8 @@ QSize Spectrogram::sizeHint() const {
 	return QSize(1024, 2048);
 }
 
-void Spectrogram::pickFile()
+void Spectrogram::openFile(QString fileName)
 {
-	QString fileName = QFileDialog::getOpenFileName(
-		this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*)")
-	);
 	if (fileName != nullptr) {
 		try {
 			InputSource *newFile = new InputSource(fileName.toUtf8().constData());
@@ -42,7 +38,6 @@ void Spectrogram::pickFile()
 			resize(fftSize, getHeight());
 		} catch (std::runtime_error e) {
 			// TODO: display error
-			return;
 		}
 	}
 }

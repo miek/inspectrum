@@ -13,7 +13,7 @@ MainWindow::MainWindow()
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
-    connect(dock->fileOpenButton, SIGNAL(clicked()), &spectrogram, SLOT(pickFile()));
+    connect(dock, SIGNAL(openFile(QString)), &spectrogram, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
     connect(dock, SIGNAL(fftSizeChanged(int)), this, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));

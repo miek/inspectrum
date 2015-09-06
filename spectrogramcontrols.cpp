@@ -1,5 +1,6 @@
 #include "spectrogramcontrols.h"
 #include <QIntValidator>
+#include <QFileDialog>
 #include <QLabel>
 #include <cmath>
 
@@ -40,9 +41,18 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	setWidget(widget);
 
 	connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeSliderChanged(int)));
+	connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
 }
 
 void SpectrogramControls::fftSizeSliderChanged(int size)
 {
 	emit fftSizeChanged((int)pow(2, size));
+}
+
+void SpectrogramControls::fileOpenButtonClicked()
+{
+	QString fileName = QFileDialog::getOpenFileName(
+		this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*)")
+	);
+	emit openFile(fileName);
 }

@@ -19,7 +19,7 @@ public:
 	int getStride();
 
 public slots:
-	void pickFile();
+	void openFile(QString fileName);
 	void setSampleRate(int rate);
 	void setFFTSize(int size);
 	void setPowerMax(int power);
