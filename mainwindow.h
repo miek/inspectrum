@@ -11,6 +11,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
+    void openFile(QString fileName);
 
 public slots:
 	void setSampleRate(QString rate);

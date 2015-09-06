@@ -73,3 +73,8 @@ int MainWindow::getScrollPos(off_t sample)
     int height = scrollArea.height();
     return sample / spectrogram.getStride() - height / 2;
 }
+
+void MainWindow::openFile(QString fileName)
+{
+    spectrogram.openFile(fileName);
+}
