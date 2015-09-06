@@ -69,11 +69,11 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 		for (int y = 0; y < height; y++) {
 			if (tileLine >= linesPerTile()) {
-				int tileId = (rect.y() + y) / linesPerTile();
+				off_t tileId = lineToSample(rect.y() + y);
 				tile = getTile(tileId);
 
 				// Handle case where we want to draw from part-way through the first tile
-				tileLine = (rect.y() + y) - (tileId * linesPerTile());
+				tileLine = (rect.y() + y) - sampleToLine(tileId);
 			}
 
 			float *line = &tile[tileLine * fftSize];
@@ -98,19 +98,19 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 float* Spectrogram::getTile(off_t tile)
 {
-	auto iter = fftCache.find(qMakePair(zoomLevel, tile));
+	auto iter = fftCache.find(qMakePair(fftSize, tile));
 	if (iter != fftCache.end())
 		return iter.value();
 
 	float *dest = new float[tileSize];
 	float *ptr = dest;
-	off_t sample = tile * linesPerTile() * getStride();
+	off_t sample = tile;
 	while ((ptr - dest) < tileSize) {
 		getLine(ptr, sample);
 		sample += getStride();
 		ptr += fftSize;
 	}
-	fftCache.insert(qMakePair(zoomLevel, tile), dest);
+	fftCache.insert(qMakePair(fftSize, tile), dest);
 	return dest;
 }
 
@@ -209,6 +209,10 @@ int Spectrogram::getStride()
 
 off_t Spectrogram::lineToSample(int line) {
 	return line * getStride();
+}
+
+int Spectrogram::sampleToLine(off_t sample) {
+	return sample / getStride();
 }
 
 QString Spectrogram::sampleToTime(off_t sample)

@@ -51,6 +51,7 @@ private:
 	void getLine(float *dest, off_t sample);
 	void paintTimeAxis(QPainter *painter, QRect rect);
 	off_t lineToSample(int line);
+	int sampleToLine(off_t sample);
 	QString sampleToTime(off_t sample);
 	int linesPerTile();
 };
