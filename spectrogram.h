@@ -32,11 +32,13 @@ protected:
 
 private:
 	const int linesPerGraduation = 50;
+	const int tileSize = 32768; // This must be a multiple of the maximum FFT size
 
 	InputSource *inputSource = nullptr;
 	FFT *fft = nullptr;
 	std::unique_ptr<float[]> window;
 	fftwf_complex *lineBuffer = nullptr;
+	QHash<QPair<int, off_t>, float*> fftCache;
 	uint colormap[256];
 
 	int sampleRate;
@@ -45,8 +47,10 @@ private:
 	float powerMax;
 	float powerMin;
 
-	void getLine(float *dest, int y);
+	float* getTile(off_t tile);
+	void getLine(float *dest, off_t sample);
 	void paintTimeAxis(QPainter *painter, QRect rect);
 	off_t lineToSample(int line);
 	QString sampleToTime(off_t sample);
+	int linesPerTile();
 };

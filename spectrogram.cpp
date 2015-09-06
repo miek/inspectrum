@@ -62,12 +62,21 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 	if (inputSource != nullptr) {
 		int height = rect.height();
-
-		float *line = (float*)malloc(fftSize * sizeof(float));
+		int tileLine = linesPerTile();
 
 		QImage image(fftSize, height, QImage::Format_RGB32);
+		float *tile;
+
 		for (int y = 0; y < height; y++) {
-			getLine(line, rect.y() + y);
+			if (tileLine >= linesPerTile()) {
+				int tileId = (rect.y() + y) / linesPerTile();
+				tile = getTile(tileId);
+
+				// Handle case where we want to draw from part-way through the first tile
+				tileLine = (rect.y() + y) - (tileId * linesPerTile());
+			}
+
+			float *line = &tile[tileLine * fftSize];
 			for (int x = 0; x < fftSize; x++) {
 				float powerRange = std::abs(int(powerMin - powerMax)); // Cast to remove overload ambiguity
 				float normPower = (line[x] - powerMax) * -1.0f / powerRange;
@@ -75,12 +84,11 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 				image.setPixel(x, y, colormap[(uint8_t)(normPower * (256 - 1))]);
 			}
+			tileLine++;
 		}
 
 		QPixmap pixmap = QPixmap::fromImage(image);
 		painter.drawPixmap(QRect(0, rect.y(), fftSize, height), pixmap);
-
-		free(line);
 
 		paintTimeAxis(&painter, rect);
 	}
@@ -88,11 +96,29 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 	qDebug() << "Paint: " << timer.elapsed() << "ms";
 }
 
-void Spectrogram::getLine(float *dest, int y)
+float* Spectrogram::getTile(off_t tile)
+{
+	auto iter = fftCache.find(qMakePair(zoomLevel, tile));
+	if (iter != fftCache.end())
+		return iter.value();
+
+	float *dest = new float[tileSize];
+	float *ptr = dest;
+	off_t sample = tile * linesPerTile() * getStride();
+	while ((ptr - dest) < tileSize) {
+		getLine(ptr, sample);
+		sample += getStride();
+		ptr += fftSize;
+	}
+	fftCache.insert(qMakePair(zoomLevel, tile), dest);
+	return dest;
+}
+
+void Spectrogram::getLine(float *dest, off_t sample)
 {
 	if (inputSource && fft) {
 		fftwf_complex buffer[fftSize];
-		inputSource->getSamples(buffer, y * getStride(), fftSize);
+		inputSource->getSamples(buffer, sample, fftSize);
 
 		for (int i = 0; i < fftSize; i++) {
 			buffer[i][0] *= window[i];
@@ -188,4 +214,8 @@ off_t Spectrogram::lineToSample(int line) {
 QString Spectrogram::sampleToTime(off_t sample)
 {
 	return QString::number((float)sample / sampleRate).append("s");
+}
+
+int Spectrogram::linesPerTile() {
+	return tileSize / fftSize;
 }
