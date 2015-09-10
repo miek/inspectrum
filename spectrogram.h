@@ -37,6 +37,7 @@ private:
 	FFT *fft = nullptr;
 	std::unique_ptr<float[]> window;
 	fftwf_complex *lineBuffer = nullptr;
+	uint colormap[256];
 
 	int sampleRate;
 	int fftSize;

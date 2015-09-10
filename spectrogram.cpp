@@ -16,6 +16,11 @@ Spectrogram::Spectrogram()
 	zoomLevel = 0;
 	powerMax = 0.0f;
 	powerMin = -50.0f;
+
+	for (int i = 0; i < 256; i++) {
+		float p = (float)i / 256;
+		colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
+	}
 }
 
 Spectrogram::~Spectrogram()
@@ -68,7 +73,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 				float normPower = (line[x] - powerMax) * -1.0f / powerRange;
 				normPower = clamp(normPower, 0.0f, 1.0f);
 
-				image.setPixel(x, y, QColor::fromHsvF(normPower * 0.83f, 1.0, 1.0 - normPower).rgba());
+				image.setPixel(x, y, colormap[(uint8_t)(normPower * (256 - 1))]);
 			}
 		}
 
