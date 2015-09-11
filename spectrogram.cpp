@@ -69,11 +69,10 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 		for (int y = 0; y < height; y++) {
 			if (tileLine >= linesPerTile()) {
-				off_t tileId = lineToSample(rect.y() + y);
+				int line = rect.y() + y;
+				tileLine = line % linesPerTile();
+				off_t tileId = lineToSample(line - tileLine);
 				tile = getTile(tileId);
-
-				// Handle case where we want to draw from part-way through the first tile
-				tileLine = (rect.y() + y) - sampleToLine(tileId);
 			}
 
 			float *line = &tile[tileLine * fftSize];
