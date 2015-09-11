@@ -98,9 +98,9 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 float* Spectrogram::getTile(off_t tile)
 {
-	auto iter = fftCache.find(qMakePair(fftSize, tile));
-	if (iter != fftCache.end())
-		return iter.value();
+	float *obj = fftCache.object(qMakePair(fftSize, tile));
+	if (obj != 0)
+		return obj;
 
 	float *dest = new float[tileSize];
 	float *ptr = dest;

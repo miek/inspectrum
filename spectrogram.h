@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCache>
 #include <QWidget>
 #include "fft.h"
 #include "inputsource.h"
@@ -38,7 +39,7 @@ private:
 	FFT *fft = nullptr;
 	std::unique_ptr<float[]> window;
 	fftwf_complex *lineBuffer = nullptr;
-	QHash<QPair<int, off_t>, float*> fftCache;
+	QCache<QPair<int, off_t>, float> fftCache;
 	uint colormap[256];
 
 	int sampleRate;
