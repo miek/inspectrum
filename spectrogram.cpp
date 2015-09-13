@@ -62,32 +62,19 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 	if (inputSource != nullptr) {
 		int height = rect.height();
-		int tileLine = linesPerTile();
+		int y = rect.y();
 
 		QImage image(fftSize, height, QImage::Format_RGB32);
-		float *tile;
 
-		for (int y = 0; y < height; y++) {
-			if (tileLine >= linesPerTile()) {
-				int line = rect.y() + y;
-				tileLine = line % linesPerTile();
-				off_t tileId = lineToSample(line - tileLine);
-				tile = getTile(tileId);
-			}
-
-			float *line = &tile[tileLine * fftSize];
-			for (int x = 0; x < fftSize; x++) {
-				float powerRange = std::abs(int(powerMin - powerMax)); // Cast to remove overload ambiguity
-				float normPower = (line[x] - powerMax) * -1.0f / powerRange;
-				normPower = clamp(normPower, 0.0f, 1.0f);
-
-				image.setPixel(x, y, colormap[(uint8_t)(normPower * (256 - 1))]);
-			}
-			tileLine++;
+		while (height > 0) {
+			int tileOffset = y % linesPerTile(); // To handle drawing a partial first tile
+			int drawHeight = std::min(linesPerTile() - tileOffset, height); // Draw rest of first tile, full tile, or partial final tile
+			off_t tileId = lineToSample(y - tileOffset);
+			QPixmap *tile = getPixmapTile(tileId);
+			painter.drawPixmap(QRect(0, y, fftSize, drawHeight), *tile, QRect(0, tileOffset, fftSize, drawHeight));
+			y += drawHeight;
+			height -= drawHeight;
 		}
-
-		QPixmap pixmap = QPixmap::fromImage(image);
-		painter.drawPixmap(QRect(0, rect.y(), fftSize, height), pixmap);
 
 		paintTimeAxis(&painter, rect);
 	}
@@ -95,7 +82,31 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 	qDebug() << "Paint: " << timer.elapsed() << "ms";
 }
 
-float* Spectrogram::getTile(off_t tile)
+QPixmap* Spectrogram::getPixmapTile(off_t tile)
+{
+	QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));
+	if (obj != 0)
+		return obj;
+
+	float *fftTile = getFFTTile(tile);
+	obj = new QPixmap(fftSize, linesPerTile());
+	QImage image(fftSize, linesPerTile(), QImage::Format_RGB32);
+	for (int y = 0; y < linesPerTile(); y++) {
+		float *line = &fftTile[y * fftSize];
+		for (int x = 0; x < fftSize; x++) {
+			float powerRange = std::abs(int(powerMin - powerMax));
+			float normPower = (line[x] - powerMax) * -1.0f / powerRange;
+			normPower = clamp(normPower, 0.0f, 1.0f);
+
+			image.setPixel(x, y, colormap[(uint8_t)(normPower * (256 - 1))]);
+		}
+	}
+	obj->convertFromImage(image);
+	pixmapCache.insert(TileCacheKey(fftSize, zoomLevel, tile), obj);
+	return obj;
+}
+
+float* Spectrogram::getFFTTile(off_t tile)
 {
 	float *obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
 	if (obj != 0)
@@ -178,12 +189,14 @@ void Spectrogram::setFFTSize(int size)
 void Spectrogram::setPowerMax(int power)
 {
 	powerMax = power;
+	pixmapCache.clear();
 	update();
 }
 
 void Spectrogram::setPowerMin(int power)
 {
 	powerMin = power;
+	pixmapCache.clear();
 	update();
 }
 

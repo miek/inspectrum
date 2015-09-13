@@ -41,6 +41,7 @@ private:
 	FFT *fft = nullptr;
 	std::unique_ptr<float[]> window;
 	fftwf_complex *lineBuffer = nullptr;
+	QCache<TileCacheKey, QPixmap> pixmapCache;
 	QCache<TileCacheKey, float> fftCache;
 	uint colormap[256];
 
@@ -50,7 +51,8 @@ private:
 	float powerMax;
 	float powerMin;
 
-	float* getTile(off_t tile);
+	QPixmap* getPixmapTile(off_t tile);
+	float* getFFTTile(off_t tile);
 	void getLine(float *dest, off_t sample);
 	void paintTimeAxis(QPainter *painter, QRect rect);
 	off_t lineToSample(int line);
