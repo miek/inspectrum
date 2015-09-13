@@ -9,6 +9,8 @@
 
 static const double Tau = M_PI * 2.0;
 
+class TileCacheKey;
+
 class Spectrogram : public QWidget {
 	Q_OBJECT
 
@@ -39,7 +41,7 @@ private:
 	FFT *fft = nullptr;
 	std::unique_ptr<float[]> window;
 	fftwf_complex *lineBuffer = nullptr;
-	QCache<QPair<int, off_t>, float> fftCache;
+	QCache<TileCacheKey, float> fftCache;
 	uint colormap[256];
 
 	int sampleRate;
@@ -55,4 +57,24 @@ private:
 	int sampleToLine(off_t sample);
 	QString sampleToTime(off_t sample);
 	int linesPerTile();
+};
+
+class TileCacheKey {
+
+public:
+	TileCacheKey(int fftSize, int zoomLevel, off_t sample) {
+		this->fftSize = fftSize;
+		this->zoomLevel = zoomLevel;
+		this->sample = sample;
+	}
+
+	bool operator==(const TileCacheKey &k2) const {
+		return (this->fftSize == k2.fftSize) &&
+				(this->zoomLevel == k2.zoomLevel) &&
+				(this->sample == k2.sample);
+	}
+
+	int fftSize;
+	int zoomLevel;
+	off_t sample;
 };

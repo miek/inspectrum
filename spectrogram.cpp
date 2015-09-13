@@ -97,7 +97,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 float* Spectrogram::getTile(off_t tile)
 {
-	float *obj = fftCache.object(qMakePair(fftSize, tile));
+	float *obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
 	if (obj != 0)
 		return obj;
 
@@ -109,7 +109,7 @@ float* Spectrogram::getTile(off_t tile)
 		sample += getStride();
 		ptr += fftSize;
 	}
-	fftCache.insert(qMakePair(fftSize, tile), dest);
+	fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), dest);
 	return dest;
 }
 
@@ -221,4 +221,8 @@ QString Spectrogram::sampleToTime(off_t sample)
 
 int Spectrogram::linesPerTile() {
 	return tileSize / fftSize;
+}
+
+uint qHash(const TileCacheKey &key, uint seed) {
+	return key.fftSize ^ key.zoomLevel ^ key.sample ^ seed;
 }
