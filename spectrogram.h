@@ -35,7 +35,7 @@ protected:
 
 private:
 	const int linesPerGraduation = 50;
-	const int tileSize = 32768; // This must be a multiple of the maximum FFT size
+	const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
 	InputSource *inputSource = nullptr;
 	FFT *fft = nullptr;
