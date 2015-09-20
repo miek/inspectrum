@@ -48,6 +48,12 @@ void MainWindow::setSampleRate(QString rate)
     spectrogram.setSampleRate(rate.toInt());
 }
 
+void MainWindow::changeSampleRate(int rate)
+{
+    spectrogram.setSampleRate(rate);
+    dock->sampleRate->setText(QString::number(rate));
+}
+
 void MainWindow::setFFTSize(int size)
 {
     off_t sample = getCenterSample();
