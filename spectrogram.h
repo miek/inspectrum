@@ -20,6 +20,7 @@ public:
 	QSize sizeHint() const;
 	int getHeight();
 	int getStride();
+	QString getFileName();
 
 public slots:
 	void openFile(QString fileName);
@@ -50,6 +51,7 @@ private:
 	int zoomLevel;
 	float powerMax;
 	float powerMin;
+	QString curName;
 
 	QPixmap* getPixmapTile(off_t tile);
 	float* getFFTTile(off_t tile);

@@ -16,6 +16,7 @@ Spectrogram::Spectrogram()
 	zoomLevel = 0;
 	powerMax = 0.0f;
 	powerMin = -50.0f;
+	curName = "<none>";
 
 	for (int i = 0; i < 256; i++) {
 		float p = (float)i / 256;
@@ -36,6 +37,7 @@ QSize Spectrogram::sizeHint() const {
 void Spectrogram::openFile(QString fileName)
 {
 	if (fileName != nullptr) {
+		curName=fileName;
 		try {
 			InputSource *newFile = new InputSource(fileName.toUtf8().constData());
 			delete inputSource;
@@ -47,6 +49,11 @@ void Spectrogram::openFile(QString fileName)
 			// TODO: display error
 		}
 	}
+}
+
+QString Spectrogram::getFileName()
+{
+	return curName;
 }
 
 template <class T> const T& clamp (const T& value, const T& min, const T& max) {
