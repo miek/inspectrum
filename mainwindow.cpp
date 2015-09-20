@@ -15,6 +15,7 @@ MainWindow::MainWindow()
 
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
+    connect(dock->centerFreq, SIGNAL(textChanged(QString)), this, SLOT(setCenterFreq(QString)));
     connect(dock, SIGNAL(fftSizeChanged(int)), this, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
@@ -52,6 +53,17 @@ void MainWindow::changeSampleRate(int rate)
 {
     spectrogram.setSampleRate(rate);
     dock->sampleRate->setText(QString::number(rate));
+}
+
+void MainWindow::setCenterFreq(QString rate)
+{
+    spectrogram.setCenterFreq(rate.toInt());
+}
+
+void MainWindow::changeCenterFreq(int rate)
+{
+    spectrogram.setCenterFreq(rate);
+    dock->centerFreq->setText(QString::number(rate));
 }
 
 void MainWindow::setFFTSize(int size)
