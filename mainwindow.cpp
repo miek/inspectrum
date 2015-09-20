@@ -82,5 +82,7 @@ int MainWindow::getScrollPos(off_t sample)
 
 void MainWindow::openFile(QString fileName)
 {
+    QString title="%1: %2";
+    this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
     spectrogram.openFile(fileName);
 }
