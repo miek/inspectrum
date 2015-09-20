@@ -11,10 +11,10 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
-    void openFile(QString fileName);
     void changeSampleRate(int rate);
 
 public slots:
+    void openFile(QString fileName);
 	void setSampleRate(QString rate);
 	void setFFTSize(int size);
 	void setZoomLevel(int zoom);
