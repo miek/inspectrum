@@ -39,6 +39,8 @@ void Spectrogram::openFile(QString fileName)
 		try {
 			InputSource *newFile = new InputSource(fileName.toUtf8().constData());
 			delete inputSource;
+			pixmapCache.clear();
+			fftCache.clear();
 			inputSource = newFile;
 			resize(fftSize, getHeight());
 		} catch (std::runtime_error e) {
