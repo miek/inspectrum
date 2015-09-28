@@ -64,6 +64,13 @@ bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
         QMouseEvent *mouseEvent = (QMouseEvent*)event;
 		QRect rb= rubberBand->geometry();
 
+		if(rb.top()==rb.bottom() or rb.left()==rb.right() or
+			( rb.bottom()-rb.top()<10 and rb.right()-rb.left()<10) ){
+			rubberBand->hide();
+			rubberBand->clearMask();
+			return false;
+		}
+
 		int topSample=spectrogram.lineToSample(scrollArea.verticalScrollBar()->value()+ rb.top());
 		int bottomSample=spectrogram.lineToSample(scrollArea.verticalScrollBar()->value()+ rb.bottom());
 
