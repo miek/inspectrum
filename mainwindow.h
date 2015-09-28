@@ -20,6 +20,7 @@ public slots:
 	void setCenterFreq(QString rate);
 	void setFFTSize(int size);
 	void setZoomLevel(int zoom);
+	void setExecCommand(QString command);
 
 protected:
 	bool eventFilter(QObject *obj, QEvent *event);
@@ -28,6 +29,7 @@ private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
     SpectrogramControls *dock;
+    QString execCommand;
 
 	off_t getCenterSample();
 	int getScrollPos(off_t sample);

@@ -25,6 +25,11 @@ int main(int argc, char *argv[])
 	    QCoreApplication::translate("main", "Hz"));
     parser.addOption(centerOption);
 
+    QCommandLineOption execOption(QStringList() << "x" << "exec",
+	    QCoreApplication::translate("main", "Helper to execute."),
+	    QCoreApplication::translate("main", "path to binary"));
+    parser.addOption(execOption);
+
     // Process the actual command line
     parser.process(a);
 
@@ -46,6 +51,9 @@ int main(int argc, char *argv[])
 	    return 1;
 	}
 	mainWin.changeCenterFreq(rate);
+    }
+    if (parser.isSet(execOption)){
+	mainWin.setExecCommand(parser.value(execOption));
     }
 
     const QStringList args = parser.positionalArguments();
