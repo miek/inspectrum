@@ -20,14 +20,20 @@ public:
 	QSize sizeHint() const;
 	int getHeight();
 	int getStride();
+	int getSampleRate();
+	int getCenterFreq();
+	int getFFTSize();
+	QString getFileName();
 
 public slots:
 	void openFile(QString fileName);
 	void setSampleRate(int rate);
+	void setCenterFreq(int hz);
 	void setFFTSize(int size);
 	void setPowerMax(int power);
 	void setPowerMin(int power);
 	void setZoomLevel(int zoom);
+	off_t lineToSample(int line);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -46,16 +52,17 @@ private:
 	uint colormap[256];
 
 	int sampleRate;
+	int centerFreq;
 	int fftSize;
 	int zoomLevel;
 	float powerMax;
 	float powerMin;
+	QString curName;
 
 	QPixmap* getPixmapTile(off_t tile);
 	float* getFFTTile(off_t tile);
 	void getLine(float *dest, off_t sample);
 	void paintTimeAxis(QPainter *painter, QRect rect);
-	off_t lineToSample(int line);
 	int sampleToLine(off_t sample);
 	QString sampleToTime(off_t sample);
 	int linesPerTile();

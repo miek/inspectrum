@@ -17,6 +17,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	sampleRate->setValidator(new QIntValidator(this));
 	layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
+	centerFreq = new QLineEdit("0");
+	centerFreq->setValidator(new QIntValidator(this));
+	layout->addRow(new QLabel(tr("Center freq:")), centerFreq);
+
 	fftSizeSlider = new QSlider(Qt::Horizontal, widget);
 	fftSizeSlider->setRange(7, 13);
 	fftSizeSlider->setValue(10);
