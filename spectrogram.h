@@ -63,7 +63,7 @@ private:
 	float* getFFTTile(off_t tile);
 	void getLine(float *dest, off_t sample);
 	void paintTimeAxis(QPainter *painter, QRect rect);
-	off_t lineToSample(int line);
+	off_t lineToSample(off_t line);
 	void paintAnnotations(QPainter *painter, QRect rect);
 	int sampleToLine(off_t sample);
 	QString sampleToTime(off_t sample);

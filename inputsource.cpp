@@ -29,8 +29,11 @@ InputSource::~InputSource() {
     fclose(m_file);
 }
 
-bool InputSource::getSamples(fftwf_complex *dest, int start, int length)
+bool InputSource::getSamples(fftwf_complex *dest, off_t start, int length)
 {
+    if(start < 0 || length < 0)
+        return false;
+
     if (start + length >= sampleCount)
         return false;
 
