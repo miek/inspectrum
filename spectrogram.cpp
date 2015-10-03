@@ -64,7 +64,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 	if (inputSource != nullptr) {
 		int height = rect.height();
-		int y = rect.y();
+		off_t y = rect.y();
 
 		QImage image(fftSize, height, QImage::Format_RGB32);
 
@@ -221,7 +221,7 @@ int Spectrogram::getStride()
 	return fftSize / pow(2, zoomLevel);
 }
 
-off_t Spectrogram::lineToSample(int line) {
+off_t Spectrogram::lineToSample(off_t line) {
 	return line * getStride();
 }
 
