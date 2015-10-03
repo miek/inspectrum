@@ -16,6 +16,6 @@ public:
     InputSource(const char *filename);
     ~InputSource();
 
-    bool getSamples(fftwf_complex *dest, int start, int length);
+    bool getSamples(fftwf_complex *dest, off_t start, int length);
     off_t getSampleCount() { return sampleCount; };
 };
