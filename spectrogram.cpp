@@ -59,16 +59,22 @@ void Spectrogram::openAnnotationFile(QString fileName)
 	QTextStream in(&data);
 	QString line;
 
-	while(!in.atEnd()) {
+	while (!in.atEnd()) {
 		line = in.readLine();
 		struct annotation a;
 
 		QStringList splitline = line.split(',');
-		a.timestamp = splitline[0].toDouble();
-		a.frequency = splitline[1].toDouble();
-		a.text = new QString(splitline[2]);
 
-		annotationList.append(a);
+		if (splitline.size() > 2) {
+			bool ok1, ok2;
+			a.timestamp = splitline[0].toDouble(&ok1);
+			a.frequency = splitline[1].toDouble(&ok2);
+			a.text = new QString(splitline[2]);
+
+			if (ok1 && ok2) {
+				annotationList.append(a);
+			}
+		}
 	}
 }
 
