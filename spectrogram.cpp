@@ -55,9 +55,6 @@ template <class T> const T& clamp (const T& value, const T& min, const T& max) {
 
 void Spectrogram::paintEvent(QPaintEvent *event)
 {
-	QElapsedTimer timer;
-	timer.start();
-
 	QRect rect = event->rect();
 	QPainter painter(this);
 	painter.fillRect(rect, Qt::black);
@@ -80,8 +77,6 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 
 		paintTimeAxis(&painter, rect);
 	}
-
-	qDebug() << "Paint: " << timer.elapsed() << "ms";
 }
 
 QPixmap* Spectrogram::getPixmapTile(off_t tile)
