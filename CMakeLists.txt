@@ -15,9 +15,13 @@ if (WIN32)
        endif(NOT(MMAN))
 ENDIF (WIN32)
 
+if (NOT CMAKE_CXX_FLAGS)
+    set(CMAKE_CXX_FLAGS "-O2")
+endif (NOT CMAKE_CXX_FLAGS)
+
 # This only works in cmake >3.1
 #set_property(TARGET inspectrum PROPERTY CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-O3 ${CMAKE_CXX_FLAGS} -std=gnu++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 list(APPEND inspectrum_sources 
 	main.cpp
