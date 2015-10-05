@@ -17,7 +17,7 @@ ENDIF (WIN32)
 
 # This only works in cmake >3.1
 #set_property(TARGET inspectrum PROPERTY CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -O3")
+set(CMAKE_CXX_FLAGS "-O3 ${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 list(APPEND inspectrum_sources 
 	main.cpp
