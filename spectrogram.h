@@ -40,6 +40,7 @@ public:
 	int getHeight();
 	int getStride();
 
+	InputSource *inputSource = nullptr;
 public slots:
 	void openFile(QString fileName);
 	void setSampleRate(int rate);
@@ -56,7 +57,6 @@ private:
 	const int linesPerGraduation = 50;
 	const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
-	InputSource *inputSource = nullptr;
 	FFT *fft = nullptr;
 	std::unique_ptr<float[]> window;
 	fftwf_complex *lineBuffer = nullptr;

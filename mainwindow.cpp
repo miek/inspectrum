@@ -32,6 +32,9 @@ MainWindow::MainWindow()
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
+    wave = new WaveformView();
+    addDockWidget(Qt::BottomDockWidgetArea, wave);
+
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
     connect(dock, SIGNAL(fftSizeChanged(int)), this, SLOT(setFFTSize(int)));
@@ -78,6 +81,7 @@ void MainWindow::setFFTSize(int size)
     off_t sample = getCenterSample();
     spectrogram.setFFTSize(size);
     scrollArea.verticalScrollBar()->setValue(getScrollPos(sample));
+    wave->viewChanged(getTopSample(), getBottomSample());
 }
 
 void MainWindow::setZoomLevel(int zoom)
@@ -85,12 +89,25 @@ void MainWindow::setZoomLevel(int zoom)
     off_t sample = getCenterSample();
     spectrogram.setZoomLevel(zoom);
     scrollArea.verticalScrollBar()->setValue(getScrollPos(sample));
+    wave->viewChanged(getTopSample(), getBottomSample());
+}
+
+off_t MainWindow::getTopSample()
+{
+    int height = scrollArea.height();
+    return scrollArea.verticalScrollBar()->value() * spectrogram.getStride();
 }
 
 off_t MainWindow::getCenterSample()
 {
     int height = scrollArea.height();
     return (scrollArea.verticalScrollBar()->value() + height / 2) * spectrogram.getStride();
+}
+
+off_t MainWindow::getBottomSample()
+{
+    int height = scrollArea.height();
+    return (scrollArea.verticalScrollBar()->value() + height) * spectrogram.getStride();
 }
 
 int MainWindow::getScrollPos(off_t sample)
@@ -104,4 +121,6 @@ void MainWindow::openFile(QString fileName)
     QString title="%1: %2";
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
     spectrogram.openFile(fileName);
+    wave->inputSourceChanged(spectrogram.inputSource);
+    wave->viewChanged(getTopSample(), getBottomSample());
 }

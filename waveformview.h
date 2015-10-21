@@ -19,37 +19,26 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogram.h"
-#include "spectrogramcontrols.h"
-#include "waveformview.h"
+#include <QDockWidget>
+#include <QPaintEvent>
+#include "inputsource.h"
 
-class MainWindow : public QMainWindow
-{
-    Q_OBJECT
+class WaveformView : public QDockWidget {
+	Q_OBJECT
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
+	WaveformView();
 
 public slots:
-    void openFile(QString fileName);
-	void setSampleRate(QString rate);
-	void setFFTSize(int size);
-	void setZoomLevel(int zoom);
+	void inputSourceChanged(InputSource *input);
+	void viewChanged(off_t firstSample, off_t lastSample);
 
 protected:
-	bool eventFilter(QObject *obj, QEvent *event);
+	void paintEvent(QPaintEvent *event);
 
 private:
-    QScrollArea scrollArea;
-    Spectrogram spectrogram;
-    SpectrogramControls *dock;
-    WaveformView *wave;
-
-    off_t getTopSample();
-	off_t getCenterSample();
-    off_t getBottomSample();
-	int getScrollPos(off_t sample);
+	InputSource *inputSource = nullptr;
+	off_t firstSample = 0;
+	off_t lastSample = 0;
+	QRgb colormap[255];
 };
