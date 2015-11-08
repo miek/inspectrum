@@ -27,6 +27,6 @@ class SampleSource
 public:
     virtual ~SampleSource() {};
 
-    virtual bool getSamples(std::complex<float> *dest, off_t start, off_t length);
+    virtual bool getSamples(std::complex<float> *dest, off_t start, off_t length) = 0;
     virtual off_t count() = 0;
 };

@@ -19,22 +19,21 @@
 
 #pragma once
 
-#include "fft.h"
-#include <fftw3.h>
-#include <memory>
+#include <complex>
+#include "samplesource.h"
 
-class InputSource
+class InputSource : public SampleSource
 {
 private:
     FILE *m_file;
     off_t m_file_size;
     off_t sampleCount;
-    fftwf_complex *m_data;
+    std::complex<float> *m_data;
 
 public:
     InputSource(const char *filename);
     ~InputSource();
 
-    bool getSamples(fftwf_complex *dest, off_t start, int length);
-    off_t getSampleCount() { return sampleCount; };
+    bool getSamples(std::complex<float> *dest, off_t start, off_t length);
+    off_t count() { return sampleCount; };
 };

@@ -36,9 +36,9 @@ InputSource::InputSource(const char *filename) {
     if (fstat(fileno(m_file), &sb) != 0)
         throw std::runtime_error("Error fstating file");
     m_file_size = sb.st_size;
-    sampleCount = m_file_size / sizeof(fftwf_complex);
+    sampleCount = m_file_size / sizeof(std::complex<float>);
 
-    m_data = (fftwf_complex*)mmap(NULL, m_file_size, PROT_READ, MAP_SHARED, fileno(m_file), 0);
+    m_data = (std::complex<float>*)mmap(NULL, m_file_size, PROT_READ, MAP_SHARED, fileno(m_file), 0);
     if (m_data == 0)
         throw std::runtime_error("Error mmapping file");
 }
@@ -48,7 +48,7 @@ InputSource::~InputSource() {
     fclose(m_file);
 }
 
-bool InputSource::getSamples(fftwf_complex *dest, off_t start, int length)
+bool InputSource::getSamples(std::complex<float> *dest, off_t start, off_t length)
 {
     if(start < 0 || length < 0)
         return false;
@@ -56,6 +56,6 @@ bool InputSource::getSamples(fftwf_complex *dest, off_t start, int length)
     if (start + length >= sampleCount)
         return false;
 
-    memcpy(dest, &m_data[start], length * sizeof(fftwf_complex));
+    memcpy(dest, &m_data[start], length * sizeof(std::complex<float>));
     return true;
 }

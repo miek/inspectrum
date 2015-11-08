@@ -143,19 +143,19 @@ float* Spectrogram::getFFTTile(off_t tile)
 void Spectrogram::getLine(float *dest, off_t sample)
 {
 	if (inputSource && fft) {
-		fftwf_complex buffer[fftSize];
+		std::complex<float> buffer[fftSize];
 		inputSource->getSamples(buffer, sample, fftSize);
 
 		for (int i = 0; i < fftSize; i++) {
-			buffer[i][0] *= window[i];
-			buffer[i][1] *= window[i];
+			buffer[i].real(buffer[i].real() * window[i]);
+			buffer[i].imag(buffer[i].imag() * window[i]);
 		}
 
 		fft->process(buffer, buffer);
 		for (int i = 0; i < fftSize; i++) {
 			int k = (i + fftSize / 2) % fftSize;
-			float re = buffer[k][0];
-			float im = buffer[k][1];
+			float re = buffer[k].real();
+			float im = buffer[k].imag();
 			float mag = sqrt(re * re + im * im) / fftSize;
 			float magdb = 10 * log2(mag) / log2(10);
 			*dest = magdb;
@@ -227,7 +227,7 @@ int Spectrogram::getHeight()
 	if (!inputSource)
 		return 0;
 
-	return inputSource->getSampleCount() / getStride();
+	return inputSource->count() / getStride();
 }
 
 int Spectrogram::getStride()

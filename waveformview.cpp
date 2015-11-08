@@ -55,7 +55,7 @@ void WaveformView::paintEvent(QPaintEvent *event)
     painter.fillRect(rect, Qt::black);
 
     off_t length = lastSample - firstSample;
-    fftwf_complex *samples = new fftwf_complex[length];
+    std::complex<float> *samples = new std::complex<float>[length];
     inputSource->getSamples(samples, firstSample, length);
     for (int iq = 0; iq < 2; iq++) {
         switch (iq) {
@@ -70,7 +70,7 @@ void WaveformView::paintEvent(QPaintEvent *event)
         int yprev = 0;
         for (off_t i = 0; i < length; i++) {
             int x = (float)i / length * rect.width();
-            int y = (samples[i][iq] * 50 * rect.height()/2) + rect.height()/2;
+            int y = (samples[i].real() * 50 * rect.height()/2) + rect.height()/2;
 
             if (x < 0) x = 0;
             if (y < 0) y = 0;

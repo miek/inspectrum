@@ -24,6 +24,7 @@
 #include "fft.h"
 #include "inputsource.h"
 
+#include <memory>
 #include <math.h>
 
 static const double Tau = M_PI * 2.0;
