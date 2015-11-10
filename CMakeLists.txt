@@ -31,6 +31,7 @@ list(APPEND inspectrum_sources
 	fft.cpp
 	mainwindow.cpp
 	inputsource.cpp
+	samplebuffer.cpp
 	spectrogram.cpp
 	spectrogramcontrols.cpp
 	waveformview.cpp
