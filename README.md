@@ -21,13 +21,22 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
     sudo make install
 
 
-## Building on OSX
+## Building on OSX - Homebrew
 
     brew install qt5 fftw cmake pkg-config
     mkdir build
     cd build
     CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake cmake ..
     make install
+
+## Building on OSX - Macports
+
+    sudo port install fftw-3 cmake pkgconfig qt5
+    mkdir build
+    cd build
+    CFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib cmake ..
+    make
+    sudo make install
 
 
 ### Run
