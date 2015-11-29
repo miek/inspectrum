@@ -38,10 +38,15 @@ list(APPEND inspectrum_sources
 )
 
 INCLUDE(FindPkgConfig)
+
 find_package(Qt5Widgets REQUIRED)
+find_package(Boost COMPONENTS system program_options REQUIRED)
+set(GR_REQUIRED_COMPONENTS RUNTIME BLOCKS FILTER)
+find_package(Gnuradio REQUIRED)
 pkg_check_modules(FFTW REQUIRED fftw3f)
 
 include_directories(
+  ${GNURADIO_RUNTIME_INCLUDE_DIRS}
   ${QT_INCLUDES}
   ${FFTW_INCLUDEDIR}
   ${FFTW_INCLUDE_DIRS}
@@ -54,7 +59,13 @@ link_directories(
 add_executable(inspectrum ${inspectrum_sources})
 qt5_use_modules(inspectrum Widgets)
 
-target_link_libraries(inspectrum ${QT_LIBRARIES} ${FFTW_LIBRARIES} ${extraLibs})
+target_link_libraries(inspectrum
+  ${Boost_LIBRARIES}
+  ${GNURADIO_ALL_LIBRARIES}
+  ${QT_LIBRARIES}
+  ${FFTW_LIBRARIES}
+  ${extraLibs}
+)
 set(INSTALL_DEFAULT_BINDIR "bin" CACHE STRING "Appended to CMAKE_INSTALL_PREFIX")
 
 install(TARGETS inspectrum RUNTIME DESTINATION ${INSTALL_DEFAULT_BINDIR})
