@@ -34,7 +34,7 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
     sudo port install fftw-3-single cmake pkgconfig qt5
     mkdir build
     cd build
-    CFLAGS=-I/opt/local/include LDFLAGS=-L/opt/local/lib cmake ..
+    cmake ..
     make
     sudo make install
 
