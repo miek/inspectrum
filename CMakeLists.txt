@@ -6,6 +6,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
+# For OSX - don't clear RPATH on install
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 if (WIN32)
        find_library (MMAN mman)
        if(NOT(MMAN))
