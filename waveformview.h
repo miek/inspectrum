@@ -30,14 +30,14 @@ public:
 	WaveformView();
 
 public slots:
-	void inputSourceChanged(InputSource *input);
+	void inputSourceChanged(SampleSource *input);
 	void viewChanged(off_t firstSample, off_t lastSample);
 
 protected:
 	void paintEvent(QPaintEvent *event);
 
 private:
-	InputSource *inputSource = nullptr;
+	SampleSource *sampleSource = nullptr;
 	off_t firstSample = 0;
 	off_t lastSample = 0;
 	QRgb colormap[255];

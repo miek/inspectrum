@@ -31,9 +31,9 @@ WaveformView::WaveformView()
     }
 }
 
-void WaveformView::inputSourceChanged(InputSource *input)
+void WaveformView::inputSourceChanged(SampleSource *src)
 {
-    inputSource = input;
+    sampleSource = src;
     update();
 }
 
@@ -47,7 +47,7 @@ void WaveformView::viewChanged(off_t firstSample, off_t lastSample)
 
 void WaveformView::paintEvent(QPaintEvent *event)
 {
-    if (inputSource == nullptr) return;
+    if (sampleSource == nullptr) return;
     if (lastSample - firstSample <= 0) return;
 
     QRect rect = QRect(0, 0, width(), height());
@@ -56,7 +56,7 @@ void WaveformView::paintEvent(QPaintEvent *event)
 
     off_t length = lastSample - firstSample;
     std::complex<float> *samples = new std::complex<float>[length];
-    inputSource->getSamples(samples, firstSample, length);
+    sampleSource->getSamples(samples, firstSample, length);
     for (int iq = 0; iq < 2; iq++) {
         switch (iq) {
             case 0:
