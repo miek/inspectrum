@@ -30,6 +30,7 @@ list(APPEND inspectrum_sources
 	main.cpp
 	fft.cpp
 	mainwindow.cpp
+	grsamplebuffer.cpp
 	inputsource.cpp
 	memory_sink_impl.cc
 	memory_source_impl.cc
