@@ -31,6 +31,8 @@ list(APPEND inspectrum_sources
 	fft.cpp
 	mainwindow.cpp
 	inputsource.cpp
+	memory_sink_impl.cc
+	memory_source_impl.cc
 	samplebuffer.cpp
 	spectrogram.cpp
 	spectrogramcontrols.cpp
