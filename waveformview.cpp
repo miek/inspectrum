@@ -20,6 +20,11 @@
 #include "waveformview.h"
 #include <QDebug>
 #include <QPainter>
+#include <gnuradio/top_block.h>
+#include <gnuradio/blocks/multiply_const_cc.h>
+#include "grsamplebuffer.h"
+#include "memory_sink.h"
+#include "memory_source.h"
 
 WaveformView::WaveformView()
 {
@@ -33,7 +38,13 @@ WaveformView::WaveformView()
 
 void WaveformView::inputSourceChanged(SampleSource *src)
 {
-    sampleSource = src;
+    gr::top_block_sptr tb = gr::make_top_block("multiply");
+    auto mem_source = gr::blocks::memory_source::make(8);
+    auto mem_sink = gr::blocks::memory_sink::make(8);
+    auto multiply = gr::blocks::multiply_const_cc::make(10);
+    tb->connect(mem_source, 0, multiply, 0);
+    tb->connect(multiply, 0, mem_sink, 0);
+    sampleSource = new GRSampleBuffer(src, tb, mem_source, mem_sink);
     update();
 }
 
@@ -69,8 +80,9 @@ void WaveformView::paintEvent(QPaintEvent *event)
         int xprev = 0;
         int yprev = 0;
         for (off_t i = 0; i < length; i++) {
+            float sample = (iq == 0) ? samples[i].real() : samples[i].imag();
             int x = (float)i / length * rect.width();
-            int y = (samples[i].real() * 50 * rect.height()/2) + rect.height()/2;
+            int y = (sample * rect.height()/2) + rect.height()/2;
 
             if (x < 0) x = 0;
             if (y < 0) y = 0;
