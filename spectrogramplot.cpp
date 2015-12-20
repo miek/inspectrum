@@ -37,6 +37,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     zoomLevel = 0;
     powerMax = 0.0f;
     powerMin = -50.0f;
+    timeScaleIsEnabled = true;
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
@@ -53,6 +54,12 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> 
     if (tunerEnabled())
         tuner.paintFront(painter, rect, sampleRange);
 
+    if (timeScaleIsEnabled)
+        paintTimeScale(painter, rect, sampleRange);
+}
+
+void SpectrogramPlot::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
     float startTime = (float)sampleRange.minimum / sampleRate;
     float stopTime = (float)sampleRange.maximum / sampleRate;
     float duration = stopTime - startTime;
@@ -293,3 +300,8 @@ void SpectrogramPlot::setSampleRate(off_t rate)
     emit repaint();
 }
 
+void SpectrogramPlot::setTimeScaleEnable(bool enabled)
+{
+    timeScaleIsEnabled = enabled;
+    emit repaint();
+}

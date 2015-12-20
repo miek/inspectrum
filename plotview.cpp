@@ -339,3 +339,9 @@ void PlotView::setSampleRate(off_t rate)
     spectrogramPlot->setSampleRate(rate);
 }
 
+void PlotView::setTimeScaleEnable(int state)
+{
+    bool timeScaleIsEnabled = (state == Qt::Checked);
+    spectrogramPlot->setTimeScaleEnable(timeScaleIsEnabled);
+}
+
