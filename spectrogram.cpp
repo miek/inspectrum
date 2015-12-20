@@ -35,6 +35,7 @@ Spectrogram::Spectrogram()
 	zoomLevel = 0;
 	powerMax = 0.0f;
 	powerMin = -50.0f;
+	timeScaleIsEnabled = true;
 
 	for (int i = 0; i < 256; i++) {
 		float p = (float)i / 256;
@@ -166,20 +167,22 @@ void Spectrogram::getLine(float *dest, off_t sample)
 
 void Spectrogram::paintTimeAxis(QPainter *painter, QRect rect)
 {
-	// Round up for firstLine and round each to nearest linesPerGraduation
-	int firstLine = ((rect.y() + linesPerGraduation - 1) / linesPerGraduation) * linesPerGraduation;
-	int lastLine = ((rect.y() + rect.height()) / linesPerGraduation) * linesPerGraduation;
+	if (timeScaleIsEnabled){
+		// Round up for firstLine and round each to nearest linesPerGraduation
+		int firstLine = ((rect.y() + linesPerGraduation - 1) / linesPerGraduation) * linesPerGraduation;
+		int lastLine = ((rect.y() + rect.height()) / linesPerGraduation) * linesPerGraduation;
 
-	painter->save();
-	QPen pen(Qt::white, 1, Qt::SolidLine);
-	painter->setPen(pen);
-	QFontMetrics fm(painter->font());
-	int textOffset = fm.ascent() / 2 - 1;
-	for (int line = firstLine; line <= lastLine; line += linesPerGraduation) {
-		painter->drawLine(0, line, 10, line);
-		painter->drawText(12, line + textOffset, sampleToTime(lineToSample(line)));
+		painter->save();
+		QPen pen(Qt::white, 1, Qt::SolidLine);
+		painter->setPen(pen);
+		QFontMetrics fm(painter->font());
+		int textOffset = fm.ascent() / 2 - 1;
+		for (int line = firstLine; line <= lastLine; line += linesPerGraduation) {
+			painter->drawLine(0, line, 10, line);
+			painter->drawText(12, line + textOffset, sampleToTime(lineToSample(line)));
+		}
+		painter->restore();
 	}
-	painter->restore();
 }
 
 void Spectrogram::setSampleRate(int rate)
@@ -221,6 +224,14 @@ void Spectrogram::setZoomLevel(int zoom)
 	zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
 	resize(fftSize, getHeight());
 }
+
+void Spectrogram::setTimeScaleEnable(int state)
+{
+	timeScaleIsEnabled = (state == Qt::Checked);
+	pixmapCache.clear();
+	update();
+}
+
 
 int Spectrogram::getHeight()
 {

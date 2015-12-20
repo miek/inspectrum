@@ -47,6 +47,7 @@ public slots:
 	void setPowerMax(int power);
 	void setPowerMin(int power);
 	void setZoomLevel(int zoom);
+	void setTimeScaleEnable(int state);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -69,6 +70,7 @@ private:
 	int zoomLevel;
 	float powerMax;
 	float powerMin;
+	bool timeScaleIsEnabled;
 
 	QPixmap* getPixmapTile(off_t tile);
 	float* getFFTTile(off_t tile);

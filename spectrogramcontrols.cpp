@@ -56,6 +56,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	powerMinSlider->setValue(-50);
 	layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
+	timeScaleCheckBox = new QCheckBox(widget);
+	timeScaleCheckBox->setCheckState(Qt::Checked);
+	layout->addRow(new QLabel(tr("time overlay:")), timeScaleCheckBox);
+
 	widget->setLayout(layout);
 	setWidget(widget);
 

@@ -38,6 +38,7 @@ MainWindow::MainWindow()
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
+    connect(dock->timeScaleCheckBox, SIGNAL(stateChanged(int)), &spectrogram, SLOT(setTimeScaleEnable(int)));
 }
 
 bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
