@@ -34,6 +34,7 @@ MainWindow::MainWindow()
 
     wave = new WaveformView();
     addDockWidget(Qt::BottomDockWidgetArea, wave);
+    connect(this, SIGNAL(viewChanged(off_t, off_t)), wave, SLOT(viewChanged(off_t, off_t)));
 
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
@@ -81,7 +82,7 @@ void MainWindow::setFFTSize(int size)
     off_t sample = getCenterSample();
     spectrogram.setFFTSize(size);
     scrollArea.verticalScrollBar()->setValue(getScrollPos(sample));
-    wave->viewChanged(getTopSample(), getBottomSample());
+    emitViewChanged();
 }
 
 void MainWindow::setZoomLevel(int zoom)
@@ -89,7 +90,12 @@ void MainWindow::setZoomLevel(int zoom)
     off_t sample = getCenterSample();
     spectrogram.setZoomLevel(zoom);
     scrollArea.verticalScrollBar()->setValue(getScrollPos(sample));
-    wave->viewChanged(getTopSample(), getBottomSample());
+    emitViewChanged();
+}
+
+void MainWindow::emitViewChanged()
+{
+    emit viewChanged(getTopSample(), getBottomSample());
 }
 
 off_t MainWindow::getTopSample()
@@ -122,5 +128,5 @@ void MainWindow::openFile(QString fileName)
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
     spectrogram.openFile(fileName);
     wave->inputSourceChanged(spectrogram.inputSource);
-    wave->viewChanged(getTopSample(), getBottomSample());
+    emitViewChanged();
 }

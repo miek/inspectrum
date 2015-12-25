@@ -39,6 +39,9 @@ public slots:
 	void setFFTSize(int size);
 	void setZoomLevel(int zoom);
 
+signals:
+    void viewChanged(off_t firstSample, off_t lastSample);
+
 protected:
 	bool eventFilter(QObject *obj, QEvent *event);
 
@@ -48,6 +51,7 @@ private:
     SpectrogramControls *dock;
     WaveformView *wave;
 
+    void emitViewChanged();
     off_t getTopSample();
 	off_t getCenterSample();
     off_t getBottomSample();
