@@ -42,6 +42,8 @@ MainWindow::MainWindow()
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
+
+    connect(scrollArea.verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(spectrogramSliderMoved(int)));
 }
 
 bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
@@ -90,6 +92,11 @@ void MainWindow::setZoomLevel(int zoom)
     off_t sample = getCenterSample();
     spectrogram.setZoomLevel(zoom);
     scrollArea.verticalScrollBar()->setValue(getScrollPos(sample));
+    emitViewChanged();
+}
+
+void MainWindow::spectrogramSliderMoved(int value)
+{
     emitViewChanged();
 }
 

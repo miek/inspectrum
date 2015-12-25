@@ -38,6 +38,7 @@ public slots:
 	void setSampleRate(QString rate);
 	void setFFTSize(int size);
 	void setZoomLevel(int zoom);
+    void spectrogramSliderMoved(int value);
 
 signals:
     void viewChanged(off_t firstSample, off_t lastSample);
