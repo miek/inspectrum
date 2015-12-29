@@ -41,7 +41,7 @@ void WaveformView::inputSourceChanged(SampleSource *src)
     gr::top_block_sptr tb = gr::make_top_block("multiply");
     auto mem_source = gr::blocks::memory_source::make(8);
     auto mem_sink = gr::blocks::memory_sink::make(8);
-    auto multiply = gr::blocks::multiply_const_cc::make(10);
+    auto multiply = gr::blocks::multiply_const_cc::make(20);
     tb->connect(mem_source, 0, multiply, 0);
     tb->connect(multiply, 0, mem_sink, 0);
     sampleSource = new GRSampleBuffer(src, tb, mem_source, mem_sink);
@@ -68,32 +68,32 @@ void WaveformView::paintEvent(QPaintEvent *event)
     off_t length = lastSample - firstSample;
     std::complex<float> *samples = new std::complex<float>[length];
     sampleSource->getSamples(samples, firstSample, length);
-    for (int iq = 0; iq < 2; iq++) {
-        switch (iq) {
-            case 0:
-                painter.setPen(Qt::red);
-                break;
-            case 1:
-                painter.setPen(Qt::blue);
-                break;
-        }
-        int xprev = 0;
-        int yprev = 0;
-        for (off_t i = 0; i < length; i++) {
-            float sample = (iq == 0) ? samples[i].real() : samples[i].imag();
-            int x = (float)i / length * rect.width();
-            int y = (sample * rect.height()/2) + rect.height()/2;
 
-            if (x < 0) x = 0;
-            if (y < 0) y = 0;
-            if (x >= rect.width()-1) x = rect.width()-2;
-            if (y >= rect.height()-1) y = rect.height()-2;
-
-            painter.drawLine(xprev, yprev, x, y);
-            xprev = x;
-            yprev = y;
-        }
-    }
+    painter.setPen(Qt::red);
+    plot(&painter, reinterpret_cast<float*>(samples), length, 2);
+    painter.setPen(Qt::blue);
+    plot(&painter, reinterpret_cast<float*>(samples)+1, length, 2);
 
     delete[] samples;
+}
+
+void WaveformView::plot(QPainter *painter, float *samples, off_t count, int step = 1)
+{
+    QRect rect = QRect(0, 0, width(), height());
+    int xprev = 0;
+    int yprev = 0;
+    for (off_t i = 0; i < count; i++) {
+        float sample = samples[i*step];
+        int x = (float)i / count * rect.width();
+        int y = (sample * rect.height()/2) + rect.height()/2;
+
+        if (x < 0) x = 0;
+        if (y < 0) y = 0;
+        if (x >= rect.width()-1) x = rect.width()-2;
+        if (y >= rect.height()-1) y = rect.height()-2;
+
+        painter->drawLine(xprev, yprev, x, y);
+        xprev = x;
+        yprev = y;
+    }
 }
