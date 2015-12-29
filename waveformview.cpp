@@ -66,15 +66,12 @@ void WaveformView::paintEvent(QPaintEvent *event)
     painter.fillRect(rect, Qt::black);
 
     off_t length = lastSample - firstSample;
-    std::complex<float> *samples = new std::complex<float>[length];
-    sampleSource->getSamples(samples, firstSample, length);
+    auto samples = sampleSource->getSamples(firstSample, length);
 
     painter.setPen(Qt::red);
-    plot(&painter, reinterpret_cast<float*>(samples), length, 2);
+    plot(&painter, reinterpret_cast<float*>(samples.get()), length, 2);
     painter.setPen(Qt::blue);
-    plot(&painter, reinterpret_cast<float*>(samples)+1, length, 2);
-
-    delete[] samples;
+    plot(&painter, reinterpret_cast<float*>(samples.get())+1, length, 2);
 }
 
 void WaveformView::plot(QPainter *painter, float *samples, off_t count, int step = 1)

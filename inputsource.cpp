@@ -48,14 +48,15 @@ InputSource::~InputSource() {
     fclose(m_file);
 }
 
-bool InputSource::getSamples(std::complex<float> *dest, off_t start, off_t length)
+std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_t length)
 {
     if(start < 0 || length < 0)
-        return false;
+        return nullptr;
 
     if (start + length >= sampleCount)
-        return false;
+        return nullptr;
 
-    memcpy(dest, &m_data[start], length * sizeof(std::complex<float>));
-    return true;
+    std::unique_ptr<std::complex<float>[]> dest(new std::complex<float>[length]);
+    memcpy(dest.get(), &m_data[start], length * sizeof(std::complex<float>));
+    return dest;
 }

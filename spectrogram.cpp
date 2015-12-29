@@ -143,15 +143,14 @@ float* Spectrogram::getFFTTile(off_t tile)
 void Spectrogram::getLine(float *dest, off_t sample)
 {
 	if (inputSource && fft) {
-		std::complex<float> buffer[fftSize];
-		inputSource->getSamples(buffer, sample, fftSize);
+		auto buffer = inputSource->getSamples(sample, fftSize);
 
 		for (int i = 0; i < fftSize; i++) {
 			buffer[i].real(buffer[i].real() * window[i]);
 			buffer[i].imag(buffer[i].imag() * window[i]);
 		}
 
-		fft->process(buffer, buffer);
+		fft->process(buffer.get(), buffer.get());
 		for (int i = 0; i < fftSize; i++) {
 			int k = (i + fftSize / 2) % fftSize;
 			float re = buffer[k].real();

@@ -30,7 +30,7 @@ private:
 
 public:
 	SampleBuffer(SampleSource *src) : src(src) {};
-	virtual bool getSamples(std::complex<float> *dest, off_t start, off_t length);
+	virtual std::unique_ptr<std::complex<float>[]> getSamples(off_t start, off_t length);
 	virtual void work(void *input, void *output, int count) = 0;
 	virtual off_t count() { return src->count(); };
 };

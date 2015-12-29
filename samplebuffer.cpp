@@ -19,10 +19,10 @@
 
 #include "samplebuffer.h"
 
-bool SampleBuffer::getSamples(std::complex<float> *dest, off_t start, off_t length)
+std::unique_ptr<std::complex<float>[]> SampleBuffer::getSamples(off_t start, off_t length)
 {
-	std::complex<float> buf[length];
-	src->getSamples(buf, start, length);
-	work(buf, dest, length);
-	return true;
+	auto samples = src->getSamples(start, length);
+	std::unique_ptr<std::complex<float>[]> dest(new std::complex<float>[length]);
+	work(samples.get(), dest.get(), length);
+	return dest;
 }

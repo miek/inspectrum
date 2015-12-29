@@ -34,6 +34,6 @@ public:
     InputSource(const char *filename);
     ~InputSource();
 
-    bool getSamples(std::complex<float> *dest, off_t start, off_t length);
+    std::unique_ptr<std::complex<float>[]> getSamples(off_t start, off_t length);
     off_t count() { return sampleCount; };
 };

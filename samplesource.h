@@ -20,6 +20,7 @@
 #pragma once
 
 #include <complex>
+#include <memory>
 
 class SampleSource
 {
@@ -27,6 +28,6 @@ class SampleSource
 public:
     virtual ~SampleSource() {};
 
-    virtual bool getSamples(std::complex<float> *dest, off_t start, off_t length) = 0;
+    virtual std::unique_ptr<std::complex<float>[]> getSamples(off_t start, off_t length) = 0;
     virtual off_t count() = 0;
 };
