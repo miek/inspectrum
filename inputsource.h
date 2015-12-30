@@ -22,7 +22,7 @@
 #include <complex>
 #include "samplesource.h"
 
-class InputSource : public SampleSource
+class InputSource : public SampleSource<std::complex<float>>
 {
 private:
     FILE *m_file;

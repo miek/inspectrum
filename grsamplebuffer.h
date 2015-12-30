@@ -26,7 +26,8 @@
 
 #include "samplebuffer.h"
 
-class GRSampleBuffer : public SampleBuffer
+template <typename Tin, typename Tout>
+class GRSampleBuffer : public SampleBuffer<Tin, Tout>
 {
 private:
 	gr::top_block_sptr tb;
@@ -34,7 +35,7 @@ private:
 	gr::blocks::memory_sink::sptr mem_sink;
 
 public:
-	GRSampleBuffer(SampleSource *src, gr::top_block_sptr tb, gr::blocks::memory_source::sptr mem_source, gr::blocks::memory_sink::sptr mem_sink)
-		: SampleBuffer(src), tb(tb), mem_source(mem_source), mem_sink(mem_sink) {};
+	GRSampleBuffer(SampleSource<Tin> *src, gr::top_block_sptr tb, gr::blocks::memory_source::sptr mem_source, gr::blocks::memory_sink::sptr mem_sink)
+		: SampleBuffer<Tin, Tout>(src), tb(tb), mem_source(mem_source), mem_sink(mem_sink) {};
 	virtual void work(void *input, void *output, int count);
 };

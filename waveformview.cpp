@@ -36,7 +36,7 @@ WaveformView::WaveformView()
     }
 }
 
-void WaveformView::inputSourceChanged(SampleSource *src)
+void WaveformView::inputSourceChanged(AbstractSampleSource *src)
 {
     gr::top_block_sptr tb = gr::make_top_block("multiply");
     auto mem_source = gr::blocks::memory_source::make(8);
@@ -44,7 +44,12 @@ void WaveformView::inputSourceChanged(SampleSource *src)
     auto multiply = gr::blocks::multiply_const_cc::make(20);
     tb->connect(mem_source, 0, multiply, 0);
     tb->connect(multiply, 0, mem_sink, 0);
-    sampleSource = new GRSampleBuffer(src, tb, mem_source, mem_sink);
+
+    auto derived = dynamic_cast<SampleSource<std::complex<float>>*>(src);
+    if (derived == nullptr)
+        throw new std::runtime_error("SampleSource doesn't provide correct type for GRSampleBuffer");
+
+    sampleSource = new GRSampleBuffer<std::complex<float>, std::complex<float>>(derived, tb, mem_source, mem_sink);
     update();
 }
 
@@ -66,7 +71,7 @@ void WaveformView::paintEvent(QPaintEvent *event)
     painter.fillRect(rect, Qt::black);
 
     off_t length = lastSample - firstSample;
-    auto samples = sampleSource->getSamples(firstSample, length);
+    auto samples = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource)->getSamples(firstSample, length);
 
     painter.setPen(Qt::red);
     plot(&painter, reinterpret_cast<float*>(samples.get()), length, 2);

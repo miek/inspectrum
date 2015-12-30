@@ -19,9 +19,13 @@
 
  #include "grsamplebuffer.h"
  
- void GRSampleBuffer::work(void *input, void *output, int length)
+ template<typename Tin, typename Tout>
+ void GRSampleBuffer<Tin, Tout>::work(void *input, void *output, int length)
  {
 	mem_source->set_source(input, length);
 	mem_sink->set_sink(output, length);
 	tb->run();
  }
+
+template class GRSampleBuffer<std::complex<float>, std::complex<float>>;
+template class GRSampleBuffer<std::complex<float>, float>;

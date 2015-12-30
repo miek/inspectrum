@@ -21,15 +21,10 @@
 
 #include <complex>
 #include <memory>
-#include "abstractsamplesource.h"
 
-template<typename T>
-class SampleSource : public AbstractSampleSource
+class AbstractSampleSource
 {
 
 public:
-    virtual ~SampleSource() {};
-
-    virtual std::unique_ptr<T[]> getSamples(off_t start, off_t length) = 0;
-    virtual off_t count() = 0;
+    virtual ~AbstractSampleSource() {};
 };

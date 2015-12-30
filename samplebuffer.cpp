@@ -19,10 +19,14 @@
 
 #include "samplebuffer.h"
 
-std::unique_ptr<std::complex<float>[]> SampleBuffer::getSamples(off_t start, off_t length)
+template <typename Tin, typename Tout>
+std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
 {
 	auto samples = src->getSamples(start, length);
-	std::unique_ptr<std::complex<float>[]> dest(new std::complex<float>[length]);
+	std::unique_ptr<Tout[]> dest(new Tout[length]);
 	work(samples.get(), dest.get(), length);
 	return dest;
 }
+
+template class SampleBuffer<std::complex<float>, std::complex<float>>;
+template class SampleBuffer<std::complex<float>, float>;
