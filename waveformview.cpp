@@ -74,19 +74,18 @@ void WaveformView::paintEvent(QPaintEvent *event)
     if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource)) {
         auto samples = src->getSamples(firstSample, length);
         painter.setPen(Qt::red);
-        plot(&painter, reinterpret_cast<float*>(samples.get()), length, 2);
+        plot(&painter, rect, reinterpret_cast<float*>(samples.get()), length, 2);
         painter.setPen(Qt::blue);
-        plot(&painter, reinterpret_cast<float*>(samples.get())+1, length, 2);
+        plot(&painter, rect, reinterpret_cast<float*>(samples.get())+1, length, 2);
     } else if (auto src = dynamic_cast<SampleSource<float>*>(sampleSource)) {
         auto samples = src->getSamples(firstSample, length);
         painter.setPen(Qt::green);
-        plot(&painter, samples.get(), length, 1);
+        plot(&painter, rect, samples.get(), length, 1);
     }
 }
 
-void WaveformView::plot(QPainter *painter, float *samples, off_t count, int step = 1)
+void WaveformView::plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step = 1)
 {
-    QRect rect = QRect(0, 0, width(), height());
     int xprev = 0;
     int yprev = 0;
     for (off_t i = 0; i < count; i++) {
@@ -99,7 +98,7 @@ void WaveformView::plot(QPainter *painter, float *samples, off_t count, int step
         if (x >= rect.width()-1) x = rect.width()-2;
         if (y >= rect.height()-1) y = rect.height()-2;
 
-        painter->drawLine(xprev, yprev, x, y);
+        painter->drawLine(xprev + rect.x(), yprev + rect.y(), x + rect.x(), y + rect.y());
         xprev = x;
         yprev = y;
     }

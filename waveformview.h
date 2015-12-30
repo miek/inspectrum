@@ -42,5 +42,5 @@ private:
 	off_t lastSample = 0;
 	QRgb colormap[255];
 
-	void plot(QPainter *painter, float *samples, off_t count, int step);
+	void plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step);
 };
