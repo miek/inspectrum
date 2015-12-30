@@ -37,7 +37,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 
 private:
-	AbstractSampleSource *sampleSource = nullptr;
+	std::vector<std::unique_ptr<AbstractSampleSource>> sampleSources;
 	off_t firstSample = 0;
 	off_t lastSample = 0;
 	QRgb colormap[255];

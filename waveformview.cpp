@@ -38,18 +38,20 @@ WaveformView::WaveformView()
 
 void WaveformView::inputSourceChanged(AbstractSampleSource *src)
 {
-    gr::top_block_sptr tb = gr::make_top_block("multiply");
-    auto mem_source = gr::blocks::memory_source::make(8);
-    auto mem_sink = gr::blocks::memory_sink::make(8);
+    sampleSources.clear();
+
+    gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
+    auto iq_mem_source = gr::blocks::memory_source::make(8);
+    auto iq_mem_sink = gr::blocks::memory_sink::make(8);
     auto multiply = gr::blocks::multiply_const_cc::make(20);
-    tb->connect(mem_source, 0, multiply, 0);
-    tb->connect(multiply, 0, mem_sink, 0);
+    iq_tb->connect(iq_mem_source, 0, multiply, 0);
+    iq_tb->connect(multiply, 0, iq_mem_sink, 0);
 
     auto derived = dynamic_cast<SampleSource<std::complex<float>>*>(src);
     if (derived == nullptr)
         throw new std::runtime_error("SampleSource doesn't provide correct type for GRSampleBuffer");
 
-    sampleSource = new GRSampleBuffer<std::complex<float>, std::complex<float>>(derived, tb, mem_source, mem_sink);
+    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, std::complex<float>>(derived, iq_tb, iq_mem_source, iq_mem_sink));
     update();
 }
 
@@ -63,24 +65,30 @@ void WaveformView::viewChanged(off_t firstSample, off_t lastSample)
 
 void WaveformView::paintEvent(QPaintEvent *event)
 {
-    if (sampleSource == nullptr) return;
     if (lastSample - firstSample <= 0) return;
 
     QRect rect = QRect(0, 0, width(), height());
     QPainter painter(this);
     painter.fillRect(rect, Qt::black);
 
-    off_t length = lastSample - firstSample;
-    if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource)) {
-        auto samples = src->getSamples(firstSample, length);
-        painter.setPen(Qt::red);
-        plot(&painter, rect, reinterpret_cast<float*>(samples.get()), length, 2);
-        painter.setPen(Qt::blue);
-        plot(&painter, rect, reinterpret_cast<float*>(samples.get())+1, length, 2);
-    } else if (auto src = dynamic_cast<SampleSource<float>*>(sampleSource)) {
-        auto samples = src->getSamples(firstSample, length);
-        painter.setPen(Qt::green);
-        plot(&painter, rect, samples.get(), length, 1);
+    // Split space equally between waveforms for now
+    int waveHeight = height() / sampleSources.size();
+    int wave = 0;
+    for (auto&& sampleSource : sampleSources) {
+        QRect waveRect = QRect(0, wave * waveHeight, width(), waveHeight);
+        off_t length = lastSample - firstSample;
+        if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource.get())) {
+            auto samples = src->getSamples(firstSample, length);
+            painter.setPen(Qt::red);
+            plot(&painter, waveRect, reinterpret_cast<float*>(samples.get()), length, 2);
+            painter.setPen(Qt::blue);
+            plot(&painter, waveRect, reinterpret_cast<float*>(samples.get())+1, length, 2);
+        } else if (auto src = dynamic_cast<SampleSource<float>*>(sampleSource.get())) {
+            auto samples = src->getSamples(firstSample, length);
+            painter.setPen(Qt::green);
+            plot(&painter, waveRect, samples.get(), length, 1);
+        }
+        wave++;
     }
 }
 
