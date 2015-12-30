@@ -21,6 +21,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <gnuradio/top_block.h>
+#include <gnuradio/analog/quadrature_demod_cf.h>
 #include <gnuradio/blocks/multiply_const_cc.h>
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
@@ -47,11 +48,19 @@ void WaveformView::inputSourceChanged(AbstractSampleSource *src)
     iq_tb->connect(iq_mem_source, 0, multiply, 0);
     iq_tb->connect(multiply, 0, iq_mem_sink, 0);
 
+    gr::top_block_sptr quad_demod_tb = gr::make_top_block("quad_demod");
+    auto quad_demod_mem_source = gr::blocks::memory_source::make(8);
+    auto quad_demod_mem_sink = gr::blocks::memory_sink::make(4);
+    auto quad_demod = gr::analog::quadrature_demod_cf::make(5);
+    quad_demod_tb->connect(quad_demod_mem_source, 0, quad_demod, 0);
+    quad_demod_tb->connect(quad_demod, 0, quad_demod_mem_sink, 0);
+
     auto derived = dynamic_cast<SampleSource<std::complex<float>>*>(src);
     if (derived == nullptr)
         throw new std::runtime_error("SampleSource doesn't provide correct type for GRSampleBuffer");
 
     sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, std::complex<float>>(derived, iq_tb, iq_mem_source, iq_mem_sink));
+    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, float>(derived, quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink));
     update();
 }
 

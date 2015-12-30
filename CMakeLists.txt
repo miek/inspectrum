@@ -44,7 +44,7 @@ INCLUDE(FindPkgConfig)
 
 find_package(Qt5Widgets REQUIRED)
 find_package(Boost COMPONENTS system program_options REQUIRED)
-set(GR_REQUIRED_COMPONENTS RUNTIME BLOCKS FILTER)
+set(GR_REQUIRED_COMPONENTS RUNTIME ANALOG BLOCKS FILTER)
 find_package(Gnuradio REQUIRED)
 pkg_check_modules(FFTW REQUIRED fftw3f)
 
