@@ -36,5 +36,7 @@ public:
     ~InputSource();
 
     bool getSamples(fftwf_complex *dest, off_t start, int length);
-    off_t getSampleCount() { return sampleCount; };
+    off_t getSampleCount() {
+        return sampleCount;
+    };
 };

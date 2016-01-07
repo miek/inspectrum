@@ -21,12 +21,15 @@
 
 #include <fftw3.h>
 
-class FFT {
+class FFT
+{
 public:
     FFT(int size);
     ~FFT();
     void process(void *dest, void *source);
-    int getSize() { return fftSize; }
+    int getSize() {
+        return fftSize;
+    }
 
 private:
     int fftSize;

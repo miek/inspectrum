@@ -34,18 +34,18 @@ public:
 
 public slots:
     void openFile(QString fileName);
-	void setSampleRate(QString rate);
-	void setFFTSize(int size);
-	void setZoomLevel(int zoom);
+    void setSampleRate(QString rate);
+    void setFFTSize(int size);
+    void setZoomLevel(int zoom);
 
 protected:
-	bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
     SpectrogramControls *dock;
 
-	off_t getCenterSample();
-	int getScrollPos(off_t sample);
+    off_t getCenterSample();
+    int getScrollPos(off_t sample);
 };

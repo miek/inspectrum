@@ -10,12 +10,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 if (WIN32)
-       find_library (MMAN mman)
-       if(NOT(MMAN))
-       message(FATAL_ERROR "please install mman-win32")
-       else(NOT(MMAN))
-       set (extraLibs  ${extraLibs} ${MMAN})
-       endif(NOT(MMAN))
+    find_library (MMAN mman)
+    if(NOT(MMAN))
+    message(FATAL_ERROR "please install mman-win32")
+    else(NOT(MMAN))
+    set (extraLibs  ${extraLibs} ${MMAN})
+    endif(NOT(MMAN))
 ENDIF (WIN32)
 
 if (NOT CMAKE_CXX_FLAGS)
@@ -27,12 +27,12 @@ endif (NOT CMAKE_CXX_FLAGS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 list(APPEND inspectrum_sources 
-	main.cpp
-	fft.cpp
-	mainwindow.cpp
-	inputsource.cpp
-	spectrogram.cpp
-	spectrogramcontrols.cpp
+    main.cpp
+    fft.cpp
+    mainwindow.cpp
+    inputsource.cpp
+    spectrogram.cpp
+    spectrogramcontrols.cpp
 )
 
 INCLUDE(FindPkgConfig)
@@ -40,13 +40,13 @@ find_package(Qt5Widgets REQUIRED)
 pkg_check_modules(FFTW REQUIRED fftw3f)
 
 include_directories(
-  ${QT_INCLUDES}
-  ${FFTW_INCLUDEDIR}
-  ${FFTW_INCLUDE_DIRS}
+    ${QT_INCLUDES}
+    ${FFTW_INCLUDEDIR}
+    ${FFTW_INCLUDE_DIRS}
 )
 
 link_directories(
-  ${FFTW_LIBRARY_DIRS}
+    ${FFTW_LIBRARY_DIRS}
 )
 
 add_executable(inspectrum ${inspectrum_sources})
