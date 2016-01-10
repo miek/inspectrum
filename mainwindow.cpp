@@ -21,6 +21,7 @@
 #include <QRubberBand>
 
 #include "mainwindow.h"
+#include "util.h"
 
 MainWindow::MainWindow()
 {
