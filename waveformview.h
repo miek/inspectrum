@@ -33,15 +33,22 @@ public:
 public slots:
     void inputSourceChanged(AbstractSampleSource *input);
     void viewChanged(off_t firstSample, off_t lastSample);
+    void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
+    void selectionCleared();
 
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
+    SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     std::vector<std::unique_ptr<AbstractSampleSource>> sampleSources;
     off_t firstSample = 0;
     off_t lastSample = 0;
+    bool selection = false;
+    std::pair<off_t, off_t> selectionTime;
+    std::pair<float, float> selectionFreq;
     QRgb colormap[255];
 
+    void refreshSources();
     void plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step);
 };

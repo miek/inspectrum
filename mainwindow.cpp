@@ -37,6 +37,9 @@ MainWindow::MainWindow()
     wave = new WaveformView();
     addDockWidget(Qt::BottomDockWidgetArea, wave);
     connect(this, SIGNAL(viewChanged(off_t, off_t)), wave, SLOT(viewChanged(off_t, off_t)));
+    connect(this, SIGNAL(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)),
+            wave, SLOT(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)));
+    connect(this, SIGNAL(selectionCleared()), wave, SLOT(selectionCleared()));
 
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));

@@ -23,6 +23,8 @@
 #include <gnuradio/top_block.h>
 #include <gnuradio/analog/quadrature_demod_cf.h>
 #include <gnuradio/blocks/multiply_const_cc.h>
+#include <gnuradio/filter/firdes.h>
+#include <gnuradio/filter/freq_xlating_fir_filter_ccf.h>
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
@@ -37,7 +39,7 @@ WaveformView::WaveformView()
     }
 }
 
-void WaveformView::inputSourceChanged(AbstractSampleSource *src)
+void WaveformView::refreshSources()
 {
     sampleSources.clear();
 
@@ -45,8 +47,19 @@ void WaveformView::inputSourceChanged(AbstractSampleSource *src)
     auto iq_mem_source = gr::blocks::memory_source::make(8);
     auto iq_mem_sink = gr::blocks::memory_sink::make(8);
     auto multiply = gr::blocks::multiply_const_cc::make(20);
-    iq_tb->connect(iq_mem_source, 0, multiply, 0);
-    iq_tb->connect(multiply, 0, iq_mem_sink, 0);
+    if (selection) {
+        float centre = (selectionFreq.first + selectionFreq.second) / 2;
+        float cutoff = std::abs(selectionFreq.first - centre);
+        auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
+        auto filter = gr::filter::freq_xlating_fir_filter_ccf::make(1, lp_taps, centre, 1.0);
+
+        iq_tb->connect(iq_mem_source, 0, filter, 0);
+        iq_tb->connect(filter, 0, multiply, 0);
+        iq_tb->connect(multiply, 0, iq_mem_sink, 0);
+    } else {
+        iq_tb->connect(iq_mem_source, 0, multiply, 0);
+        iq_tb->connect(multiply, 0, iq_mem_sink, 0);
+    }
 
     gr::top_block_sptr quad_demod_tb = gr::make_top_block("quad_demod");
     auto quad_demod_mem_source = gr::blocks::memory_source::make(8);
@@ -55,21 +68,40 @@ void WaveformView::inputSourceChanged(AbstractSampleSource *src)
     quad_demod_tb->connect(quad_demod_mem_source, 0, quad_demod, 0);
     quad_demod_tb->connect(quad_demod, 0, quad_demod_mem_sink, 0);
 
+    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, std::complex<float>>(mainSampleSource, iq_tb, iq_mem_source, iq_mem_sink));
+    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, float>(dynamic_cast<SampleSource<std::complex<float>>*>(sampleSources[0].get()), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink));
+    update();
+}
+
+void WaveformView::inputSourceChanged(AbstractSampleSource *src)
+{
     auto derived = dynamic_cast<SampleSource<std::complex<float>>*>(src);
     if (derived == nullptr)
         throw new std::runtime_error("SampleSource doesn't provide correct type for GRSampleBuffer");
 
-    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, std::complex<float>>(derived, iq_tb, iq_mem_source, iq_mem_sink));
-    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, float>(derived, quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink));
-    update();
+    mainSampleSource = derived;
+    refreshSources();
 }
 
 void WaveformView::viewChanged(off_t firstSample, off_t lastSample)
 {
     this->firstSample = firstSample;
     this->lastSample = lastSample;
-    qDebug() << "viewChanged(" << firstSample << ", " << lastSample << ")";
     update();
+}
+
+void WaveformView::selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq)
+{
+    this->selectionTime = selectionTime;
+    this->selectionFreq = selectionFreq;
+    selection = true;
+    refreshSources();
+}
+
+void WaveformView::selectionCleared()
+{
+    selection = false;
+    refreshSources();
 }
 
 void WaveformView::paintEvent(QPaintEvent *event)
