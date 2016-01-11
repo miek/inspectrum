@@ -83,29 +83,17 @@ bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
         QMouseEvent *mouseEvent = (QMouseEvent*)event;
         QRect rb = rubberBand->geometry();
 
-        int topSample = spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.top());
-        int bottomSample = spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.bottom());
+        off_t topSample = spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.top());
+        off_t bottomSample = spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.bottom());
 
-        int leftFreq = (int)(scrollArea.horizontalScrollBar()->value() + rb.left())*spectrogram.getSampleRate()/spectrogram.getFFTSize();
-        int rightFreq = (int)(scrollArea.horizontalScrollBar()->value() + rb.right())*spectrogram.getSampleRate()/spectrogram.getFFTSize();
+        int offset = scrollArea.horizontalScrollBar()->value();
+        int width = spectrogram.width();
+        float left = (float)clamp(offset + rb.left(), 0, width) / width - 0.5;
+        float right = (float)clamp(offset + rb.right(), 0, width) / width - 0.5;
 
-        QStringList command;
-        command << "cut_sample" << spectrogram.getFileName() << QString::number(spectrogram.getSampleRate())
-                << QString::number(spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.top()))
-                << QString::number(spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.bottom()))
+        selectionTime = {topSample, bottomSample};
+        selectionFreq = {left, right};
 
-                << QString::number((long int)(scrollArea.horizontalScrollBar()->value() + rb.left())*spectrogram.getSampleRate()/spectrogram.getFFTSize() + spectrogram.getCenterFreq() - spectrogram.getSampleRate()/2)
-                << QString::number((long int)(scrollArea.horizontalScrollBar()->value() + rb.right())*spectrogram.getSampleRate()/spectrogram.getFFTSize() + spectrogram.getCenterFreq() - spectrogram.getSampleRate()/2)
-                << QString::number(spectrogram.getCenterFreq())
-                ;
-
-        if(system(command.join(" ").toLatin1().data())) {
-            QMessageBox msgBox;
-            msgBox.setText("cut_sample call failed.");
-            msgBox.exec();
-        };
-        rubberBand->hide();
-        rubberBand->clearMask();
         return true;
     };
     return false;

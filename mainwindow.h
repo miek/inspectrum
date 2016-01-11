@@ -45,6 +45,8 @@ private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
     SpectrogramControls *dock;
+    std::pair<off_t, off_t> selectionTime;
+    std::pair<float, float> selectionFreq;
 
     off_t getCenterSample();
     int getScrollPos(off_t sample);
