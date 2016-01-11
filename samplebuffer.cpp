@@ -22,10 +22,10 @@
 template <typename Tin, typename Tout>
 std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
 {
-	auto samples = src->getSamples(start, length);
-	std::unique_ptr<Tout[]> dest(new Tout[length]);
-	work(samples.get(), dest.get(), length);
-	return dest;
+    auto samples = src->getSamples(start, length);
+    std::unique_ptr<Tout[]> dest(new Tout[length]);
+    work(samples.get(), dest.get(), length);
+    return dest;
 }
 
 template class SampleBuffer<std::complex<float>, std::complex<float>>;

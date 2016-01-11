@@ -35,5 +35,7 @@ public:
     ~InputSource();
 
     std::unique_ptr<std::complex<float>[]> getSamples(off_t start, off_t length);
-    off_t count() { return sampleCount; };
+    off_t count() {
+        return sampleCount;
+    };
 };

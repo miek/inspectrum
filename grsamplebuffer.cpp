@@ -17,15 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- #include "grsamplebuffer.h"
- 
- template<typename Tin, typename Tout>
- void GRSampleBuffer<Tin, Tout>::work(void *input, void *output, int length)
- {
-	mem_source->set_source(input, length);
-	mem_sink->set_sink(output, length);
-	tb->run();
- }
+#include "grsamplebuffer.h"
+
+template<typename Tin, typename Tout>
+void GRSampleBuffer<Tin, Tout>::work(void *input, void *output, int length)
+{
+    mem_source->set_source(input, length);
+    mem_sink->set_sink(output, length);
+    tb->run();
+}
 
 template class GRSampleBuffer<std::complex<float>, std::complex<float>>;
 template class GRSampleBuffer<std::complex<float>, float>;

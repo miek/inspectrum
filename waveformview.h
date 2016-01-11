@@ -23,24 +23,25 @@
 #include <QPaintEvent>
 #include "inputsource.h"
 
-class WaveformView : public QDockWidget {
-	Q_OBJECT
+class WaveformView : public QDockWidget
+{
+    Q_OBJECT
 
 public:
-	WaveformView();
+    WaveformView();
 
 public slots:
-	void inputSourceChanged(AbstractSampleSource *input);
-	void viewChanged(off_t firstSample, off_t lastSample);
+    void inputSourceChanged(AbstractSampleSource *input);
+    void viewChanged(off_t firstSample, off_t lastSample);
 
 protected:
-	void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 private:
-	std::vector<std::unique_ptr<AbstractSampleSource>> sampleSources;
-	off_t firstSample = 0;
-	off_t lastSample = 0;
-	QRgb colormap[255];
+    std::vector<std::unique_ptr<AbstractSampleSource>> sampleSources;
+    off_t firstSample = 0;
+    off_t lastSample = 0;
+    QRgb colormap[255];
 
-	void plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step);
+    void plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step);
 };

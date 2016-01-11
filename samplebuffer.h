@@ -27,11 +27,13 @@ template <typename Tin, typename Tout>
 class SampleBuffer : public SampleSource<Tout>
 {
 private:
-	std::shared_ptr<SampleSource<Tin>> src;
+    std::shared_ptr<SampleSource<Tin>> src;
 
 public:
-	SampleBuffer(SampleSource<Tin> *src) : src(src) {};
-	virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
-	virtual void work(void *input, void *output, int count) = 0;
-	virtual off_t count() { return src->count(); };
+    SampleBuffer(SampleSource<Tin> *src) : src(src) {};
+    virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
+    virtual void work(void *input, void *output, int count) = 0;
+    virtual off_t count() {
+        return src->count();
+    };
 };

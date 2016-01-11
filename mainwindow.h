@@ -35,16 +35,16 @@ public:
 
 public slots:
     void openFile(QString fileName);
-	void setSampleRate(QString rate);
-	void setFFTSize(int size);
-	void setZoomLevel(int zoom);
+    void setSampleRate(QString rate);
+    void setFFTSize(int size);
+    void setZoomLevel(int zoom);
     void spectrogramSliderMoved(int value);
 
 signals:
     void viewChanged(off_t firstSample, off_t lastSample);
 
 protected:
-	bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     QScrollArea scrollArea;
@@ -54,7 +54,7 @@ private:
 
     void emitViewChanged();
     off_t getTopSample();
-	off_t getCenterSample();
+    off_t getCenterSample();
     off_t getBottomSample();
-	int getScrollPos(off_t sample);
+    int getScrollPos(off_t sample);
 };

@@ -23,19 +23,21 @@
 #include <gnuradio/blocks/api.h>
 #include <gnuradio/sync_block.h>
 
-namespace gr {
-  namespace blocks {
-    class memory_source : virtual public sync_block
-    {
-    public:
-      typedef boost::shared_ptr<memory_source> sptr;
+namespace gr
+{
+namespace blocks
+{
+class memory_source : virtual public sync_block
+{
+public:
+    typedef boost::shared_ptr<memory_source> sptr;
 
-      static sptr make(size_t itemsize);
+    static sptr make(size_t itemsize);
 
-      virtual void set_source(void *source, size_t length) = 0;
-    };
+    virtual void set_source(void *source, size_t length) = 0;
+};
 
-  } /* namespace blocks */
+} /* namespace blocks */
 } /* namespace gr */
 
 #endif /* INCLUDED_GR_MEMORY_SOURCE_H */
