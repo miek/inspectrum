@@ -27,7 +27,7 @@ template <typename Tin, typename Tout>
 class SampleBuffer : public SampleSource<Tout>
 {
 private:
-    std::shared_ptr<SampleSource<Tin>> src;
+    SampleSource<Tin> *src;
 
 public:
     SampleBuffer(SampleSource<Tin> *src) : src(src) {};
