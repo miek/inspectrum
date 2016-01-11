@@ -94,9 +94,11 @@ bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
         if (rb.width() > 10 && rb.height() > 10) {
             selectionTime = {topSample, bottomSample};
             selectionFreq = {left, right};
+            emit selectionChanged(selectionTime, selectionFreq);
         } else {
             rubberBand->hide();
             rubberBand->clearMask();
+            emit selectionCleared();
         }
         return true;
     };
