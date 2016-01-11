@@ -42,6 +42,8 @@ public slots:
 
 signals:
     void viewChanged(off_t firstSample, off_t lastSample);
+    void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
+    void selectionCleared();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -51,6 +53,8 @@ private:
     Spectrogram spectrogram;
     SpectrogramControls *dock;
     WaveformView *wave;
+    std::pair<off_t, off_t> selectionTime;
+    std::pair<float, float> selectionFreq;
 
     void emitViewChanged();
     off_t getTopSample();

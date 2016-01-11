@@ -41,6 +41,7 @@ public:
     QSize sizeHint() const;
     int getHeight();
     int getStride();
+    off_t lineToSample(off_t line);
 
     InputSource *inputSource = nullptr;
 public slots:
@@ -76,7 +77,6 @@ private:
     float* getFFTTile(off_t tile);
     void getLine(float *dest, off_t sample);
     void paintTimeAxis(QPainter *painter, QRect rect);
-    off_t lineToSample(off_t line);
     int sampleToLine(off_t sample);
     QString sampleToTime(off_t sample);
     int linesPerTile();

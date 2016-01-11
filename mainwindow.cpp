@@ -18,8 +18,10 @@
  */
 
 #include <QtWidgets>
+#include <QRubberBand>
 
 #include "mainwindow.h"
+#include "util.h"
 
 MainWindow::MainWindow()
 {
@@ -46,6 +48,9 @@ MainWindow::MainWindow()
     connect(scrollArea.verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(spectrogramSliderMoved(int)));
 }
 
+QRubberBand *rubberBand=NULL;
+QPoint mystart;
+
 bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
 {
     if (event->type() == QEvent::Wheel) {
@@ -64,7 +69,45 @@ bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
             }
             return true;
         }
-    }
+    } else if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = (QMouseEvent*)event;
+        if (mouseEvent->buttons() == Qt::LeftButton) {
+            mystart = (mouseEvent->pos());
+            if(!rubberBand)
+                rubberBand = new QRubberBand(QRubberBand::Rectangle, scrollArea.viewport());
+            rubberBand->setGeometry(QRect(mystart, mystart));
+            rubberBand->show();
+            return true;
+        }
+    } else if (event->type() == QEvent::MouseMove) {
+        QMouseEvent *mouseEvent = (QMouseEvent*)event;
+        if (mouseEvent->buttons() == Qt::LeftButton) {
+            rubberBand->setGeometry(QRect(mystart, mouseEvent->pos()).normalized()); //Area Bounding
+            return true;
+        }
+    } else if (event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent *mouseEvent = (QMouseEvent*)event;
+        QRect rb = rubberBand->geometry();
+
+        off_t topSample = spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.top());
+        off_t bottomSample = spectrogram.lineToSample(scrollArea.verticalScrollBar()->value() + rb.bottom());
+
+        int offset = scrollArea.horizontalScrollBar()->value();
+        int width = spectrogram.width();
+        float left = (float)clamp(offset + rb.left(), 0, width) / width - 0.5;
+        float right = (float)clamp(offset + rb.right(), 0, width) / width - 0.5;
+
+        if (rb.width() > 10 && rb.height() > 10) {
+            selectionTime = {topSample, bottomSample};
+            selectionFreq = {left, right};
+            emit selectionChanged(selectionTime, selectionFreq);
+        } else {
+            rubberBand->hide();
+            rubberBand->clearMask();
+            emit selectionCleared();
+        }
+        return true;
+    };
     return false;
 }
 

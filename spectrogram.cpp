@@ -26,6 +26,7 @@
 #include <QRect>
 
 #include <cstdlib>
+#include "util.h"
 
 
 Spectrogram::Spectrogram()
@@ -67,11 +68,6 @@ void Spectrogram::openFile(QString fileName)
             // TODO: display error
         }
     }
-}
-
-template <class T> const T& clamp (const T& value, const T& min, const T& max)
-{
-    return std::min(max, std::max(min, value));
 }
 
 void Spectrogram::paintEvent(QPaintEvent *event)
