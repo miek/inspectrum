@@ -91,9 +91,13 @@ bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
         float left = (float)clamp(offset + rb.left(), 0, width) / width - 0.5;
         float right = (float)clamp(offset + rb.right(), 0, width) / width - 0.5;
 
-        selectionTime = {topSample, bottomSample};
-        selectionFreq = {left, right};
-
+        if (rb.width() > 10 && rb.height() > 10) {
+            selectionTime = {topSample, bottomSample};
+            selectionFreq = {left, right};
+        } else {
+            rubberBand->hide();
+            rubberBand->clearMask();
+        }
         return true;
     };
     return false;
