@@ -23,7 +23,7 @@
 #include <QScrollArea>
 #include "spectrogram.h"
 #include "spectrogramcontrols.h"
-#include "waveformview.h"
+#include "plotview.h"
 
 class MainWindow : public QMainWindow
 {
@@ -52,7 +52,7 @@ private:
     QScrollArea scrollArea;
     Spectrogram spectrogram;
     SpectrogramControls *dock;
-    WaveformView *wave;
+    PlotView *plots;
     std::pair<off_t, off_t> selectionTime;
     std::pair<float, float> selectionFreq;
 

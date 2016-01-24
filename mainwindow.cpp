@@ -34,12 +34,12 @@ MainWindow::MainWindow()
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
-    wave = new WaveformView();
-    addDockWidget(Qt::BottomDockWidgetArea, wave);
-    connect(this, SIGNAL(viewChanged(off_t, off_t)), wave, SLOT(viewChanged(off_t, off_t)));
+    plots = new PlotView();
+    addDockWidget(Qt::BottomDockWidgetArea, plots);
+    connect(this, SIGNAL(viewChanged(off_t, off_t)), plots, SLOT(viewChanged(off_t, off_t)));
     connect(this, SIGNAL(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)),
-            wave, SLOT(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)));
-    connect(this, SIGNAL(selectionCleared()), wave, SLOT(selectionCleared()));
+            plots, SLOT(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)));
+    connect(this, SIGNAL(selectionCleared()), plots, SLOT(selectionCleared()));
 
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
@@ -180,6 +180,6 @@ void MainWindow::openFile(QString fileName)
     QString title="%1: %2";
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
     spectrogram.openFile(fileName);
-    wave->inputSourceChanged(spectrogram.inputSource);
+    plots->inputSourceChanged(spectrogram.inputSource);
     emitViewChanged();
 }

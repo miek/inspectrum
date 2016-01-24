@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2015-2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -23,12 +23,12 @@
 #include <QPaintEvent>
 #include "inputsource.h"
 
-class WaveformView : public QDockWidget
+class PlotView : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    WaveformView();
+    PlotView();
 
 public slots:
     void inputSourceChanged(AbstractSampleSource *input);

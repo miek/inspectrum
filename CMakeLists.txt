@@ -34,10 +34,10 @@ list(APPEND inspectrum_sources
     inputsource.cpp
     memory_sink_impl.cc
     memory_source_impl.cc
+    plotview.cpp
     samplebuffer.cpp
     spectrogram.cpp
     spectrogramcontrols.cpp
-    waveformview.cpp
     util.cpp
 )
 

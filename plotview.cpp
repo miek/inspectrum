@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2015-2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "waveformview.h"
+#include "plotview.h"
 #include <QDebug>
 #include <QPainter>
 #include <gnuradio/top_block.h>
@@ -29,7 +29,7 @@
 #include "memory_sink.h"
 #include "memory_source.h"
 
-WaveformView::WaveformView()
+PlotView::PlotView()
 {
     for (int i = 0; i < 128; i++) {
         colormap[i] = qRgb(i/2, i*1.5, i*1.5);
@@ -39,7 +39,7 @@ WaveformView::WaveformView()
     }
 }
 
-void WaveformView::refreshSources()
+void PlotView::refreshSources()
 {
     sampleSources.clear();
 
@@ -73,7 +73,7 @@ void WaveformView::refreshSources()
     update();
 }
 
-void WaveformView::inputSourceChanged(AbstractSampleSource *src)
+void PlotView::inputSourceChanged(AbstractSampleSource *src)
 {
     auto derived = dynamic_cast<SampleSource<std::complex<float>>*>(src);
     if (derived == nullptr)
@@ -83,14 +83,14 @@ void WaveformView::inputSourceChanged(AbstractSampleSource *src)
     refreshSources();
 }
 
-void WaveformView::viewChanged(off_t firstSample, off_t lastSample)
+void PlotView::viewChanged(off_t firstSample, off_t lastSample)
 {
     this->firstSample = firstSample;
     this->lastSample = lastSample;
     update();
 }
 
-void WaveformView::selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq)
+void PlotView::selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq)
 {
     this->selectionTime = selectionTime;
     this->selectionFreq = selectionFreq;
@@ -98,13 +98,13 @@ void WaveformView::selectionChanged(std::pair<off_t, off_t> selectionTime, std::
     refreshSources();
 }
 
-void WaveformView::selectionCleared()
+void PlotView::selectionCleared()
 {
     selection = false;
     refreshSources();
 }
 
-void WaveformView::paintEvent(QPaintEvent *event)
+void PlotView::paintEvent(QPaintEvent *event)
 {
     if (lastSample - firstSample <= 0) return;
 
@@ -133,7 +133,7 @@ void WaveformView::paintEvent(QPaintEvent *event)
     }
 }
 
-void WaveformView::plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step = 1)
+void PlotView::plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step = 1)
 {
     int xprev = 0;
     int yprev = 0;
