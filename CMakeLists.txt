@@ -38,7 +38,6 @@ list(APPEND inspectrum_sources
     samplebuffer.cpp
     spectrogram.cpp
     spectrogramcontrols.cpp
-    util.cpp
 )
 
 INCLUDE(FindPkgConfig)
