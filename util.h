@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Jared Boone, ShareBrained Technology, Inc.
  *
  *  This file is part of inspectrum.
  *
@@ -24,3 +25,34 @@ template <class T> const T& clamp (const T& value, const T& min, const T& max)
 {
     return std::min(max, std::max(min, value));
 }
+
+template<class T>
+struct range_t {
+    const T minimum;
+    const T maximum;
+
+    const T& clip(const T& value) const {
+        return clamp(value, minimum, maximum);
+    }
+
+    void reset_if_outside(T& value, const T& reset_value) const {
+        if( (value < minimum ) ||
+            (value > maximum ) ) {
+            value = reset_value;
+        }
+    }
+
+    bool below_range(const T& value) const {
+        return value < minimum;
+    }
+
+    bool contains(const T& value) const {
+        // TODO: Subtle gotcha here! Range test doesn't include maximum!
+        return (value >= minimum) && (value < maximum);
+    }
+
+    bool out_of_range(const T& value) const {
+        // TODO: Subtle gotcha here! Range test in contains() doesn't include maximum!
+        return !contains(value);
+    }
+};
