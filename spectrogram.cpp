@@ -69,6 +69,35 @@ void Spectrogram::openFile(QString fileName)
 	}
 }
 
+void Spectrogram::openAnnotationFile(QString fileName)
+{
+	QFile data(fileName);
+	if (!data.open(QFile::ReadOnly)) {
+		return;
+	}
+
+	QTextStream in(&data);
+	QString line;
+
+	while (!in.atEnd()) {
+		line = in.readLine();
+		struct annotation a;
+
+		QStringList splitline = line.split(',');
+
+		if (splitline.size() > 2) {
+			bool ok1, ok2;
+			a.timestamp = splitline[0].toDouble(&ok1);
+			a.frequency = splitline[1].toDouble(&ok2);
+			a.text = new QString(splitline[2]);
+
+			if (ok1 && ok2) {
+				annotationList.append(a);
+			}
+		}
+	}
+}
+
 template <class T> const T& clamp (const T& value, const T& min, const T& max) {
     return std::min(max, std::max(min, value));
 }
@@ -96,6 +125,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 		}
 
 		paintTimeAxis(&painter, rect);
+		paintAnnotations(&painter, rect);
 	}
 }
 
@@ -183,6 +213,31 @@ void Spectrogram::paintTimeAxis(QPainter *painter, QRect rect)
 		}
 		painter->restore();
 	}
+}
+
+void Spectrogram::paintAnnotations(QPainter *painter, QRect rect)
+{
+	int firstSample = lineToSample(rect.y());
+	int lastSample = lineToSample(rect.y() + rect.height());
+
+	float startTime = (float)firstSample / sampleRate;
+	float stopTime = (float)lastSample / sampleRate;
+
+	painter->save();
+	QPen pen(Qt::white, 1, Qt::SolidLine);
+	painter->setPen(pen);
+	QFontMetrics fm(painter->font());
+
+	for (int i = 0; i < annotationList.size(); ++i) {
+		struct annotation a = annotationList.at(i);
+		if (startTime <= a.timestamp && stopTime >= a.timestamp) {
+			// TODO: Use real centerFreq once available
+			int centerFreq = 0;
+			painter->drawText(((a.frequency - centerFreq) /sampleRate + 0.5) * fftSize, sampleToLine(sampleRate * a.timestamp), *a.text);
+		}
+	}
+
+	painter->restore();
 }
 
 void Spectrogram::setSampleRate(int rate)

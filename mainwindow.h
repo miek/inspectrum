@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
     void changeSampleRate(int rate);
+    void openAnnotationFile(QString fileName);
 
 public slots:
     void openFile(QString fileName);
