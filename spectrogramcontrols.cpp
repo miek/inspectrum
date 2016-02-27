@@ -60,6 +60,18 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	timeScaleCheckBox->setCheckState(Qt::Checked);
 	layout->addRow(new QLabel(tr("time overlay:")), timeScaleCheckBox);
 
+	cursorFrequencyLabel = new QLabel();
+	layout->addRow(new QLabel(tr("Cursor frequency:")), cursorFrequencyLabel);
+
+	cursorTimeLabel = new QLabel();
+	layout->addRow(new QLabel(tr("Cursor time:")), cursorTimeLabel);
+
+	deltaFrequencyLabel = new QLabel();
+	layout->addRow(new QLabel(tr("Delta frequency:")), deltaFrequencyLabel);
+
+	deltaTimeLabel = new QLabel();
+	layout->addRow(new QLabel(tr("Delta time:")), deltaTimeLabel);
+
 	widget->setLayout(layout);
 	setWidget(widget);
 

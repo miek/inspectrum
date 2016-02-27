@@ -41,6 +41,8 @@ Spectrogram::Spectrogram()
 		float p = (float)i / 256;
 		colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
 	}
+
+	setMouseTracking(true);
 }
 
 Spectrogram::~Spectrogram()
@@ -73,6 +75,38 @@ template <class T> const T& clamp (const T& value, const T& min, const T& max) {
     return std::min(max, std::max(min, value));
 }
 
+void Spectrogram::xyToFreqTime(int x, int y, float *freq, float *time) {
+	*freq = labs(x - (fftSize / 2)) * sampleRate / 2 / (float)fftSize;
+	*time = (float)lineToSample(y) / sampleRate;
+}
+
+void Spectrogram::mouseReleaseEvent(QMouseEvent *event) {
+	cursorStartX = -1;
+	update();
+}
+
+void Spectrogram::mouseMoveEvent(QMouseEvent *event) {
+	float freq, time;
+	xyToFreqTime(event->x(), event->y(), &freq, &time);
+	emit cursorFrequencyChanged(QString::number(freq) + " Hz");
+	emit cursorTimeChanged(QString::number(time) + " s");
+	if (cursorStartX != -1) {
+		float s_freq, s_time;
+		xyToFreqTime(cursorStartX, cursorStartY, &s_freq, &s_time);
+		emit deltaFrequencyChanged(QString::number(fabs(s_freq - freq)) + " Hz");
+		emit deltaTimeChanged(QString::number(fabs(s_time - time)) + " s");
+		cursorEndX = event->x();
+		cursorEndY = event->y();
+		update();
+	}
+}
+
+void Spectrogram::mousePressEvent(QMouseEvent *event) {
+	cursorEndX = cursorStartX = event->x();
+	cursorEndY = cursorStartY = event->y();
+	update();
+}
+
 void Spectrogram::paintEvent(QPaintEvent *event)
 {
 	QRect rect = event->rect();
@@ -96,6 +130,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
 		}
 
 		paintTimeAxis(&painter, rect);
+		paintCursors(&painter, rect);
 	}
 }
 
@@ -162,6 +197,21 @@ void Spectrogram::getLine(float *dest, off_t sample)
 			*dest = magdb;
 			dest++;
 		}
+	}
+}
+
+void Spectrogram::paintCursors(QPainter *painter, QRect rect)
+{
+	if (cursorStartX != -1) {
+		painter->save();
+		QPen pen(Qt::white, 1, Qt::DashLine);
+		painter->setPen(pen);
+		painter->drawLine(rect.left(), cursorStartY, rect.right(), cursorStartY);
+		painter->drawLine(cursorStartX, rect.top(), cursorStartX, rect.bottom());
+		painter->drawLine(rect.left(), cursorEndY, rect.right(), cursorEndY);
+		painter->drawLine(cursorEndX, rect.top(), cursorEndX, rect.bottom());
+		painter->restore();
+
 	}
 }
 

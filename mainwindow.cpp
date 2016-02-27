@@ -39,6 +39,10 @@ MainWindow::MainWindow()
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), &spectrogram, SLOT(setPowerMin(int)));
     connect(dock->timeScaleCheckBox, SIGNAL(stateChanged(int)), &spectrogram, SLOT(setTimeScaleEnable(int)));
+    connect(&spectrogram, SIGNAL(cursorFrequencyChanged(QString)), dock->cursorFrequencyLabel, SLOT(setText(QString)));
+    connect(&spectrogram, SIGNAL(cursorTimeChanged(QString)), dock->cursorTimeLabel, SLOT(setText(QString)));
+    connect(&spectrogram, SIGNAL(deltaFrequencyChanged(QString)), dock->deltaFrequencyLabel, SLOT(setText(QString)));
+    connect(&spectrogram, SIGNAL(deltaTimeChanged(QString)), dock->deltaTimeLabel, SLOT(setText(QString)));
 }
 
 bool MainWindow::eventFilter(QObject * /*obj*/, QEvent *event)
