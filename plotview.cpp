@@ -140,7 +140,7 @@ void PlotView::plot(QPainter *painter, QRect &rect, float *samples, off_t count,
     for (off_t i = 0; i < count; i++) {
         float sample = samples[i*step];
         int x = (float)i / count * rect.width();
-        int y = (sample * rect.height()/2) + rect.height()/2;
+        int y = rect.height() - ((sample * rect.height()/2) + rect.height()/2);
 
         if (x < 0) x = 0;
         if (y < 0) y = 0;
