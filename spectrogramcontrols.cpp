@@ -66,6 +66,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 	cursorTimeLabel = new QLabel();
 	layout->addRow(new QLabel(tr("Cursor time:")), cursorTimeLabel);
 
+	deltaDragCheckBox = new QCheckBox(widget);
+	deltaDragCheckBox->setCheckState(Qt::Checked);
+	layout->addRow(new QLabel(tr("Delta dragging:")), deltaDragCheckBox);
+
 	deltaFrequencyLabel = new QLabel();
 	layout->addRow(new QLabel(tr("Delta frequency:")), deltaFrequencyLabel);
 

@@ -54,6 +54,7 @@ public slots:
 	void setPowerMin(int power);
 	void setZoomLevel(int zoom);
 	void setTimeScaleEnable(int state);
+	void setDeltaDragEnable(int state);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -80,6 +81,7 @@ private:
 	float powerMax;
 	float powerMin;
 	bool timeScaleIsEnabled;
+	bool deltaDragIsEnabled;
 	int cursorStartX = -1, cursorStartY;
 	int cursorEndX, cursorEndY;
 

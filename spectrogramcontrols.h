@@ -54,6 +54,7 @@ public:
 	QCheckBox *timeScaleCheckBox;
 	QLabel *cursorFrequencyLabel;
 	QLabel *cursorTimeLabel;
+	QCheckBox *deltaDragCheckBox;
 	QLabel *deltaFrequencyLabel;
 	QLabel *deltaTimeLabel;
 };

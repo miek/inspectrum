@@ -36,6 +36,7 @@ Spectrogram::Spectrogram()
 	powerMax = 0.0f;
 	powerMin = -50.0f;
 	timeScaleIsEnabled = true;
+	deltaDragIsEnabled = true;
 
 	for (int i = 0; i < 256; i++) {
 		float p = (float)i / 256;
@@ -81,8 +82,10 @@ void Spectrogram::xyToFreqTime(int x, int y, float *freq, float *time) {
 }
 
 void Spectrogram::mouseReleaseEvent(QMouseEvent *event) {
-	cursorStartX = -1;
-	update();
+	if (deltaDragIsEnabled) {
+		cursorStartX = -1;
+		update();
+	}
 }
 
 void Spectrogram::mouseMoveEvent(QMouseEvent *event) {
@@ -102,8 +105,12 @@ void Spectrogram::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void Spectrogram::mousePressEvent(QMouseEvent *event) {
-	cursorEndX = cursorStartX = event->x();
-	cursorEndY = cursorStartY = event->y();
+	if (cursorStartX == -1) {
+		cursorEndX = cursorStartX = event->x();
+		cursorEndY = cursorStartY = event->y();
+	} else {
+		cursorStartX = -1;
+	}
 	update();
 }
 
@@ -280,6 +287,11 @@ void Spectrogram::setTimeScaleEnable(int state)
 	timeScaleIsEnabled = (state == Qt::Checked);
 	pixmapCache.clear();
 	update();
+}
+
+void Spectrogram::setDeltaDragEnable(int state)
+{
+	deltaDragIsEnabled = (state == Qt::Checked);
 }
 
 

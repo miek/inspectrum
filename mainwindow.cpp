@@ -41,6 +41,7 @@ MainWindow::MainWindow()
     connect(dock->timeScaleCheckBox, SIGNAL(stateChanged(int)), &spectrogram, SLOT(setTimeScaleEnable(int)));
     connect(&spectrogram, SIGNAL(cursorFrequencyChanged(QString)), dock->cursorFrequencyLabel, SLOT(setText(QString)));
     connect(&spectrogram, SIGNAL(cursorTimeChanged(QString)), dock->cursorTimeLabel, SLOT(setText(QString)));
+    connect(dock->deltaDragCheckBox, SIGNAL(stateChanged(int)), &spectrogram, SLOT(setDeltaDragEnable(int)));
     connect(&spectrogram, SIGNAL(deltaFrequencyChanged(QString)), dock->deltaFrequencyLabel, SLOT(setText(QString)));
     connect(&spectrogram, SIGNAL(deltaTimeChanged(QString)), dock->deltaTimeLabel, SLOT(setText(QString)));
 }
