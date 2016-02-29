@@ -27,34 +27,35 @@
 #include <QCheckBox>
 #include <QLabel>
 
-class SpectrogramControls : public QDockWidget {
-	Q_OBJECT
+class SpectrogramControls : public QDockWidget
+{
+    Q_OBJECT
 
 public:
-	SpectrogramControls(const QString & title, QWidget * parent);
+    SpectrogramControls(const QString & title, QWidget * parent);
 
 signals:
-	void fftSizeChanged(int size);
-	void openFile(QString fileName);
+    void fftSizeChanged(int size);
+    void openFile(QString fileName);
 
 private slots:
-	void fftSizeSliderChanged(int size);
-	void fileOpenButtonClicked();
+    void fftSizeSliderChanged(int size);
+    void fileOpenButtonClicked();
 
 private:
-	QWidget *widget;
-	QFormLayout *layout;
+    QWidget *widget;
+    QFormLayout *layout;
 public:
-	QPushButton *fileOpenButton;
-	QLineEdit *sampleRate;
-	QSlider *fftSizeSlider;
-	QSlider *zoomLevelSlider;
-	QSlider *powerMaxSlider;
-	QSlider *powerMinSlider;
-	QCheckBox *timeScaleCheckBox;
-	QLabel *cursorFrequencyLabel;
-	QLabel *cursorTimeLabel;
-	QCheckBox *deltaDragCheckBox;
-	QLabel *deltaFrequencyLabel;
-	QLabel *deltaTimeLabel;
+    QPushButton *fileOpenButton;
+    QLineEdit *sampleRate;
+    QSlider *fftSizeSlider;
+    QSlider *zoomLevelSlider;
+    QSlider *powerMaxSlider;
+    QSlider *powerMinSlider;
+    QCheckBox *timeScaleCheckBox;
+    QLabel *cursorFrequencyLabel;
+    QLabel *cursorTimeLabel;
+    QCheckBox *deltaDragCheckBox;
+    QLabel *deltaFrequencyLabel;
+    QLabel *deltaTimeLabel;
 };

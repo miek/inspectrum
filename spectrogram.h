@@ -30,89 +30,91 @@ static const double Tau = M_PI * 2.0;
 
 class TileCacheKey;
 
-class Spectrogram : public QWidget {
-	Q_OBJECT
+class Spectrogram : public QWidget
+{
+    Q_OBJECT
 
 public:
-	Spectrogram();
-	~Spectrogram();
-	QSize sizeHint() const;
-	int getHeight();
-	int getStride();
+    Spectrogram();
+    ~Spectrogram();
+    QSize sizeHint() const;
+    int getHeight();
+    int getStride();
 
 signals:
-	void cursorFrequencyChanged(QString);
-	void cursorTimeChanged(QString);
-	void deltaFrequencyChanged(QString);
-	void deltaTimeChanged(QString);
+    void cursorFrequencyChanged(QString);
+    void cursorTimeChanged(QString);
+    void deltaFrequencyChanged(QString);
+    void deltaTimeChanged(QString);
 
 public slots:
-	void openFile(QString fileName);
-	void setSampleRate(int rate);
-	void setFFTSize(int size);
-	void setPowerMax(int power);
-	void setPowerMin(int power);
-	void setZoomLevel(int zoom);
-	void setTimeScaleEnable(int state);
-	void setDeltaDragEnable(int state);
+    void openFile(QString fileName);
+    void setSampleRate(int rate);
+    void setFFTSize(int size);
+    void setPowerMax(int power);
+    void setPowerMin(int power);
+    void setZoomLevel(int zoom);
+    void setTimeScaleEnable(int state);
+    void setDeltaDragEnable(int state);
 
 protected:
-	void paintEvent(QPaintEvent *event);
-	void mouseReleaseEvent(QMouseEvent * event);
-	void mouseMoveEvent(QMouseEvent * event);
-	void mousePressEvent(QMouseEvent * event);
+    void paintEvent(QPaintEvent *event);
+    void mouseReleaseEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent * event);
 
 
 private:
-	const int linesPerGraduation = 50;
-	const int tileSize = 65536; // This must be a multiple of the maximum FFT size
+    const int linesPerGraduation = 50;
+    const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
-	InputSource *inputSource = nullptr;
-	FFT *fft = nullptr;
-	std::unique_ptr<float[]> window;
-	fftwf_complex *lineBuffer = nullptr;
-	QCache<TileCacheKey, QPixmap> pixmapCache;
-	QCache<TileCacheKey, float> fftCache;
-	uint colormap[256];
+    InputSource *inputSource = nullptr;
+    FFT *fft = nullptr;
+    std::unique_ptr<float[]> window;
+    fftwf_complex *lineBuffer = nullptr;
+    QCache<TileCacheKey, QPixmap> pixmapCache;
+    QCache<TileCacheKey, float> fftCache;
+    uint colormap[256];
 
-	int sampleRate;
-	int fftSize;
-	int zoomLevel;
-	float powerMax;
-	float powerMin;
-	bool timeScaleIsEnabled;
-	bool deltaDragIsEnabled;
-	int cursorStartX = -1, cursorStartY;
-	int cursorEndX, cursorEndY;
+    int sampleRate;
+    int fftSize;
+    int zoomLevel;
+    float powerMax;
+    float powerMin;
+    bool timeScaleIsEnabled;
+    bool deltaDragIsEnabled;
+    int cursorStartX = -1, cursorStartY;
+    int cursorEndX, cursorEndY;
 
-	QPixmap* getPixmapTile(off_t tile);
-	float* getFFTTile(off_t tile);
-	void getLine(float *dest, off_t sample);
-	void paintTimeAxis(QPainter *painter, QRect rect);
-	void paintCursors(QPainter *painter, QRect rect);
-	off_t lineToSample(off_t line);
-	int sampleToLine(off_t sample);
-	QString sampleToTime(off_t sample);
-	int linesPerTile();
-	void xyToFreqTime(int x, int y, float *freq, float *time);
+    QPixmap* getPixmapTile(off_t tile);
+    float* getFFTTile(off_t tile);
+    void getLine(float *dest, off_t sample);
+    void paintTimeAxis(QPainter *painter, QRect rect);
+    void paintCursors(QPainter *painter, QRect rect);
+    off_t lineToSample(off_t line);
+    int sampleToLine(off_t sample);
+    QString sampleToTime(off_t sample);
+    int linesPerTile();
+    void xyToFreqTime(int x, int y, float *freq, float *time);
 };
 
-class TileCacheKey {
+class TileCacheKey
+{
 
 public:
-	TileCacheKey(int fftSize, int zoomLevel, off_t sample) {
-		this->fftSize = fftSize;
-		this->zoomLevel = zoomLevel;
-		this->sample = sample;
-	}
+    TileCacheKey(int fftSize, int zoomLevel, off_t sample) {
+        this->fftSize = fftSize;
+        this->zoomLevel = zoomLevel;
+        this->sample = sample;
+    }
 
-	bool operator==(const TileCacheKey &k2) const {
-		return (this->fftSize == k2.fftSize) &&
-				(this->zoomLevel == k2.zoomLevel) &&
-				(this->sample == k2.sample);
-	}
+    bool operator==(const TileCacheKey &k2) const {
+        return (this->fftSize == k2.fftSize) &&
+               (this->zoomLevel == k2.zoomLevel) &&
+               (this->sample == k2.sample);
+    }
 
-	int fftSize;
-	int zoomLevel;
-	off_t sample;
+    int fftSize;
+    int zoomLevel;
+    off_t sample;
 };

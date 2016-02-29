@@ -27,7 +27,8 @@
 
 #include <stdexcept>
 
-InputSource::InputSource(const char *filename) {
+InputSource::InputSource(const char *filename)
+{
     m_file = fopen(filename, "rb");
     if (m_file == nullptr)
         throw std::runtime_error("Error opening file");
@@ -43,7 +44,8 @@ InputSource::InputSource(const char *filename) {
         throw std::runtime_error("Error mmapping file");
 }
 
-InputSource::~InputSource() {
+InputSource::~InputSource()
+{
     munmap(m_data, m_file_size);
     fclose(m_file);
 }
