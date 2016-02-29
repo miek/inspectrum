@@ -28,6 +28,7 @@
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
+#include "traceplot.h"
 
 PlotView::PlotView()
 {
@@ -41,7 +42,7 @@ PlotView::PlotView()
 
 void PlotView::refreshSources()
 {
-    sampleSources.clear();
+    plots.clear();
 
     gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
     auto iq_mem_source = gr::blocks::memory_source::make(8);
@@ -68,8 +69,16 @@ void PlotView::refreshSources()
     quad_demod_tb->connect(quad_demod_mem_source, 0, quad_demod, 0);
     quad_demod_tb->connect(quad_demod, 0, quad_demod_mem_sink, 0);
 
-    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, std::complex<float>>(mainSampleSource, iq_tb, iq_mem_source, iq_mem_sink));
-    sampleSources.emplace_back(new GRSampleBuffer<std::complex<float>, float>(dynamic_cast<SampleSource<std::complex<float>>*>(sampleSources[0].get()), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink));
+    auto iq_src = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(mainSampleSource, iq_tb, iq_mem_source, iq_mem_sink);
+    plots.emplace_back(new TracePlot(iq_src));
+
+    plots.emplace_back(
+        new TracePlot(
+            std::make_shared<GRSampleBuffer<std::complex<float>, float>>(
+                dynamic_cast<SampleSource<std::complex<float>>*>(iq_src.get()), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink
+            )
+        )
+    );
     update();
 }
 
@@ -113,42 +122,21 @@ void PlotView::paintEvent(QPaintEvent *event)
     painter.fillRect(rect, Qt::black);
 
     // Split space equally between waveforms for now
-    int waveHeight = height() / sampleSources.size();
-    int wave = 0;
-    for (auto&& sampleSource : sampleSources) {
-        QRect waveRect = QRect(0, wave * waveHeight, width(), waveHeight);
-        off_t length = lastSample - firstSample;
-        if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource.get())) {
-            auto samples = src->getSamples(firstSample, length);
-            painter.setPen(Qt::red);
-            plot(&painter, waveRect, reinterpret_cast<float*>(samples.get()), length, 2);
-            painter.setPen(Qt::blue);
-            plot(&painter, waveRect, reinterpret_cast<float*>(samples.get())+1, length, 2);
-        } else if (auto src = dynamic_cast<SampleSource<float>*>(sampleSource.get())) {
-            auto samples = src->getSamples(firstSample, length);
-            painter.setPen(Qt::green);
-            plot(&painter, waveRect, samples.get(), length, 1);
-        }
-        wave++;
+    int plotHeight = height() / plots.size();
+
+#define PLOT_LAYER(paintFunc)                                                   \
+    {                                                                           \
+        int plotCount = 0;                                                      \
+        for (auto&& plot : plots) {                                             \
+            QRect rect = QRect(0, plotCount * plotHeight, width(), plotHeight); \
+            plot->paintFunc(painter, rect, {firstSample, lastSample});          \
+            plotCount++;                                                        \
+        }                                                                       \
     }
-}
 
-void PlotView::plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step = 1)
-{
-    int xprev = 0;
-    int yprev = 0;
-    for (off_t i = 0; i < count; i++) {
-        float sample = samples[i*step];
-        int x = (float)i / count * rect.width();
-        int y = rect.height() - ((sample * rect.height()/2) + rect.height()/2);
+    PLOT_LAYER(paintBack);
+    PLOT_LAYER(paintMid);
+    PLOT_LAYER(paintFront);
 
-        if (x < 0) x = 0;
-        if (y < 0) y = 0;
-        if (x >= rect.width()-1) x = rect.width()-2;
-        if (y >= rect.height()-1) y = rect.height()-2;
-
-        painter->drawLine(xprev + rect.x(), yprev + rect.y(), x + rect.x(), y + rect.y());
-        xprev = x;
-        yprev = y;
-    }
+#undef PLOT_LAYER
 }

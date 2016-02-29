@@ -22,6 +22,7 @@
 #include <QDockWidget>
 #include <QPaintEvent>
 #include "inputsource.h"
+#include "plot.h"
 
 class PlotView : public QDockWidget
 {
@@ -41,7 +42,7 @@ protected:
 
 private:
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
-    std::vector<std::unique_ptr<AbstractSampleSource>> sampleSources;
+    std::vector<std::unique_ptr<Plot>> plots;
     off_t firstSample = 0;
     off_t lastSample = 0;
     bool selection = false;
@@ -50,5 +51,4 @@ private:
     QRgb colormap[255];
 
     void refreshSources();
-    void plot(QPainter *painter, QRect &rect, float *samples, off_t count, int step);
 };
