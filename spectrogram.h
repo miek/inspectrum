@@ -40,6 +40,12 @@ public:
 	int getHeight();
 	int getStride();
 
+signals:
+	void cursorFrequencyChanged(QString);
+	void cursorTimeChanged(QString);
+	void deltaFrequencyChanged(QString);
+	void deltaTimeChanged(QString);
+
 public slots:
 	void openFile(QString fileName);
 	void setSampleRate(int rate);
@@ -48,9 +54,13 @@ public slots:
 	void setPowerMin(int power);
 	void setZoomLevel(int zoom);
 	void setTimeScaleEnable(int state);
+	void setDeltaDragEnable(int state);
 
 protected:
 	void paintEvent(QPaintEvent *event);
+	void mouseReleaseEvent(QMouseEvent * event);
+	void mouseMoveEvent(QMouseEvent * event);
+	void mousePressEvent(QMouseEvent * event);
 
 
 private:
@@ -71,15 +81,20 @@ private:
 	float powerMax;
 	float powerMin;
 	bool timeScaleIsEnabled;
+	bool deltaDragIsEnabled;
+	int cursorStartX = -1, cursorStartY;
+	int cursorEndX, cursorEndY;
 
 	QPixmap* getPixmapTile(off_t tile);
 	float* getFFTTile(off_t tile);
 	void getLine(float *dest, off_t sample);
 	void paintTimeAxis(QPainter *painter, QRect rect);
+	void paintCursors(QPainter *painter, QRect rect);
 	off_t lineToSample(off_t line);
 	int sampleToLine(off_t sample);
 	QString sampleToTime(off_t sample);
 	int linesPerTile();
+	void xyToFreqTime(int x, int y, float *freq, float *time);
 };
 
 class TileCacheKey {
