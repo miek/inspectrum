@@ -31,6 +31,10 @@ struct range_t {
     const T minimum;
     const T maximum;
 
+    const T length() {
+        return maximum - minimum;
+    }
+
     const T& clip(const T& value) const {
         return clamp(value, minimum, maximum);
     }
