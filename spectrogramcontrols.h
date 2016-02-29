@@ -24,6 +24,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
+#include <QCheckBox>
+#include <QLabel>
 
 class SpectrogramControls : public QDockWidget
 {
@@ -50,4 +52,10 @@ public:
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
+    QCheckBox *timeScaleCheckBox;
+    QLabel *cursorFrequencyLabel;
+    QLabel *cursorTimeLabel;
+    QCheckBox *deltaDragCheckBox;
+    QLabel *deltaFrequencyLabel;
+    QLabel *deltaTimeLabel;
 };

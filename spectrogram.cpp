@@ -36,11 +36,15 @@ Spectrogram::Spectrogram()
     zoomLevel = 0;
     powerMax = 0.0f;
     powerMin = -50.0f;
+    timeScaleIsEnabled = true;
+    deltaDragIsEnabled = true;
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
         colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
     }
+
+    setMouseTracking(true);
 }
 
 Spectrogram::~Spectrogram()
@@ -70,6 +74,48 @@ void Spectrogram::openFile(QString fileName)
     }
 }
 
+void Spectrogram::xyToFreqTime(int x, int y, float *freq, float *time)
+{
+    *freq = labs(x - (fftSize / 2)) * sampleRate / 2 / (float)fftSize;
+    *time = (float)lineToSample(y) / sampleRate;
+}
+
+void Spectrogram::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (deltaDragIsEnabled) {
+        cursorStartX = -1;
+        update();
+    }
+}
+
+void Spectrogram::mouseMoveEvent(QMouseEvent *event)
+{
+    float freq, time;
+    xyToFreqTime(event->x(), event->y(), &freq, &time);
+    emit cursorFrequencyChanged(QString::number(freq) + " Hz");
+    emit cursorTimeChanged(QString::number(time) + " s");
+    if (cursorStartX != -1) {
+        float s_freq, s_time;
+        xyToFreqTime(cursorStartX, cursorStartY, &s_freq, &s_time);
+        emit deltaFrequencyChanged(QString::number(fabs(s_freq - freq)) + " Hz");
+        emit deltaTimeChanged(QString::number(fabs(s_time - time)) + " s");
+        cursorEndX = event->x();
+        cursorEndY = event->y();
+        update();
+    }
+}
+
+void Spectrogram::mousePressEvent(QMouseEvent *event)
+{
+    if (cursorStartX == -1) {
+        cursorEndX = cursorStartX = event->x();
+        cursorEndY = cursorStartY = event->y();
+    } else {
+        cursorStartX = -1;
+    }
+    update();
+}
+
 void Spectrogram::paintEvent(QPaintEvent *event)
 {
     QRect rect = event->rect();
@@ -93,6 +139,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
         }
 
         paintTimeAxis(&painter, rect);
+        paintCursors(&painter, rect);
     }
 }
 
@@ -161,22 +208,39 @@ void Spectrogram::getLine(float *dest, off_t sample)
     }
 }
 
+void Spectrogram::paintCursors(QPainter *painter, QRect rect)
+{
+    if (cursorStartX != -1) {
+        painter->save();
+        QPen pen(Qt::white, 1, Qt::DashLine);
+        painter->setPen(pen);
+        painter->drawLine(rect.left(), cursorStartY, rect.right(), cursorStartY);
+        painter->drawLine(cursorStartX, rect.top(), cursorStartX, rect.bottom());
+        painter->drawLine(rect.left(), cursorEndY, rect.right(), cursorEndY);
+        painter->drawLine(cursorEndX, rect.top(), cursorEndX, rect.bottom());
+        painter->restore();
+
+    }
+}
+
 void Spectrogram::paintTimeAxis(QPainter *painter, QRect rect)
 {
-    // Round up for firstLine and round each to nearest linesPerGraduation
-    int firstLine = ((rect.y() + linesPerGraduation - 1) / linesPerGraduation) * linesPerGraduation;
-    int lastLine = ((rect.y() + rect.height()) / linesPerGraduation) * linesPerGraduation;
+    if (timeScaleIsEnabled) {
+        // Round up for firstLine and round each to nearest linesPerGraduation
+        int firstLine = ((rect.y() + linesPerGraduation - 1) / linesPerGraduation) * linesPerGraduation;
+        int lastLine = ((rect.y() + rect.height()) / linesPerGraduation) * linesPerGraduation;
 
-    painter->save();
-    QPen pen(Qt::white, 1, Qt::SolidLine);
-    painter->setPen(pen);
-    QFontMetrics fm(painter->font());
-    int textOffset = fm.ascent() / 2 - 1;
-    for (int line = firstLine; line <= lastLine; line += linesPerGraduation) {
-        painter->drawLine(0, line, 10, line);
-        painter->drawText(12, line + textOffset, sampleToTime(lineToSample(line)));
+        painter->save();
+        QPen pen(Qt::white, 1, Qt::SolidLine);
+        painter->setPen(pen);
+        QFontMetrics fm(painter->font());
+        int textOffset = fm.ascent() / 2 - 1;
+        for (int line = firstLine; line <= lastLine; line += linesPerGraduation) {
+            painter->drawLine(0, line, 10, line);
+            painter->drawText(12, line + textOffset, sampleToTime(lineToSample(line)));
+        }
+        painter->restore();
     }
-    painter->restore();
 }
 
 void Spectrogram::setSampleRate(int rate)
@@ -218,6 +282,19 @@ void Spectrogram::setZoomLevel(int zoom)
     zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
     resize(fftSize, getHeight());
 }
+
+void Spectrogram::setTimeScaleEnable(int state)
+{
+    timeScaleIsEnabled = (state == Qt::Checked);
+    pixmapCache.clear();
+    update();
+}
+
+void Spectrogram::setDeltaDragEnable(int state)
+{
+    deltaDragIsEnabled = (state == Qt::Checked);
+}
+
 
 int Spectrogram::getHeight()
 {

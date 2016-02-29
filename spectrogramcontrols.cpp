@@ -56,6 +56,26 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     powerMinSlider->setValue(-50);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
+    timeScaleCheckBox = new QCheckBox(widget);
+    timeScaleCheckBox->setCheckState(Qt::Checked);
+    layout->addRow(new QLabel(tr("time overlay:")), timeScaleCheckBox);
+
+    cursorFrequencyLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Cursor frequency:")), cursorFrequencyLabel);
+
+    cursorTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Cursor time:")), cursorTimeLabel);
+
+    deltaDragCheckBox = new QCheckBox(widget);
+    deltaDragCheckBox->setCheckState(Qt::Checked);
+    layout->addRow(new QLabel(tr("Delta dragging:")), deltaDragCheckBox);
+
+    deltaFrequencyLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Delta frequency:")), deltaFrequencyLabel);
+
+    deltaTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Delta time:")), deltaTimeLabel);
+
     widget->setLayout(layout);
     setWidget(widget);
 
