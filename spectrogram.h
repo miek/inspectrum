@@ -23,6 +23,7 @@
 #include <QWidget>
 #include "fft.h"
 #include "inputsource.h"
+#include "plot.h"
 
 #include <memory>
 #include <math.h>
@@ -31,13 +32,18 @@ static const double Tau = M_PI * 2.0;
 
 class TileCacheKey;
 
-class Spectrogram : public QWidget
+class Spectrogram : public Plot
 {
     Q_OBJECT
 
 public:
     Spectrogram();
     ~Spectrogram();
+
+    void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+
     QSize sizeHint() const;
     int getHeight();
     int getStride();
@@ -50,6 +56,7 @@ signals:
     void cursorTimeChanged(QString);
     void deltaFrequencyChanged(QString);
     void deltaTimeChanged(QString);
+    void needUpdate();
 
 public slots:
     void openFile(QString fileName);
@@ -60,6 +67,7 @@ public slots:
     void setZoomLevel(int zoom);
     void setTimeScaleEnable(int state);
     void setDeltaDragEnable(int state);
+    void update() { emit needUpdate(); };
 
 protected:
     void paintEvent(QPaintEvent *event);

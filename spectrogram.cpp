@@ -44,7 +44,6 @@ Spectrogram::Spectrogram()
         colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
     }
 
-    setMouseTracking(true);
 }
 
 Spectrogram::~Spectrogram()
@@ -67,7 +66,7 @@ void Spectrogram::openFile(QString fileName)
             pixmapCache.clear();
             fftCache.clear();
             inputSource = newFile;
-            resize(fftSize, getHeight());
+            setHeight(fftSize);
         } catch (std::runtime_error e) {
             // TODO: display error
         }
@@ -116,7 +115,23 @@ void Spectrogram::mousePressEvent(QMouseEvent *event)
     update();
 }
 
-void Spectrogram::paintEvent(QPaintEvent *event)
+void Spectrogram::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+
+}
+
+void Spectrogram::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+
+}
+
+void Spectrogram::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+
+}
+
+
+/*void Spectrogram::paintEvent(QPaintEvent *event)
 {
     QRect rect = event->rect();
     QPainter painter(this);
@@ -141,7 +156,7 @@ void Spectrogram::paintEvent(QPaintEvent *event)
         paintTimeAxis(&painter, rect);
         paintCursors(&painter, rect);
     }
-}
+}*/
 
 QPixmap* Spectrogram::getPixmapTile(off_t tile)
 {
@@ -260,7 +275,7 @@ void Spectrogram::setFFTSize(int size)
         window[i] = 0.5f * (1.0f - cos(Tau * i / (fftSize - 1)));
     }
 
-    resize(fftSize, getHeight());
+    setHeight(fftSize);
 }
 
 void Spectrogram::setPowerMax(int power)
@@ -280,7 +295,6 @@ void Spectrogram::setPowerMin(int power)
 void Spectrogram::setZoomLevel(int zoom)
 {
     zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
-    resize(fftSize, getHeight());
 }
 
 void Spectrogram::setTimeScaleEnable(int state)

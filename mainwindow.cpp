@@ -26,7 +26,6 @@
 MainWindow::MainWindow()
 {
     setWindowTitle(tr("inspectrum"));
-    scrollArea.setWidget(&spectrogram);
     scrollArea.viewport()->installEventFilter(this);
     setCentralWidget(&scrollArea);
 
