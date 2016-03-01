@@ -27,18 +27,18 @@ MainWindow::MainWindow()
 {
     setWindowTitle(tr("inspectrum"));
     scrollArea.viewport()->installEventFilter(this);
-    setCentralWidget(&scrollArea);
 
     dock = new SpectrogramControls(tr("Controls"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     plots = new PlotView();
-    addDockWidget(Qt::BottomDockWidgetArea, plots);
     connect(this, SIGNAL(viewChanged(off_t, off_t)), plots, SLOT(viewChanged(off_t, off_t)));
     connect(this, SIGNAL(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)),
             plots, SLOT(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)));
     connect(this, SIGNAL(selectionCleared()), plots, SLOT(selectionCleared()));
+    scrollArea.setWidget(plots);
+    setCentralWidget(&scrollArea);
 
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
