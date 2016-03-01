@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "spectrogram.h"
+#include "spectrogramplot.h"
 
 #include <QDebug>
 #include <QElapsedTimer>
@@ -29,7 +29,7 @@
 #include "util.h"
 
 
-Spectrogram::Spectrogram()
+SpectrogramPlot::SpectrogramPlot()
 {
     sampleRate = 8000000;
     setFFTSize(1024);
@@ -46,18 +46,18 @@ Spectrogram::Spectrogram()
 
 }
 
-Spectrogram::~Spectrogram()
+SpectrogramPlot::~SpectrogramPlot()
 {
     delete fft;
     delete inputSource;
 }
 
-QSize Spectrogram::sizeHint() const
+QSize SpectrogramPlot::sizeHint() const
 {
     return QSize(1024, 2048);
 }
 
-void Spectrogram::openFile(QString fileName)
+void SpectrogramPlot::openFile(QString fileName)
 {
     if (fileName != nullptr) {
         try {
@@ -73,13 +73,13 @@ void Spectrogram::openFile(QString fileName)
     }
 }
 
-void Spectrogram::xyToFreqTime(int x, int y, float *freq, float *time)
+void SpectrogramPlot::xyToFreqTime(int x, int y, float *freq, float *time)
 {
     *freq = labs(x - (fftSize / 2)) * sampleRate / 2 / (float)fftSize;
     *time = (float)lineToSample(y) / sampleRate;
 }
 
-void Spectrogram::mouseReleaseEvent(QMouseEvent *event)
+void SpectrogramPlot::mouseReleaseEvent(QMouseEvent *event)
 {
     if (deltaDragIsEnabled) {
         cursorStartX = -1;
@@ -87,7 +87,7 @@ void Spectrogram::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void Spectrogram::mouseMoveEvent(QMouseEvent *event)
+void SpectrogramPlot::mouseMoveEvent(QMouseEvent *event)
 {
     float freq, time;
     xyToFreqTime(event->x(), event->y(), &freq, &time);
@@ -104,7 +104,7 @@ void Spectrogram::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void Spectrogram::mousePressEvent(QMouseEvent *event)
+void SpectrogramPlot::mousePressEvent(QMouseEvent *event)
 {
     if (cursorStartX == -1) {
         cursorEndX = cursorStartX = event->x();
@@ -115,23 +115,23 @@ void Spectrogram::mousePressEvent(QMouseEvent *event)
     update();
 }
 
-void Spectrogram::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void SpectrogramPlot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
 
 }
 
-void Spectrogram::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
 
 }
 
-void Spectrogram::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
 
 }
 
 
-/*void Spectrogram::paintEvent(QPaintEvent *event)
+/*void SpectrogramPlot::paintEvent(QPaintEvent *event)
 {
     QRect rect = event->rect();
     QPainter painter(this);
@@ -158,7 +158,7 @@ void Spectrogram::paintFront(QPainter &painter, QRect &rect, range_t<off_t> samp
     }
 }*/
 
-QPixmap* Spectrogram::getPixmapTile(off_t tile)
+QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
 {
     QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));
     if (obj != 0)
@@ -182,7 +182,7 @@ QPixmap* Spectrogram::getPixmapTile(off_t tile)
     return obj;
 }
 
-float* Spectrogram::getFFTTile(off_t tile)
+float* SpectrogramPlot::getFFTTile(off_t tile)
 {
     float *obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
     if (obj != 0)
@@ -200,7 +200,7 @@ float* Spectrogram::getFFTTile(off_t tile)
     return dest;
 }
 
-void Spectrogram::getLine(float *dest, off_t sample)
+void SpectrogramPlot::getLine(float *dest, off_t sample)
 {
     if (inputSource && fft) {
         auto buffer = inputSource->getSamples(sample, fftSize);
@@ -223,7 +223,7 @@ void Spectrogram::getLine(float *dest, off_t sample)
     }
 }
 
-void Spectrogram::paintCursors(QPainter *painter, QRect rect)
+void SpectrogramPlot::paintCursors(QPainter *painter, QRect rect)
 {
     if (cursorStartX != -1) {
         painter->save();
@@ -238,7 +238,7 @@ void Spectrogram::paintCursors(QPainter *painter, QRect rect)
     }
 }
 
-void Spectrogram::paintTimeAxis(QPainter *painter, QRect rect)
+void SpectrogramPlot::paintTimeAxis(QPainter *painter, QRect rect)
 {
     if (timeScaleIsEnabled) {
         // Round up for firstLine and round each to nearest linesPerGraduation
@@ -258,13 +258,13 @@ void Spectrogram::paintTimeAxis(QPainter *painter, QRect rect)
     }
 }
 
-void Spectrogram::setSampleRate(int rate)
+void SpectrogramPlot::setSampleRate(int rate)
 {
     sampleRate = rate;
     update();
 }
 
-void Spectrogram::setFFTSize(int size)
+void SpectrogramPlot::setFFTSize(int size)
 {
     fftSize = size;
     delete fft;
@@ -278,39 +278,39 @@ void Spectrogram::setFFTSize(int size)
     setHeight(fftSize);
 }
 
-void Spectrogram::setPowerMax(int power)
+void SpectrogramPlot::setPowerMax(int power)
 {
     powerMax = power;
     pixmapCache.clear();
     update();
 }
 
-void Spectrogram::setPowerMin(int power)
+void SpectrogramPlot::setPowerMin(int power)
 {
     powerMin = power;
     pixmapCache.clear();
     update();
 }
 
-void Spectrogram::setZoomLevel(int zoom)
+void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
 }
 
-void Spectrogram::setTimeScaleEnable(int state)
+void SpectrogramPlot::setTimeScaleEnable(int state)
 {
     timeScaleIsEnabled = (state == Qt::Checked);
     pixmapCache.clear();
     update();
 }
 
-void Spectrogram::setDeltaDragEnable(int state)
+void SpectrogramPlot::setDeltaDragEnable(int state)
 {
     deltaDragIsEnabled = (state == Qt::Checked);
 }
 
 
-int Spectrogram::getHeight()
+int SpectrogramPlot::getHeight()
 {
     if (!inputSource)
         return 0;
@@ -318,27 +318,27 @@ int Spectrogram::getHeight()
     return inputSource->count() / getStride();
 }
 
-int Spectrogram::getStride()
+int SpectrogramPlot::getStride()
 {
     return fftSize / pow(2, zoomLevel);
 }
 
-off_t Spectrogram::lineToSample(off_t line)
+off_t SpectrogramPlot::lineToSample(off_t line)
 {
     return line * getStride();
 }
 
-int Spectrogram::sampleToLine(off_t sample)
+int SpectrogramPlot::sampleToLine(off_t sample)
 {
     return sample / getStride();
 }
 
-QString Spectrogram::sampleToTime(off_t sample)
+QString SpectrogramPlot::sampleToTime(off_t sample)
 {
     return QString::number((float)sample / sampleRate).append("s");
 }
 
-int Spectrogram::linesPerTile()
+int SpectrogramPlot::linesPerTile()
 {
     return tileSize / fftSize;
 }

@@ -21,8 +21,8 @@
 
 #include <QMainWindow>
 #include <QScrollArea>
-#include "spectrogram.h"
 #include "spectrogramcontrols.h"
+#include "spectrogramplot.h"
 #include "plotview.h"
 
 class MainWindow : public QMainWindow
@@ -50,7 +50,7 @@ protected:
 
 private:
     QScrollArea scrollArea;
-    Spectrogram spectrogram;
+    SpectrogramPlot spectrogram;
     SpectrogramControls *dock;
     PlotView *plots;
     std::pair<off_t, off_t> selectionTime;

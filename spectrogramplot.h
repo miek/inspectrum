@@ -32,13 +32,13 @@ static const double Tau = M_PI * 2.0;
 
 class TileCacheKey;
 
-class Spectrogram : public Plot
+class SpectrogramPlot : public Plot
 {
     Q_OBJECT
 
 public:
-    Spectrogram();
-    ~Spectrogram();
+    SpectrogramPlot();
+    ~SpectrogramPlot();
 
     void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
