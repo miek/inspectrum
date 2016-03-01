@@ -32,12 +32,7 @@
 
 PlotView::PlotView()
 {
-    for (int i = 0; i < 128; i++) {
-        colormap[i] = qRgb(i/2, i*1.5, i*1.5);
-    }
-    for (int i = 128; i < 256; i++) {
-        colormap[i] = qRgb(64 + (i-128)*1.5, 192+(i-128)/2, 192+(i-128)/2);
-    }
+
 }
 
 void PlotView::refreshSources()

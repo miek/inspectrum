@@ -48,7 +48,6 @@ private:
     bool selection = false;
     std::pair<off_t, off_t> selectionTime;
     std::pair<float, float> selectionFreq;
-    QRgb colormap[255];
 
     void refreshSources();
 };
