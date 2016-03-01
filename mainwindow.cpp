@@ -37,7 +37,10 @@ MainWindow::MainWindow()
     connect(this, SIGNAL(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)),
             plots, SLOT(selectionChanged(std::pair<off_t, off_t>, std::pair<float, float>)));
     connect(this, SIGNAL(selectionCleared()), plots, SLOT(selectionCleared()));
-    scrollArea.setWidget(plots);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(plots);
+    scrollArea.setLayout(layout);
     setCentralWidget(&scrollArea);
 
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
