@@ -30,7 +30,6 @@ class TracePlot : public Plot
 public:
 	TracePlot(std::shared_ptr<AbstractSampleSource> source);
 
-    void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 

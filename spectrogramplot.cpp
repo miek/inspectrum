@@ -115,11 +115,6 @@ void SpectrogramPlot::mousePressEvent(QMouseEvent *event)
     update();
 }
 
-void SpectrogramPlot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
-{
-
-}
-
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
 

@@ -34,6 +34,7 @@ list(APPEND inspectrum_sources
     inputsource.cpp
     memory_sink_impl.cc
     memory_source_impl.cc
+    plot.cpp
     plotview.cpp
     samplebuffer.cpp
     spectrogramcontrols.cpp

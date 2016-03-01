@@ -28,6 +28,7 @@
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
+#include "spectrogramplot.h"
 #include "traceplot.h"
 
 PlotView::PlotView()

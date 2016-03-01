@@ -18,3 +18,12 @@
  */
 
 #include "plot.h"
+
+void Plot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+    painter.save();
+    QPen pen(Qt::white, 1, Qt::DashLine);
+    painter.setPen(pen);
+    painter.drawLine(rect.left(), rect.center().y(), rect.right(), rect.center().y());
+    painter.restore();
+}

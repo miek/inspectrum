@@ -24,11 +24,6 @@ TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : sampleSourc
 
 }
 
-void TracePlot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
-{
-
-}
-
 void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
 	auto firstSample = sampleRange.minimum;
