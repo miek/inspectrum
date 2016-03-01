@@ -30,4 +30,11 @@ public:
     virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) = 0;
     virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) = 0;
     virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) = 0;
+    int height() const { return _height; };
+
+protected:
+    void setHeight(int height) { _height = height; };
+
+private:
+    int _height = 50;
 };

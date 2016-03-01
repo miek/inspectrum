@@ -121,16 +121,14 @@ void PlotView::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.fillRect(rect, Qt::black);
 
-    // Split space equally between waveforms for now
-    int plotHeight = height() / plots.size();
 
 #define PLOT_LAYER(paintFunc)                                                   \
     {                                                                           \
-        int plotCount = 0;                                                      \
+        int y = 0;                                                              \
         for (auto&& plot : plots) {                                             \
-            QRect rect = QRect(0, plotCount * plotHeight, width(), plotHeight); \
+            QRect rect = QRect(0, y, width(), plot->height());                  \
             plot->paintFunc(painter, rect, {firstSample, lastSample});          \
-            plotCount++;                                                        \
+            y += plot->height();                                                \
         }                                                                       \
     }
 
