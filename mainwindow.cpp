@@ -23,7 +23,7 @@
 #include "mainwindow.h"
 #include "util.h"
 
-MainWindow::MainWindow()
+MainWindow::MainWindow() : spectrogram(nullptr)
 {
     setWindowTitle(tr("inspectrum"));
     scrollArea.viewport()->installEventFilter(this);

@@ -40,6 +40,9 @@ void PlotView::refreshSources()
 {
     plots.clear();
 
+    auto sp = new SpectrogramPlot(mainSampleSource);
+    plots.emplace_back(sp);
+
     gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
     auto iq_mem_source = gr::blocks::memory_source::make(8);
     auto iq_mem_sink = gr::blocks::memory_sink::make(8);

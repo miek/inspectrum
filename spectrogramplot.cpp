@@ -29,10 +29,11 @@
 #include "util.h"
 
 
-SpectrogramPlot::SpectrogramPlot()
+SpectrogramPlot::SpectrogramPlot(SampleSource<std::complex<float>> *src)
 {
+    inputSource = src;
     sampleRate = 8000000;
-    setFFTSize(1024);
+    setFFTSize(512);
     zoomLevel = 0;
     powerMax = 0.0f;
     powerMin = -50.0f;
@@ -66,7 +67,6 @@ void SpectrogramPlot::openFile(QString fileName)
             pixmapCache.clear();
             fftCache.clear();
             inputSource = newFile;
-            setHeight(fftSize);
         } catch (std::runtime_error e) {
             // TODO: display error
         }
