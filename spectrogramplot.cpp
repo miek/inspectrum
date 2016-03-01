@@ -117,7 +117,8 @@ void SpectrogramPlot::mousePressEvent(QMouseEvent *event)
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
-
+    QPixmap *tile = getPixmapTile(0);
+    painter.drawPixmap(QRect(rect.x(), rect.y(), linesPerTile(), fftSize), *tile);
 }
 
 void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -160,13 +161,13 @@ QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
         return obj;
 
     float *fftTile = getFFTTile(tile);
-    obj = new QPixmap(fftSize, linesPerTile());
-    QImage image(fftSize, linesPerTile(), QImage::Format_RGB32);
-    for (int y = 0; y < linesPerTile(); y++) {
-        float *line = &fftTile[y * fftSize];
-        for (int x = 0; x < fftSize; x++) {
+    obj = new QPixmap(linesPerTile(), fftSize);
+    QImage image(linesPerTile(), fftSize, QImage::Format_RGB32);
+    for (int x = 0; x < linesPerTile(); x++) {
+        float *line = &fftTile[x * fftSize];
+        for (int y = 0; y < fftSize; y++) {
             float powerRange = std::abs(int(powerMin - powerMax));
-            float normPower = (line[x] - powerMax) * -1.0f / powerRange;
+            float normPower = (line[y] - powerMax) * -1.0f / powerRange;
             normPower = clamp(normPower, 0.0f, 1.0f);
 
             image.setPixel(x, y, colormap[(uint8_t)(normPower * (256 - 1))]);
