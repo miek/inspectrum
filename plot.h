@@ -36,5 +36,6 @@ protected:
     void setHeight(int height) { _height = height; };
 
 private:
-    int _height = 50;
+    // TODO: don't hardcode this
+    int _height = 200;
 };
