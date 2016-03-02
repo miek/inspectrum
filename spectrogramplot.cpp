@@ -117,8 +117,10 @@ void SpectrogramPlot::mousePressEvent(QMouseEvent *event)
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
-    QPixmap *tile = getPixmapTile(0);
-    painter.drawPixmap(QRect(rect.x(), rect.y(), linesPerTile(), fftSize), *tile);
+    for (int x = rect.left(); x < rect.right(); x += linesPerTile()) {
+        QPixmap *tile = getPixmapTile(x * fftSize);
+        painter.drawPixmap(QRect(x, rect.y(), linesPerTile(), fftSize), *tile);
+    }
 }
 
 void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
