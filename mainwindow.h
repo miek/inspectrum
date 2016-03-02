@@ -22,7 +22,6 @@
 #include <QMainWindow>
 #include <QScrollArea>
 #include "spectrogramcontrols.h"
-#include "spectrogramplot.h"
 #include "plotview.h"
 
 class MainWindow : public QMainWindow
@@ -35,30 +34,9 @@ public:
 
 public slots:
     void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setFFTSize(int size);
-    void setZoomLevel(int zoom);
-    void spectrogramSliderMoved(int value);
-
-signals:
-    void viewChanged(off_t firstSample, off_t lastSample);
-    void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
-    void selectionCleared();
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     QScrollArea scrollArea;
-    SpectrogramPlot spectrogram;
     SpectrogramControls *dock;
     PlotView *plots;
-    std::pair<off_t, off_t> selectionTime;
-    std::pair<float, float> selectionFreq;
-
-    void emitViewChanged();
-    off_t getTopSample();
-    off_t getCenterSample();
-    off_t getBottomSample();
-    int getScrollPos(off_t sample);
 };

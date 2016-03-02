@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
             fputs("ERROR: could not parse rate\n", stderr);
             return 1;
         }
-        mainWin.changeSampleRate(rate);
+        // TODO: set sample rate
     }
 
     const QStringList args = parser.positionalArguments();
