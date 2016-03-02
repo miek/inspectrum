@@ -26,17 +26,13 @@
 MainWindow::MainWindow()
 {
     setWindowTitle(tr("inspectrum"));
-    scrollArea.viewport()->installEventFilter(this);
 
     dock = new SpectrogramControls(tr("Controls"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     plots = new PlotView();
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(plots);
-    scrollArea.setLayout(layout);
-    setCentralWidget(&scrollArea);
+    setCentralWidget(plots);
 }
 
 void MainWindow::openFile(QString fileName)

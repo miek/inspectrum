@@ -33,7 +33,7 @@
 
 PlotView::PlotView()
 {
-
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 }
 
 void PlotView::refreshSources()
@@ -117,7 +117,7 @@ void PlotView::paintEvent(QPaintEvent *event)
     if (lastSample - firstSample <= 0) return;
 
     QRect rect = QRect(0, 0, width(), height());
-    QPainter painter(this);
+    QPainter painter(viewport());
     painter.fillRect(rect, Qt::black);
 
 

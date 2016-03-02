@@ -36,7 +36,6 @@ public slots:
     void openFile(QString fileName);
 
 private:
-    QScrollArea scrollArea;
     SpectrogramControls *dock;
     PlotView *plots;
 };

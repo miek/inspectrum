@@ -19,12 +19,12 @@
 
 #pragma once
 
-#include <QDockWidget>
+#include <QAbstractScrollArea>
 #include <QPaintEvent>
 #include "inputsource.h"
 #include "plot.h"
 
-class PlotView : public QDockWidget
+class PlotView : public QAbstractScrollArea
 {
     Q_OBJECT
 
