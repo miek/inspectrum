@@ -20,6 +20,7 @@
 #include "plotview.h"
 #include <QDebug>
 #include <QPainter>
+#include <QScrollBar>
 #include <gnuradio/top_block.h>
 #include <gnuradio/analog/quadrature_demod_cf.h>
 #include <gnuradio/blocks/multiply_const_cc.h>
@@ -89,13 +90,9 @@ void PlotView::inputSourceChanged(AbstractSampleSource *src)
 
     mainSampleSource = derived;
     refreshSources();
-}
 
-void PlotView::viewChanged(off_t firstSample, off_t lastSample)
-{
-    this->firstSample = firstSample;
-    this->lastSample = lastSample;
-    update();
+    horizontalScrollBar()->setMinimum(0);
+    horizontalScrollBar()->setMaximum(mainSampleSource->count());
 }
 
 void PlotView::selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq)
@@ -114,7 +111,10 @@ void PlotView::selectionCleared()
 
 void PlotView::paintEvent(QPaintEvent *event)
 {
-    if (lastSample - firstSample <= 0) return;
+    if (mainSampleSource == nullptr) return;
+    off_t firstSample = horizontalScrollBar()->value();
+    // TODO: don't hardcode width
+    off_t lastSample = firstSample + 10240;
 
     QRect rect = QRect(0, 0, width(), height());
     QPainter painter(viewport());

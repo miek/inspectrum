@@ -33,7 +33,6 @@ public:
 
 public slots:
     void inputSourceChanged(AbstractSampleSource *input);
-    void viewChanged(off_t firstSample, off_t lastSample);
     void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
     void selectionCleared();
 
@@ -43,8 +42,6 @@ protected:
 private:
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
-    off_t firstSample = 0;
-    off_t lastSample = 0;
     bool selection = false;
     std::pair<off_t, off_t> selectionTime;
     std::pair<float, float> selectionFreq;

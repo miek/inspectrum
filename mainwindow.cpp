@@ -41,6 +41,4 @@ void MainWindow::openFile(QString fileName)
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
     // TODO: error check, ownership
     plots->inputSourceChanged(new InputSource(fileName.toUtf8().constData()));
-    // TODO: don't hardcode this
-    plots->viewChanged(0, 102400);
 }
