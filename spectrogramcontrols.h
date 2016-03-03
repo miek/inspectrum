@@ -33,6 +33,7 @@ class SpectrogramControls : public QDockWidget
 
 public:
     SpectrogramControls(const QString & title, QWidget * parent);
+    void setDefaults();
 
 signals:
     void fftSizeChanged(int size);

@@ -42,22 +42,18 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     fftSizeSlider = new QSlider(Qt::Horizontal, widget);
     fftSizeSlider->setRange(7, 13);
-    fftSizeSlider->setValue(10);
     layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
     zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
     zoomLevelSlider->setRange(0, 10);
-    zoomLevelSlider->setValue(0);
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
     powerMaxSlider->setRange(-100, 20);
-    powerMaxSlider->setValue(0);
     layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
 
     powerMinSlider = new QSlider(Qt::Horizontal, widget);
     powerMinSlider->setRange(-100, 20);
-    powerMinSlider->setValue(-50);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
     // Pointer position info
@@ -75,11 +71,9 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("<b>Selection</b>")));
 
     cursorsCheckBox = new QCheckBox(widget);
-    cursorsCheckBox->setCheckState(Qt::Unchecked);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
 
     deltaDragCheckBox = new QCheckBox(widget);
-    deltaDragCheckBox->setCheckState(Qt::Checked);
     layout->addRow(new QLabel(tr("Delta dragging:")), deltaDragCheckBox);
 
     deltaFrequencyLabel = new QLabel();
@@ -93,6 +87,16 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeSliderChanged(int)));
     connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
+}
+
+void SpectrogramControls::setDefaults()
+{
+    fftSizeSlider->setValue(9);
+    zoomLevelSlider->setValue(0);
+    powerMaxSlider->setValue(0);
+    powerMinSlider->setValue(-50);
+    cursorsCheckBox->setCheckState(Qt::Unchecked);
+    deltaDragCheckBox->setCheckState(Qt::Checked);
 }
 
 void SpectrogramControls::fftSizeSliderChanged(int size)
