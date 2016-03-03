@@ -58,7 +58,6 @@ signals:
     void needUpdate();
 
 public slots:
-    void openFile(QString fileName);
     void setSampleRate(int rate);
     void setFFTSize(int size);
     void setPowerMax(int power);

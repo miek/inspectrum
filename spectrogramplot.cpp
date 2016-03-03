@@ -58,21 +58,6 @@ QSize SpectrogramPlot::sizeHint() const
     return QSize(1024, 2048);
 }
 
-void SpectrogramPlot::openFile(QString fileName)
-{
-    if (fileName != nullptr) {
-        try {
-            InputSource *newFile = new InputSource(fileName.toUtf8().constData());
-            delete inputSource;
-            pixmapCache.clear();
-            fftCache.clear();
-            inputSource = newFile;
-        } catch (std::runtime_error e) {
-            // TODO: display error
-        }
-    }
-}
-
 void SpectrogramPlot::xyToFreqTime(int x, int y, float *freq, float *time)
 {
     *freq = labs(x - (fftSize / 2)) * sampleRate / 2 / (float)fftSize;
