@@ -29,7 +29,6 @@
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
-#include "spectrogramplot.h"
 #include "traceplot.h"
 
 PlotView::PlotView()
@@ -41,16 +40,16 @@ void PlotView::refreshSources()
 {
     plots.clear();
 
-    auto sp = new SpectrogramPlot(mainSampleSource);
-    plots.emplace_back(sp);
+    spectrogramPlot = new SpectrogramPlot(mainSampleSource);
+    plots.emplace_back(spectrogramPlot);
 
     gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
     auto iq_mem_source = gr::blocks::memory_source::make(8);
     auto iq_mem_sink = gr::blocks::memory_sink::make(8);
     auto multiply = gr::blocks::multiply_const_cc::make(20);
-    if (selection) {
-        float centre = (selectionFreq.first + selectionFreq.second) / 2;
-        float cutoff = std::abs(selectionFreq.first - centre);
+    if (selection || true) {
+        float centre = -0.05; //(selectionFreq.first + selectionFreq.second) / 2;
+        float cutoff = 0.02; //std::abs(selectionFreq.first - centre);
         auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
         auto filter = gr::filter::freq_xlating_fir_filter_ccf::make(1, lp_taps, centre, 1.0);
 
@@ -109,12 +108,19 @@ void PlotView::selectionCleared()
     refreshSources();
 }
 
+void PlotView::setFFTSize(int size)
+{
+    fftSize = size;
+    spectrogramPlot->setFFTSize(size);
+    viewport()->update();
+}
+
 void PlotView::paintEvent(QPaintEvent *event)
 {
     if (mainSampleSource == nullptr) return;
     off_t firstSample = horizontalScrollBar()->value();
     // TODO: don't hardcode width
-    off_t lastSample = firstSample + 10240;
+    off_t lastSample = firstSample + fftSize * width();
 
     QRect rect = QRect(0, 0, width(), height());
     QPainter painter(viewport());

@@ -23,6 +23,7 @@
 #include <QPaintEvent>
 #include "inputsource.h"
 #include "plot.h"
+#include "spectrogramplot.h"
 
 class PlotView : public QAbstractScrollArea
 {
@@ -35,16 +36,20 @@ public slots:
     void inputSourceChanged(AbstractSampleSource *input);
     void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
     void selectionCleared();
+    void setFFTSize(int size);
 
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
+    SpectrogramPlot *spectrogramPlot;
     std::vector<std::unique_ptr<Plot>> plots;
     bool selection = false;
     std::pair<off_t, off_t> selectionTime;
     std::pair<float, float> selectionFreq;
+
+    int fftSize;
 
     void refreshSources();
 };

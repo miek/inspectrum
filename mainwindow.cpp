@@ -33,6 +33,8 @@ MainWindow::MainWindow()
 
     plots = new PlotView();
     setCentralWidget(plots);
+
+    connect(dock, SIGNAL(fftSizeChanged(int)), plots, SLOT(setFFTSize(int)));
 }
 
 void MainWindow::openFile(QString fileName)
