@@ -112,8 +112,8 @@ void PlotView::setFFTSize(int size)
 {
     fftSize = size;
     spectrogramPlot->setFFTSize(size);
-    horizontalScrollBar()->setSingleStep(size * pow(2, zoomLevel));
-    horizontalScrollBar()->setPageStep(size * pow(2, zoomLevel) * 10);
+    horizontalScrollBar()->setSingleStep(size * 10 / pow(2, zoomLevel));
+    horizontalScrollBar()->setPageStep(size * 100 / pow(2, zoomLevel));
     viewport()->update();
 }
 
