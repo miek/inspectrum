@@ -38,6 +38,7 @@ list(APPEND inspectrum_sources
     plot.cpp
     plotview.cpp
     samplebuffer.cpp
+    samplesource.cpp
     spectrogramcontrols.cpp
     spectrogramplot.cpp
     traceplot.cpp

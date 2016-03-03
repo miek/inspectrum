@@ -21,7 +21,9 @@
 
 #include <complex>
 #include <memory>
+#include <set>
 #include "abstractsamplesource.h"
+#include "subscriber.h"
 
 template<typename T>
 class SampleSource : public AbstractSampleSource
@@ -31,5 +33,14 @@ public:
     virtual ~SampleSource() {};
 
     virtual std::unique_ptr<T[]> getSamples(off_t start, off_t length) = 0;
+    virtual void invalidateEvent() { };
     virtual off_t count() = 0;
+    void subscribe(Subscriber *subscriber);
+    void unsubscribe(Subscriber *subscriber);
+
+protected:
+	virtual void invalidate();
+
+private:
+	std::set<Subscriber*> subscribers;
 };

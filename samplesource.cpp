@@ -17,24 +17,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include <complex>
-#include <memory>
 #include "samplesource.h"
 
-template <typename Tin, typename Tout>
-class SampleBuffer : public SampleSource<Tout>, public Subscriber
+template<typename T>
+void SampleSource<T>::subscribe(Subscriber *subscriber)
 {
-private:
-    SampleSource<Tin> *src;
+	subscribers.insert(subscriber);
+}
 
-public:
-    SampleBuffer(SampleSource<Tin> *src);
-	void invalidEvent();
-    virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
-    virtual void work(void *input, void *output, int count) = 0;
-    virtual off_t count() {
-        return src->count();
-    };
-};
+template<typename T>
+void SampleSource<T>::invalidate()
+{
+	for (auto subscriber : subscribers) {
+		subscriber->invalidateEvent();
+	}
+}
+
+template<typename T>
+void SampleSource<T>::unsubscribe(Subscriber *subscriber)
+{
+	subscribers.erase(subscriber);
+}
+
+template class SampleSource<std::complex<float>>;
+template class SampleSource<float>;

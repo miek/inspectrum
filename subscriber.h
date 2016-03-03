@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -19,22 +19,9 @@
 
 #pragma once
 
-#include <complex>
-#include <memory>
-#include "samplesource.h"
 
-template <typename Tin, typename Tout>
-class SampleBuffer : public SampleSource<Tout>, public Subscriber
+class Subscriber
 {
-private:
-    SampleSource<Tin> *src;
-
 public:
-    SampleBuffer(SampleSource<Tin> *src);
-	void invalidEvent();
-    virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
-    virtual void work(void *input, void *output, int count) = 0;
-    virtual off_t count() {
-        return src->count();
-    };
+    virtual void invalidateEvent() = 0;
 };

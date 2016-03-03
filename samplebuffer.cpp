@@ -20,12 +20,24 @@
 #include "samplebuffer.h"
 
 template <typename Tin, typename Tout>
+SampleBuffer<Tin, Tout>::SampleBuffer(SampleSource<Tin> *src) : src(src)
+{
+	src->subscribe(this);
+}
+
+template <typename Tin, typename Tout>
 std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
 {
     auto samples = src->getSamples(start, length);
     std::unique_ptr<Tout[]> dest(new Tout[length]);
     work(samples.get(), dest.get(), length);
     return dest;
+}
+
+template <typename Tin, typename Tout>
+void SampleBuffer<Tin, Tout>::invalidEvent()
+{
+	SampleSource<Tout>::invalidate();
 }
 
 template class SampleBuffer<std::complex<float>, std::complex<float>>;
