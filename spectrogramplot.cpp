@@ -128,34 +128,6 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> 
 
 }
 
-
-/*void SpectrogramPlot::paintEvent(QPaintEvent *event)
-{
-    QRect rect = event->rect();
-    QPainter painter(this);
-    painter.fillRect(rect, Qt::black);
-
-    if (inputSource != nullptr) {
-        int height = rect.height();
-        off_t y = rect.y();
-
-        QImage image(fftSize, height, QImage::Format_RGB32);
-
-        while (height > 0) {
-            int tileOffset = y % linesPerTile(); // To handle drawing a partial first tile
-            int drawHeight = std::min(linesPerTile() - tileOffset, height); // Draw rest of first tile, full tile, or partial final tile
-            off_t tileId = lineToSample(y - tileOffset);
-            QPixmap *tile = getPixmapTile(tileId);
-            painter.drawPixmap(QRect(0, y, fftSize, drawHeight), *tile, QRect(0, tileOffset, fftSize, drawHeight));
-            y += drawHeight;
-            height -= drawHeight;
-        }
-
-        paintTimeAxis(&painter, rect);
-        paintCursors(&painter, rect);
-    }
-}*/
-
 QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
 {
     QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));
@@ -233,26 +205,6 @@ void SpectrogramPlot::paintCursors(QPainter *painter, QRect rect)
         painter->drawLine(cursorEndX, rect.top(), cursorEndX, rect.bottom());
         painter->restore();
 
-    }
-}
-
-void SpectrogramPlot::paintTimeAxis(QPainter *painter, QRect rect)
-{
-    if (timeScaleIsEnabled) {
-        // Round up for firstLine and round each to nearest linesPerGraduation
-        int firstLine = ((rect.y() + linesPerGraduation - 1) / linesPerGraduation) * linesPerGraduation;
-        int lastLine = ((rect.y() + rect.height()) / linesPerGraduation) * linesPerGraduation;
-
-        painter->save();
-        QPen pen(Qt::white, 1, Qt::SolidLine);
-        painter->setPen(pen);
-        QFontMetrics fm(painter->font());
-        int textOffset = fm.ascent() / 2 - 1;
-        for (int line = firstLine; line <= lastLine; line += linesPerGraduation) {
-            painter->drawLine(0, line, 10, line);
-            painter->drawText(12, line + textOffset, sampleToTime(lineToSample(line)));
-        }
-        painter->restore();
     }
 }
 

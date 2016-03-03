@@ -69,7 +69,6 @@ public slots:
     void update() { emit needUpdate(); };
 
 protected:
-    void paintEvent(QPaintEvent *event);
     void mouseReleaseEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
     void mousePressEvent(QMouseEvent * event);
@@ -99,7 +98,6 @@ private:
     QPixmap* getPixmapTile(off_t tile);
     float* getFFTTile(off_t tile);
     void getLine(float *dest, off_t sample);
-    void paintTimeAxis(QPainter *painter, QRect rect);
     void paintCursors(QPainter *painter, QRect rect);
     int sampleToLine(off_t sample);
     QString sampleToTime(off_t sample);
