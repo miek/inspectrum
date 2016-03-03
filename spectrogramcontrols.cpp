@@ -36,6 +36,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     sampleRate->setValidator(new QIntValidator(this));
     layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
+    // Spectrogram settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
+
     fftSizeSlider = new QSlider(Qt::Horizontal, widget);
     fftSizeSlider->setRange(7, 13);
     fftSizeSlider->setValue(10);
@@ -56,15 +60,23 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     powerMinSlider->setValue(-50);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
+    // Pointer position info
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Pointer</b>")));
+
+    pointerFrequencyLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Pointer frequency:")), pointerFrequencyLabel);
+
+    pointerTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Pointer time:")), pointerTimeLabel);
+
+    // Selection settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Selection</b>")));
+
     cursorsCheckBox = new QCheckBox(widget);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
-
-    cursorFrequencyLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Cursor frequency:")), cursorFrequencyLabel);
-
-    cursorTimeLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Cursor time:")), cursorTimeLabel);
 
     deltaDragCheckBox = new QCheckBox(widget);
     deltaDragCheckBox->setCheckState(Qt::Checked);

@@ -53,8 +53,8 @@ public:
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
     QCheckBox *cursorsCheckBox;
-    QLabel *cursorFrequencyLabel;
-    QLabel *cursorTimeLabel;
+    QLabel *pointerFrequencyLabel;
+    QLabel *pointerTimeLabel;
     QCheckBox *deltaDragCheckBox;
     QLabel *deltaFrequencyLabel;
     QLabel *deltaTimeLabel;
