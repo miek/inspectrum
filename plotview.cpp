@@ -31,9 +31,10 @@
 #include "memory_source.h"
 #include "traceplot.h"
 
-PlotView::PlotView()
+PlotView::PlotView() : cursors(this)
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    enableCursors(false);
 }
 
 void PlotView::refreshSources()
@@ -79,6 +80,14 @@ void PlotView::refreshSources()
         )
     );
     update();
+}
+
+void PlotView::enableCursors(bool enabled)
+{
+    if (enabled)
+        cursors.show();
+    else
+        cursors.hide();
 }
 
 void PlotView::inputSourceChanged(AbstractSampleSource *src)
@@ -150,4 +159,14 @@ void PlotView::paintEvent(QPaintEvent *event)
     PLOT_LAYER(paintFront);
 
 #undef PLOT_LAYER
+}
+
+void PlotView::resizeEvent(QResizeEvent * event)
+{
+    QRect rect = viewport()->rect();
+
+    // Resize cursors
+    // TODO: don't hardcode this
+    int margin = rect.width() / 3;
+    cursors.setGeometry(QRect(rect.left() + margin, rect.top(), rect.right() - rect.left() - 2 * margin, rect.height()));
 }

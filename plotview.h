@@ -21,6 +21,8 @@
 
 #include <QAbstractScrollArea>
 #include <QPaintEvent>
+
+#include "cursors.h"
 #include "inputsource.h"
 #include "plot.h"
 #include "spectrogramplot.h"
@@ -33,6 +35,7 @@ public:
     PlotView();
 
 public slots:
+    void enableCursors(bool enable);
     void inputSourceChanged(AbstractSampleSource *input);
     void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
     void selectionCleared();
@@ -41,8 +44,10 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *event);
+    void resizeEvent(QResizeEvent * event);
 
 private:
+    Cursors cursors;
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     SpectrogramPlot *spectrogramPlot;
     std::vector<std::unique_ptr<Plot>> plots;

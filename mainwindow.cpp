@@ -36,6 +36,7 @@ MainWindow::MainWindow()
 
     connect(dock, SIGNAL(fftSizeChanged(int)), plots, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), plots, SLOT(setZoomLevel(int)));
+    connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
 }
 
 void MainWindow::openFile(QString fileName)
