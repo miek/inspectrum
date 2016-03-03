@@ -52,7 +52,7 @@ public:
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
-    QCheckBox *timeScaleCheckBox;
+    QCheckBox *cursorsCheckBox;
     QLabel *cursorFrequencyLabel;
     QLabel *cursorTimeLabel;
     QCheckBox *deltaDragCheckBox;

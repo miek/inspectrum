@@ -56,6 +56,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     powerMinSlider->setValue(-50);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
+    cursorsCheckBox = new QCheckBox(widget);
+    cursorsCheckBox->setCheckState(Qt::Unchecked);
+    layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
+
     cursorFrequencyLabel = new QLabel();
     layout->addRow(new QLabel(tr("Cursor frequency:")), cursorFrequencyLabel);
 
