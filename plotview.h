@@ -43,6 +43,8 @@ public slots:
     void selectionCleared();
     void setFFTSize(int size);
     void setZoomLevel(int zoom);
+    void setPowerMin(int power);
+    void setPowerMax(int power);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -62,6 +64,8 @@ private:
 
     int fftSize;
     int zoomLevel;
+    int powerMin;
+    int powerMax;
 
     TracePlot* createIQPlot(SampleSource<std::complex<float>> *src);
     TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);

@@ -130,6 +130,22 @@ void PlotView::setZoomLevel(int zoom)
     updateView();
 }
 
+void PlotView::setPowerMin(int power)
+{
+    powerMin = power;
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setPowerMin(power);
+    updateView();
+}
+
+void PlotView::setPowerMax(int power)
+{
+    powerMax = power;
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setPowerMax(power);
+    updateView();
+}
+
 void PlotView::paintEvent(QPaintEvent *event)
 {
     if (mainSampleSource == nullptr) return;
