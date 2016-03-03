@@ -35,6 +35,7 @@ MainWindow::MainWindow()
     setCentralWidget(plots);
 
     connect(dock, SIGNAL(fftSizeChanged(int)), plots, SLOT(setFFTSize(int)));
+    connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), plots, SLOT(setZoomLevel(int)));
 }
 
 void MainWindow::openFile(QString fileName)

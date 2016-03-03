@@ -37,6 +37,7 @@ public slots:
     void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
     void selectionCleared();
     void setFFTSize(int size);
+    void setZoomLevel(int zoom);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -50,6 +51,7 @@ private:
     std::pair<float, float> selectionFreq;
 
     int fftSize;
+    int zoomLevel;
 
     void refreshSources();
 };

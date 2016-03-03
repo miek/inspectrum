@@ -112,6 +112,15 @@ void PlotView::setFFTSize(int size)
 {
     fftSize = size;
     spectrogramPlot->setFFTSize(size);
+    horizontalScrollBar()->setSingleStep(size * pow(2, zoomLevel));
+    horizontalScrollBar()->setPageStep(size * pow(2, zoomLevel) * 10);
+    viewport()->update();
+}
+
+void PlotView::setZoomLevel(int zoom)
+{
+    zoomLevel = zoom;
+    spectrogramPlot->setZoomLevel(zoom);
     viewport()->update();
 }
 
@@ -119,8 +128,7 @@ void PlotView::paintEvent(QPaintEvent *event)
 {
     if (mainSampleSource == nullptr) return;
     off_t firstSample = horizontalScrollBar()->value();
-    // TODO: don't hardcode width
-    off_t lastSample = firstSample + fftSize * width();
+    off_t lastSample = firstSample + fftSize * width() / pow(2, zoomLevel);
 
     QRect rect = QRect(0, 0, width(), height());
     QPainter painter(viewport());
