@@ -36,6 +36,7 @@ MainWindow::MainWindow()
     plots = new PlotView(input);
     setCentralWidget(plots);
 
+    connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock, SIGNAL(fftSizeChanged(int)), plots, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), plots, SLOT(setZoomLevel(int)));
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
