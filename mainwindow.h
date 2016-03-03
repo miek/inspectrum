@@ -38,4 +38,5 @@ public slots:
 private:
     SpectrogramControls *dock;
     PlotView *plots;
+    InputSource *input;
 };

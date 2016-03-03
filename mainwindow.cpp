@@ -31,7 +31,7 @@ MainWindow::MainWindow()
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
-    InputSource *input = new InputSource();
+    input = new InputSource();
 
     plots = new PlotView(input);
     setCentralWidget(plots);
@@ -45,5 +45,5 @@ void MainWindow::openFile(QString fileName)
 {
     QString title="%1: %2";
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
-    // TODO: open a file again
+    input->openFile(fileName.toUtf8().constData());
 }

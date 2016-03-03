@@ -71,6 +71,8 @@ void InputSource::openFile(const char *filename)
     inputFile = file;
     fileSize = size;
     mmapData = data;
+
+    invalidate();
 }
 
 std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_t length)

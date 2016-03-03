@@ -36,6 +36,8 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
+
+    mainSampleSource->subscribe(this);
 }
 
 void PlotView::refreshSources()
@@ -93,13 +95,8 @@ void PlotView::enableCursors(bool enabled)
         cursors.hide();
 }
 
-void PlotView::inputSourceChanged(AbstractSampleSource *src)
+void PlotView::invalidateEvent()
 {
-    auto derived = dynamic_cast<SampleSource<std::complex<float>>*>(src);
-    if (derived == nullptr)
-        throw new std::runtime_error("SampleSource doesn't provide correct type for GRSampleBuffer");
-
-    mainSampleSource = derived;
     refreshSources();
 
     horizontalScrollBar()->setMinimum(0);

@@ -27,7 +27,7 @@
 #include "plot.h"
 #include "spectrogramplot.h"
 
-class PlotView : public QAbstractScrollArea
+class PlotView : public QAbstractScrollArea, Subscriber
 {
     Q_OBJECT
 
@@ -36,7 +36,7 @@ public:
 
 public slots:
     void enableCursors(bool enable);
-    void inputSourceChanged(AbstractSampleSource *input);
+    void invalidateEvent();
     void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
     void selectionCleared();
     void setFFTSize(int size);
