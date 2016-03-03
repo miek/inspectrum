@@ -29,6 +29,9 @@ template <typename Tin, typename Tout>
 std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
 {
     auto samples = src->getSamples(start, length);
+    if (samples == nullptr)
+    	return nullptr;
+
     std::unique_ptr<Tout[]> dest(new Tout[length]);
     work(samples.get(), dest.get(), length);
     return dest;

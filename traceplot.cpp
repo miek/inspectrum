@@ -32,6 +32,9 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
 	// Is it a 2-channel (complex) trace?
     if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource.get())) {
         auto samples = src->getSamples(firstSample, length);
+        if (samples == nullptr)
+            return;
+
         painter.setPen(Qt::red);
         plotTrace(painter, rect, reinterpret_cast<float*>(samples.get()), length, 2);
         painter.setPen(Qt::blue);
@@ -40,6 +43,9 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     // Otherwise is it single channel?
     } else if (auto src = dynamic_cast<SampleSource<float>*>(sampleSource.get())) {
         auto samples = src->getSamples(firstSample, length);
+        if (samples == nullptr)
+            return;
+
         painter.setPen(Qt::green);
         plotTrace(painter, rect, samples.get(), length, 1);
     } else {
