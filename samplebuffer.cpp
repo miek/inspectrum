@@ -35,7 +35,7 @@ std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t l
 }
 
 template <typename Tin, typename Tout>
-void SampleBuffer<Tin, Tout>::invalidEvent()
+void SampleBuffer<Tin, Tout>::invalidateEvent()
 {
 	SampleSource<Tout>::invalidate();
 }
