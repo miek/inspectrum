@@ -45,12 +45,14 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent * event);
+    void scrollContentsBy(int dx, int dy);
 
 private:
     Cursors cursors;
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
-    SpectrogramPlot *spectrogramPlot;
+    SpectrogramPlot *spectrogramPlot = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
+    std::pair<off_t, off_t> viewRange;
     bool selection = false;
     std::pair<off_t, off_t> selectionTime;
     std::pair<float, float> selectionFreq;
@@ -59,4 +61,5 @@ private:
     int zoomLevel;
 
     void refreshSources();
+    void updateView();
 };

@@ -31,7 +31,7 @@
 #include "memory_source.h"
 #include "traceplot.h"
 
-PlotView::PlotView() : cursors(this)
+PlotView::PlotView() : cursors(this), viewRange({0, 0})
 {
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
@@ -40,6 +40,8 @@ PlotView::PlotView() : cursors(this)
 void PlotView::refreshSources()
 {
     plots.clear();
+    if (mainSampleSource == nullptr)
+        return;
 
     spectrogramPlot = new SpectrogramPlot(mainSampleSource);
     plots.emplace_back(spectrogramPlot);
@@ -120,24 +122,24 @@ void PlotView::selectionCleared()
 void PlotView::setFFTSize(int size)
 {
     fftSize = size;
-    spectrogramPlot->setFFTSize(size);
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setFFTSize(size);
     horizontalScrollBar()->setSingleStep(size * 10 / pow(2, zoomLevel));
     horizontalScrollBar()->setPageStep(size * 100 / pow(2, zoomLevel));
-    viewport()->update();
+    updateView();
 }
 
 void PlotView::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;
-    spectrogramPlot->setZoomLevel(zoom);
-    viewport()->update();
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setZoomLevel(zoom);
+    updateView();
 }
 
 void PlotView::paintEvent(QPaintEvent *event)
 {
     if (mainSampleSource == nullptr) return;
-    off_t firstSample = horizontalScrollBar()->value();
-    off_t lastSample = firstSample + fftSize * width() / pow(2, zoomLevel);
 
     QRect rect = QRect(0, 0, width(), height());
     QPainter painter(viewport());
@@ -149,7 +151,7 @@ void PlotView::paintEvent(QPaintEvent *event)
         int y = 0;                                                              \
         for (auto&& plot : plots) {                                             \
             QRect rect = QRect(0, y, width(), plot->height());                  \
-            plot->paintFunc(painter, rect, {firstSample, lastSample});          \
+            plot->paintFunc(painter, rect, {viewRange.first, viewRange.second});\
             y += plot->height();                                                \
         }                                                                       \
     }
@@ -169,4 +171,20 @@ void PlotView::resizeEvent(QResizeEvent * event)
     // TODO: don't hardcode this
     int margin = rect.width() / 3;
     cursors.setGeometry(QRect(rect.left() + margin, rect.top(), rect.right() - rect.left() - 2 * margin, rect.height()));
+
+    updateView();
+}
+
+void PlotView::scrollContentsBy(int dx, int dy)
+{
+    updateView();
+}
+
+void PlotView::updateView()
+{
+    viewRange = {
+        horizontalScrollBar()->value(),
+        horizontalScrollBar()->value() + fftSize * width() / (int)pow(2, zoomLevel)
+    };
+    viewport()->update();
 }
