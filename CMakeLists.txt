@@ -27,6 +27,7 @@ endif (NOT CMAKE_CXX_FLAGS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 list(APPEND inspectrum_sources 
+    cursors.cpp
     main.cpp
     fft.cpp
     mainwindow.cpp
