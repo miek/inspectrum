@@ -29,7 +29,6 @@
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
-#include "traceplot.h"
 
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 {
@@ -37,18 +36,18 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
 
-    mainSampleSource->subscribe(this);
-}
-
-void PlotView::refreshSources()
-{
-    plots.clear();
-    if (mainSampleSource == nullptr)
-        return;
-
     spectrogramPlot = new SpectrogramPlot(mainSampleSource);
     plots.emplace_back(spectrogramPlot);
 
+    iqPlot = createIQPlot(mainSampleSource);
+    plots.emplace_back(iqPlot);
+    plots.emplace_back(createQuadratureDemodPlot(static_cast<SampleSource<std::complex<float>>*>(iqPlot->source().get())));
+
+    mainSampleSource->subscribe(this);
+}
+
+TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)
+{
     gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
     auto iq_mem_source = gr::blocks::memory_source::make(8);
     auto iq_mem_sink = gr::blocks::memory_sink::make(8);
@@ -67,6 +66,12 @@ void PlotView::refreshSources()
         iq_tb->connect(multiply, 0, iq_mem_sink, 0);
     }
 
+    auto iq_src = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(mainSampleSource, iq_tb, iq_mem_source, iq_mem_sink);
+    return new TracePlot(iq_src);
+}
+
+TracePlot* PlotView::createQuadratureDemodPlot(SampleSource<std::complex<float>> *src)
+{
     gr::top_block_sptr quad_demod_tb = gr::make_top_block("quad_demod");
     auto quad_demod_mem_source = gr::blocks::memory_source::make(8);
     auto quad_demod_mem_sink = gr::blocks::memory_sink::make(4);
@@ -74,17 +79,11 @@ void PlotView::refreshSources()
     quad_demod_tb->connect(quad_demod_mem_source, 0, quad_demod, 0);
     quad_demod_tb->connect(quad_demod, 0, quad_demod_mem_sink, 0);
 
-    auto iq_src = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(mainSampleSource, iq_tb, iq_mem_source, iq_mem_sink);
-    plots.emplace_back(new TracePlot(iq_src));
-
-    plots.emplace_back(
-        new TracePlot(
-            std::make_shared<GRSampleBuffer<std::complex<float>, float>>(
-                dynamic_cast<SampleSource<std::complex<float>>*>(iq_src.get()), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink
-            )
+    return new TracePlot(
+        std::make_shared<GRSampleBuffer<std::complex<float>, float>>(
+            dynamic_cast<SampleSource<std::complex<float>>*>(src), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink
         )
     );
-    update();
 }
 
 void PlotView::enableCursors(bool enabled)
@@ -97,8 +96,6 @@ void PlotView::enableCursors(bool enabled)
 
 void PlotView::invalidateEvent()
 {
-    refreshSources();
-
     horizontalScrollBar()->setMinimum(0);
     horizontalScrollBar()->setMaximum(mainSampleSource->count());
 }
@@ -108,13 +105,11 @@ void PlotView::selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair
     this->selectionTime = selectionTime;
     this->selectionFreq = selectionFreq;
     selection = true;
-    refreshSources();
 }
 
 void PlotView::selectionCleared()
 {
     selection = false;
-    refreshSources();
 }
 
 void PlotView::setFFTSize(int size)

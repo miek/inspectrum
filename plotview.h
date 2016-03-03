@@ -25,7 +25,9 @@
 #include "cursors.h"
 #include "inputsource.h"
 #include "plot.h"
+#include "samplesource.h"
 #include "spectrogramplot.h"
+#include "traceplot.h"
 
 class PlotView : public QAbstractScrollArea, Subscriber
 {
@@ -51,6 +53,7 @@ private:
     Cursors cursors;
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     SpectrogramPlot *spectrogramPlot = nullptr;
+    TracePlot *iqPlot = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
     std::pair<off_t, off_t> viewRange;
     bool selection = false;
@@ -60,6 +63,7 @@ private:
     int fftSize;
     int zoomLevel;
 
-    void refreshSources();
+    TracePlot* createIQPlot(SampleSource<std::complex<float>> *src);
+    TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);
     void updateView();
 };
