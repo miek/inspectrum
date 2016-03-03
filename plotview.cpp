@@ -31,8 +31,9 @@
 #include "memory_source.h"
 #include "traceplot.h"
 
-PlotView::PlotView() : cursors(this), viewRange({0, 0})
+PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 {
+    mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
 }

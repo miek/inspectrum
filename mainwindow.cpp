@@ -31,7 +31,9 @@ MainWindow::MainWindow()
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
-    plots = new PlotView();
+    InputSource *input = new InputSource();
+
+    plots = new PlotView(input);
     setCentralWidget(plots);
 
     connect(dock, SIGNAL(fftSizeChanged(int)), plots, SLOT(setFFTSize(int)));
@@ -43,6 +45,5 @@ void MainWindow::openFile(QString fileName)
 {
     QString title="%1: %2";
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
-    // TODO: error check, ownership
-    plots->inputSourceChanged(new InputSource(fileName.toUtf8().constData()));
+    // TODO: open a file again
 }

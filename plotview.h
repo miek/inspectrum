@@ -32,7 +32,7 @@ class PlotView : public QAbstractScrollArea
     Q_OBJECT
 
 public:
-    PlotView();
+    PlotView(InputSource *input);
 
 public slots:
     void enableCursors(bool enable);

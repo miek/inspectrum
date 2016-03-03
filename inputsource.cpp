@@ -27,31 +27,60 @@
 
 #include <stdexcept>
 
-InputSource::InputSource(const char *filename)
+InputSource::InputSource()
 {
-    m_file = fopen(filename, "rb");
-    if (m_file == nullptr)
-        throw std::runtime_error("Error opening file");
-
-    struct stat sb;
-    if (fstat(fileno(m_file), &sb) != 0)
-        throw std::runtime_error("Error fstating file");
-    m_file_size = sb.st_size;
-    sampleCount = m_file_size / sizeof(std::complex<float>);
-
-    m_data = (std::complex<float>*)mmap(NULL, m_file_size, PROT_READ, MAP_SHARED, fileno(m_file), 0);
-    if (m_data == 0)
-        throw std::runtime_error("Error mmapping file");
 }
 
 InputSource::~InputSource()
 {
-    munmap(m_data, m_file_size);
-    fclose(m_file);
+    cleanup();
+}
+
+void InputSource::cleanup()
+{
+    if (mmapData != nullptr) {
+        munmap(mmapData, fileSize);
+        mmapData = nullptr;
+        fileSize = 0;
+    }
+
+    if (inputFile != nullptr) {
+        fclose(inputFile);
+        inputFile = nullptr;
+    }
+}
+
+void InputSource::openFile(const char *filename)
+{
+    FILE *file = fopen(filename, "rb");
+    if (file == nullptr)
+        throw std::runtime_error("Error opening file");
+
+    struct stat sb;
+    if (fstat(fileno(file), &sb) != 0)
+        throw std::runtime_error("Error fstating file");
+    off_t size = sb.st_size;
+    sampleCount = size / sizeof(std::complex<float>);
+
+    auto data = (std::complex<float>*)mmap(NULL, size, PROT_READ, MAP_SHARED, fileno(file), 0);
+    if (data == nullptr)
+        throw std::runtime_error("Error mmapping file");
+
+    cleanup();
+
+    inputFile = file;
+    fileSize = size;
+    mmapData = data;
 }
 
 std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_t length)
 {
+    if (inputFile == nullptr)
+        return nullptr;
+
+    if (mmapData == nullptr)
+        return nullptr;
+
     if(start < 0 || length < 0)
         return nullptr;
 
@@ -59,6 +88,6 @@ std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_
         return nullptr;
 
     std::unique_ptr<std::complex<float>[]> dest(new std::complex<float>[length]);
-    memcpy(dest.get(), &m_data[start], length * sizeof(std::complex<float>));
+    memcpy(dest.get(), &mmapData[start], length * sizeof(std::complex<float>));
     return dest;
 }

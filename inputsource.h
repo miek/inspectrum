@@ -25,15 +25,16 @@
 class InputSource : public SampleSource<std::complex<float>>
 {
 private:
-    FILE *m_file;
-    off_t m_file_size;
-    off_t sampleCount;
-    std::complex<float> *m_data;
+    FILE *inputFile = nullptr;
+    off_t fileSize = 0;
+    off_t sampleCount = 0;
+    std::complex<float> *mmapData = nullptr;
 
 public:
-    InputSource(const char *filename);
+    InputSource();
     ~InputSource();
-
+    void cleanup();
+    void openFile(const char *filename);
     std::unique_ptr<std::complex<float>[]> getSamples(off_t start, off_t length);
     off_t count() {
         return sampleCount;
