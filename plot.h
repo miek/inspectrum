@@ -28,8 +28,8 @@ class Plot : public QObject
 
 public:
     virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
-    virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) = 0;
-    virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) = 0;
+    virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     int height() const { return _height; };
 
 protected:

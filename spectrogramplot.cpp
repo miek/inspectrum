@@ -117,11 +117,6 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sa
     }
 }
 
-void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
-{
-
-}
-
 QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
 {
     QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));

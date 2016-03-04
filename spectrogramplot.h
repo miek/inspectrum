@@ -41,7 +41,6 @@ public:
     ~SpectrogramPlot();
 
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
-    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 
     QSize sizeHint() const;
     int getHeight();

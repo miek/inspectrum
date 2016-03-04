@@ -72,8 +72,3 @@ void TracePlot::plotTrace(QPainter &painter, QRect &rect, float *samples, off_t 
         yprev = y;
     }
 }
-
-void TracePlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
-{
-
-}

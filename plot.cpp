@@ -27,3 +27,13 @@ void Plot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
     painter.drawLine(rect.left(), rect.center().y(), rect.right(), rect.center().y());
     painter.restore();
 }
+
+void Plot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+
+}
+
+void Plot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+
+}
