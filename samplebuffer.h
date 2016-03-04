@@ -38,4 +38,7 @@ public:
     virtual off_t count() {
         return src->count();
     };
+    off_t rate() {
+        return src->rate();
+    };
 };

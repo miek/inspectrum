@@ -37,6 +37,7 @@ MainWindow::MainWindow()
     setCentralWidget(plots);
 
     connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
+    connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
     connect(dock, SIGNAL(fftSizeChanged(int)), plots, SLOT(setFFTSize(int)));
     connect(dock->zoomLevelSlider, SIGNAL(valueChanged(int)), plots, SLOT(setZoomLevel(int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
@@ -52,4 +53,9 @@ void MainWindow::openFile(QString fileName)
     QString title="%1: %2";
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
     input->openFile(fileName.toUtf8().constData());
+}
+
+void MainWindow::setSampleRate(QString rate)
+{
+    input->setSampleRate(rate.toInt());
 }

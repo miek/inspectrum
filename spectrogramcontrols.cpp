@@ -32,7 +32,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     fileOpenButton = new QPushButton("Open file...", widget);
     layout->addRow(fileOpenButton);
 
-    sampleRate = new QLineEdit("8000000");
+    sampleRate = new QLineEdit();
     sampleRate->setValidator(new QIntValidator(this));
     layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
@@ -91,6 +91,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
 void SpectrogramControls::setDefaults()
 {
+    sampleRate->setText("8000000");
     fftSizeSlider->setValue(9);
     zoomLevelSlider->setValue(0);
     powerMaxSlider->setValue(0);

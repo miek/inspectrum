@@ -75,6 +75,17 @@ void InputSource::openFile(const char *filename)
     invalidate();
 }
 
+void InputSource::setSampleRate(off_t rate)
+{
+    sampleRate = rate;
+    invalidate();
+}
+
+off_t InputSource::rate()
+{
+    return sampleRate;
+}
+
 std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_t length)
 {
     if (inputFile == nullptr)

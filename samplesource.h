@@ -35,6 +35,7 @@ public:
     virtual std::unique_ptr<T[]> getSamples(off_t start, off_t length) = 0;
     virtual void invalidateEvent() { };
     virtual off_t count() = 0;
+    virtual off_t rate() = 0;
     void subscribe(Subscriber *subscriber);
     void unsubscribe(Subscriber *subscriber);
 

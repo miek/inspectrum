@@ -28,6 +28,7 @@ private:
     FILE *inputFile = nullptr;
     off_t fileSize = 0;
     off_t sampleCount = 0;
+    off_t sampleRate = 0;
     std::complex<float> *mmapData = nullptr;
 
 public:
@@ -39,4 +40,6 @@ public:
     off_t count() {
         return sampleCount;
     };
+    void setSampleRate(off_t rate);
+    off_t rate();
 };
