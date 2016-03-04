@@ -32,7 +32,7 @@ private:
 public:
     SampleBuffer(SampleSource<Tin> *src);
     ~SampleBuffer();
-	void invalidateEvent();
+    void invalidateEvent();
     virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
     virtual void work(void *input, void *output, int count) = 0;
     virtual off_t count() {
