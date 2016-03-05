@@ -114,18 +114,6 @@ void PlotView::invalidateEvent()
     horizontalScrollBar()->setMaximum(mainSampleSource->count());
 }
 
-void PlotView::selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq)
-{
-    this->selectionTime = selectionTime;
-    this->selectionFreq = selectionFreq;
-    selection = true;
-}
-
-void PlotView::selectionCleared()
-{
-    selection = false;
-}
-
 void PlotView::setFFTSize(int size)
 {
     fftSize = size;

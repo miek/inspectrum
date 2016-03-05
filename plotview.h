@@ -43,8 +43,6 @@ public slots:
     void cursorsMoved();
     void enableCursors(bool enable);
     void invalidateEvent();
-    void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
-    void selectionCleared();
     void setFFTSize(int size);
     void setZoomLevel(int zoom);
     void setPowerMin(int power);
@@ -63,7 +61,7 @@ private:
     std::vector<std::unique_ptr<Plot>> plots;
     std::pair<off_t, off_t> viewRange;
     bool selection = false;
-    std::pair<off_t, off_t> selectionTime;
+    range_t<off_t> selectionTime;
     std::pair<float, float> selectionFreq;
 
     int fftSize;

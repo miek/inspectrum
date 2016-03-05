@@ -28,8 +28,8 @@ template <class T> const T& clamp (const T& value, const T& min, const T& max)
 
 template<class T>
 struct range_t {
-    const T minimum;
-    const T maximum;
+    T minimum;
+    T maximum;
 
     const T length() {
         return maximum - minimum;
