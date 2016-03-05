@@ -95,6 +95,10 @@ TracePlot* PlotView::createQuadratureDemodPlot(SampleSource<std::complex<float>>
 
 void PlotView::cursorsMoved()
 {
+    int selection = cursors.selection().length();
+    off_t sampleCount = coordToSample(selection);
+    float selectionTime = sampleCount / (float)mainSampleSource->rate();
+    emit timeSelectionChanged(selectionTime);
     viewport()->update();
 }
 

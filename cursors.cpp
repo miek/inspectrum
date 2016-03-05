@@ -89,3 +89,14 @@ void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
 
     painter.restore();
 }
+
+range_t<int> Cursors::selection()
+{
+    // TODO: ensure correct ordering during dragging, not here
+    if (cursorPositions[0] < cursorPositions[1]) {
+        return {cursorPositions[0], cursorPositions[1]};
+
+    } else {
+        return {cursorPositions[1], cursorPositions[0]};
+    }
+}

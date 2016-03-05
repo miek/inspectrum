@@ -112,3 +112,9 @@ void SpectrogramControls::fileOpenButtonClicked()
                        );
     emit openFile(fileName);
 }
+
+void SpectrogramControls::timeSelectionChanged(float time)
+{
+    deltaTimeLabel->setText(QString::number(time) + "s");
+    deltaFrequencyLabel->setText(QString::number(1 / time) + "Hz");
+}

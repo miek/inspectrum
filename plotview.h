@@ -36,6 +36,9 @@ class PlotView : public QAbstractScrollArea, Subscriber
 public:
     PlotView(InputSource *input);
 
+signals:
+    void timeSelectionChanged(float time);
+
 public slots:
     void cursorsMoved();
     void enableCursors(bool enable);

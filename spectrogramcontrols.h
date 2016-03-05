@@ -39,6 +39,9 @@ signals:
     void fftSizeChanged(int size);
     void openFile(QString fileName);
 
+public slots:
+    void timeSelectionChanged(float time);
+
 private slots:
     void fftSizeSliderChanged(int size);
     void fileOpenButtonClicked();

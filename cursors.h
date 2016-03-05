@@ -31,6 +31,7 @@ class Cursors : public QObject
 public:
     Cursors(QObject * parent);
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    range_t<int> selection();
 
 signals:
 	void cursorsMoved();
