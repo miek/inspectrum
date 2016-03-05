@@ -64,42 +64,6 @@ void SpectrogramPlot::xyToFreqTime(int x, int y, float *freq, float *time)
     *time = (float)lineToSample(y) / sampleRate;
 }
 
-void SpectrogramPlot::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (deltaDragIsEnabled) {
-        cursorStartX = -1;
-        update();
-    }
-}
-
-void SpectrogramPlot::mouseMoveEvent(QMouseEvent *event)
-{
-    float freq, time;
-    xyToFreqTime(event->x(), event->y(), &freq, &time);
-    emit cursorFrequencyChanged(QString::number(freq) + " Hz");
-    emit cursorTimeChanged(QString::number(time) + " s");
-    if (cursorStartX != -1) {
-        float s_freq, s_time;
-        xyToFreqTime(cursorStartX, cursorStartY, &s_freq, &s_time);
-        emit deltaFrequencyChanged(QString::number(fabs(s_freq - freq)) + " Hz");
-        emit deltaTimeChanged(QString::number(fabs(s_time - time)) + " s");
-        cursorEndX = event->x();
-        cursorEndY = event->y();
-        update();
-    }
-}
-
-void SpectrogramPlot::mousePressEvent(QMouseEvent *event)
-{
-    if (cursorStartX == -1) {
-        cursorEndX = cursorStartX = event->x();
-        cursorEndY = cursorStartY = event->y();
-    } else {
-        cursorStartX = -1;
-    }
-    update();
-}
-
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
     if (!inputSource || inputSource->count() == 0)

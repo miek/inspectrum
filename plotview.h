@@ -37,6 +37,7 @@ public:
     PlotView(InputSource *input);
 
 public slots:
+    void cursorsMoved();
     void enableCursors(bool enable);
     void invalidateEvent();
     void selectionChanged(std::pair<off_t, off_t> selectionTime, std::pair<float, float> selectionFreq);
@@ -66,6 +67,7 @@ private:
     int zoomLevel;
     int powerMin;
     int powerMax;
+    bool cursorsEnabled;
 
     TracePlot* createIQPlot(SampleSource<std::complex<float>> *src);
     TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);

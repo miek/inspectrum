@@ -19,16 +19,30 @@
 
 #pragma once
 
-#include <QWidget>
+#include <QObject>
+#include <QPainter>
+#include <QPoint>
+#include "util.h"
 
-class Cursors : public QWidget
+class Cursors : public QObject
 {
     Q_OBJECT
 
 public:
-    Cursors(QWidget * parent);
+    Cursors(QObject * parent);
+    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+
+signals:
+	void cursorsMoved();
 
 protected:
-    void paintEvent(QPaintEvent *event);
+	bool eventFilter(QObject *obj, QEvent *event) override;
+
+private:
+	bool pointOverCursor(QPoint point, int &cursor);
+
+	bool dragging = false;
+	int selectedCursor = 0;
+	int cursorPositions[2] = {0, 50};
 
 };

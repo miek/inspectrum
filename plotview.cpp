@@ -35,6 +35,8 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
+    viewport()->installEventFilter(&cursors);
+    connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
 
     spectrogramPlot = new SpectrogramPlot(mainSampleSource);
     plots.emplace_back(spectrogramPlot);
@@ -86,12 +88,15 @@ TracePlot* PlotView::createQuadratureDemodPlot(SampleSource<std::complex<float>>
     );
 }
 
+void PlotView::cursorsMoved()
+{
+    viewport()->update();
+}
+
 void PlotView::enableCursors(bool enabled)
 {
-    if (enabled)
-        cursors.show();
-    else
-        cursors.hide();
+    cursorsEnabled = enabled;
+    viewport()->update();
 }
 
 void PlotView::invalidateEvent()
@@ -168,6 +173,8 @@ void PlotView::paintEvent(QPaintEvent *event)
     PLOT_LAYER(paintBack);
     PLOT_LAYER(paintMid);
     PLOT_LAYER(paintFront);
+    if (cursorsEnabled)
+        cursors.paintFront(painter, rect, {viewRange.first, viewRange.second});
 
 #undef PLOT_LAYER
 }
@@ -179,7 +186,7 @@ void PlotView::resizeEvent(QResizeEvent * event)
     // Resize cursors
     // TODO: don't hardcode this
     int margin = rect.width() / 3;
-    cursors.setGeometry(QRect(rect.left() + margin, rect.top(), rect.right() - rect.left() - 2 * margin, rect.height()));
+    //cursors.setGeometry(QRect(rect.left() + margin, rect.top(), rect.right() - rect.left() - 2 * margin, rect.height()));
 
     updateView();
 }
