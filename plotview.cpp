@@ -48,6 +48,11 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     mainSampleSource->subscribe(this);
 }
 
+off_t PlotView::coordToSample(int x)
+{
+    return fftSize * x / (int)pow(2, zoomLevel);
+}
+
 TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)
 {
     gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
@@ -200,7 +205,7 @@ void PlotView::updateView()
 {
     viewRange = {
         horizontalScrollBar()->value(),
-        horizontalScrollBar()->value() + fftSize * width() / (int)pow(2, zoomLevel)
+        horizontalScrollBar()->value() + coordToSample(width())
     };
     viewport()->update();
 }
