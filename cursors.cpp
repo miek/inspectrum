@@ -100,3 +100,10 @@ range_t<int> Cursors::selection()
         return {cursorPositions[1], cursorPositions[0]};
     }
 }
+
+void Cursors::setSelection(range_t<int> selection)
+{
+    cursorPositions[0] = selection.minimum;
+    cursorPositions[1] = selection.maximum;
+    emit cursorsMoved();
+}

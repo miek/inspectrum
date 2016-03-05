@@ -104,6 +104,10 @@ void PlotView::cursorsMoved()
 void PlotView::enableCursors(bool enabled)
 {
     cursorsEnabled = enabled;
+    if (enabled) {
+        int margin = viewport()->rect().width() / 3;
+        cursors.setSelection({viewport()->rect().left() + margin, viewport()->rect().right() - margin});
+    }
     viewport()->update();
 }
 
@@ -177,13 +181,6 @@ void PlotView::paintEvent(QPaintEvent *event)
 
 void PlotView::resizeEvent(QResizeEvent * event)
 {
-    QRect rect = viewport()->rect();
-
-    // Resize cursors
-    // TODO: don't hardcode this
-    int margin = rect.width() / 3;
-    //cursors.setGeometry(QRect(rect.left() + margin, rect.top(), rect.right() - rect.left() - 2 * margin, rect.height()));
-
     updateView();
 }
 
@@ -199,9 +196,20 @@ void PlotView::scrollContentsBy(int dx, int dy)
 
 void PlotView::updateView()
 {
+    // Update current view
     viewRange = {
         horizontalScrollBar()->value(),
         horizontalScrollBar()->value() + width() * samplesPerLine()
     };
+
+    // Update cursors
+    QRect rect = viewport()->rect();
+    range_t<int> newSelection = {
+        (int)((selectedSamples.minimum - horizontalScrollBar()->value()) / samplesPerLine()),
+        (int)((selectedSamples.maximum - horizontalScrollBar()->value()) / samplesPerLine())
+    };
+    cursors.setSelection(newSelection);
+
+    // Re-paint
     viewport()->update();
 }
