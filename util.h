@@ -31,6 +31,19 @@ struct range_t {
     T minimum;
     T maximum;
 
+    range_t<T>& operator=(const range_t<T> &other) {
+        minimum = other.minimum;
+        maximum = other.maximum;
+    }
+
+    range_t<T>& operator=(const std::initializer_list<T> &other) {
+        if (other.size() == 2) {
+            minimum = *other.begin();
+            maximum = *(other.begin() + 1);
+        }
+        return *this;
+    }
+
     const T length() {
         return maximum - minimum;
     }
