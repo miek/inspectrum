@@ -66,21 +66,18 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     pointerTimeLabel = new QLabel();
     layout->addRow(new QLabel(tr("Pointer time:")), pointerTimeLabel);
 
-    // Selection settings
+    // Time selection settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
-    layout->addRow(new QLabel(tr("<b>Selection</b>")));
+    layout->addRow(new QLabel(tr("<b>Time selection</b>")));
 
     cursorsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
 
-    deltaDragCheckBox = new QCheckBox(widget);
-    layout->addRow(new QLabel(tr("Delta dragging:")), deltaDragCheckBox);
+    timeSelectionFreqLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Frequency:")), timeSelectionFreqLabel);
 
-    deltaFrequencyLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Delta frequency:")), deltaFrequencyLabel);
-
-    deltaTimeLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Delta time:")), deltaTimeLabel);
+    timeSelectionTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Time:")), timeSelectionTimeLabel);
 
     widget->setLayout(layout);
     setWidget(widget);
@@ -97,7 +94,6 @@ void SpectrogramControls::setDefaults()
     powerMaxSlider->setValue(0);
     powerMinSlider->setValue(-50);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
-    deltaDragCheckBox->setCheckState(Qt::Checked);
 }
 
 void SpectrogramControls::fftSizeSliderChanged(int size)
@@ -115,6 +111,6 @@ void SpectrogramControls::fileOpenButtonClicked()
 
 void SpectrogramControls::timeSelectionChanged(float time)
 {
-    deltaTimeLabel->setText(QString::number(time) + "s");
-    deltaFrequencyLabel->setText(QString::number(1 / time) + "Hz");
+    timeSelectionTimeLabel->setText(QString::number(time) + "s");
+    timeSelectionFreqLabel->setText(QString::number(1 / time) + "Hz");
 }
