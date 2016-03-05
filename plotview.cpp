@@ -48,11 +48,6 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     mainSampleSource->subscribe(this);
 }
 
-off_t PlotView::coordToSample(int x)
-{
-    return fftSize * x / (int)pow(2, zoomLevel);
-}
-
 TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)
 {
     gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
@@ -96,7 +91,7 @@ TracePlot* PlotView::createQuadratureDemodPlot(SampleSource<std::complex<float>>
 void PlotView::cursorsMoved()
 {
     int selection = cursors.selection().length();
-    off_t sampleCount = coordToSample(selection);
+    off_t sampleCount = selection * samplesPerLine();
     float selectionTime = sampleCount / (float)mainSampleSource->rate();
     emit timeSelectionChanged(selectionTime);
     viewport()->update();
@@ -188,6 +183,11 @@ void PlotView::resizeEvent(QResizeEvent * event)
     updateView();
 }
 
+off_t PlotView::samplesPerLine()
+{
+    return fftSize / (int)pow(2, zoomLevel);
+}
+
 void PlotView::scrollContentsBy(int dx, int dy)
 {
     updateView();
@@ -197,7 +197,7 @@ void PlotView::updateView()
 {
     viewRange = {
         horizontalScrollBar()->value(),
-        horizontalScrollBar()->value() + coordToSample(width())
+        horizontalScrollBar()->value() + width() * samplesPerLine()
     };
     viewport()->update();
 }
