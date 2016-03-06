@@ -168,7 +168,7 @@ void PlotView::paintEvent(QPaintEvent *event)
 
 #define PLOT_LAYER(paintFunc)                                                   \
     {                                                                           \
-        int y = 0;                                                              \
+        int y = -verticalScrollBar()->value();                                  \
         for (auto&& plot : plots) {                                             \
             QRect rect = QRect(0, y, width(), plot->height());                  \
             plot->paintFunc(painter, rect, {viewRange.first, viewRange.second});\
@@ -183,6 +183,15 @@ void PlotView::paintEvent(QPaintEvent *event)
         cursors.paintFront(painter, rect, {viewRange.first, viewRange.second});
 
 #undef PLOT_LAYER
+}
+
+int PlotView::plotsHeight()
+{
+    int height = 0;
+    for (auto&& plot : plots) {
+        height += plot->height();
+    }
+    return height;
 }
 
 void PlotView::resizeEvent(QResizeEvent * event)
@@ -208,6 +217,8 @@ void PlotView::updateView()
         horizontalScrollBar()->value() + width() * samplesPerLine()
     };
     horizontalScrollBar()->setMaximum(mainSampleSource->count() - ((width() - 1) * samplesPerLine()));
+
+    verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
 
     // Update cursors
     QRect rect = viewport()->rect();

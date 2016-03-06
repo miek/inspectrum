@@ -73,6 +73,7 @@ private:
 
     TracePlot* createIQPlot(SampleSource<std::complex<float>> *src);
     TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);
+    int plotsHeight();
     off_t samplesPerLine();
     void updateView();
 };
