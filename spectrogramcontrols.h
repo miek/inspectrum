@@ -59,8 +59,6 @@ public:
     QSlider *powerMinSlider;
     QCheckBox *cursorsCheckBox;
     QSpinBox *cursorBitsSpinBox;
-    QLabel *pointerFrequencyLabel;
-    QLabel *pointerTimeLabel;
     QLabel *timeSelectionFreqLabel;
     QLabel *timeSelectionTimeLabel;
     QLabel *bitSelectionFreqLabel;

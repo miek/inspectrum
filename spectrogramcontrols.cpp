@@ -56,16 +56,6 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     powerMinSlider->setRange(-100, 20);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
-    // Pointer position info
-    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
-    layout->addRow(new QLabel(tr("<b>Pointer</b>")));
-
-    pointerFrequencyLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Pointer frequency:")), pointerFrequencyLabel);
-
-    pointerTimeLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Pointer time:")), pointerTimeLabel);
-
     // Time selection settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
     layout->addRow(new QLabel(tr("<b>Time selection</b>")));
