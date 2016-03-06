@@ -75,6 +75,7 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sa
     for (int x = rect.left(); x < rect.right(); x += linesPerTile()) {
         QPixmap *tile = getPixmapTile(tileID);
         // TODO: don't draw past rect.right()
+        // TODO: handle partial final tile
         painter.drawPixmap(QRect(x, rect.y(), linesPerTile() - xoffset, fftSize), *tile, QRect(xoffset, 0, linesPerTile() - xoffset, fftSize));
         xoffset = 0;
         tileID += getStride() * linesPerTile();
@@ -127,6 +128,8 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
 {
     if (inputSource && fft) {
         auto buffer = inputSource->getSamples(sample, fftSize);
+        if (buffer == nullptr)
+            return;
 
         for (int i = 0; i < fftSize; i++) {
             buffer[i].real(buffer[i].real() * window[i]);
