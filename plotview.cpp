@@ -117,6 +117,12 @@ void PlotView::invalidateEvent()
     horizontalScrollBar()->setMaximum(mainSampleSource->count());
 }
 
+void PlotView::setCursorBits(int bits)
+{
+    cursors.setBits(bits);
+    viewport()->update();
+}
+
 void PlotView::setFFTSize(int size)
 {
     fftSize = size;
@@ -201,6 +207,7 @@ void PlotView::updateView()
         horizontalScrollBar()->value(),
         horizontalScrollBar()->value() + width() * samplesPerLine()
     };
+    horizontalScrollBar()->setMaximum(mainSampleSource->count() - ((width() - 1) * samplesPerLine()));
 
     // Update cursors
     QRect rect = viewport()->rect();

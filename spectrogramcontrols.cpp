@@ -73,11 +73,20 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     cursorsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
 
+    cursorBitsSpinBox = new QSpinBox();
+    layout->addRow(new QLabel(tr("Bits:")), cursorBitsSpinBox);
+
     timeSelectionFreqLabel = new QLabel();
     layout->addRow(new QLabel(tr("Frequency:")), timeSelectionFreqLabel);
 
     timeSelectionTimeLabel = new QLabel();
     layout->addRow(new QLabel(tr("Time:")), timeSelectionTimeLabel);
+
+    bitSelectionFreqLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Bit frequency:")), bitSelectionFreqLabel);
+
+    bitSelectionTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Bit time:")), bitSelectionTimeLabel);
 
     widget->setLayout(layout);
     setWidget(widget);
@@ -94,6 +103,7 @@ void SpectrogramControls::setDefaults()
     powerMaxSlider->setValue(0);
     powerMinSlider->setValue(-50);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
+    cursorBitsSpinBox->setValue(1);
 }
 
 void SpectrogramControls::fftSizeSliderChanged(int size)
@@ -113,4 +123,8 @@ void SpectrogramControls::timeSelectionChanged(float time)
 {
     timeSelectionTimeLabel->setText(QString::number(time) + "s");
     timeSelectionFreqLabel->setText(QString::number(1 / time) + "Hz");
+
+    int bits = cursorBitsSpinBox->value();
+    bitSelectionTimeLabel->setText(QString::number(time / bits) + "s");
+    bitSelectionFreqLabel->setText(QString::number(bits / time) + "Hz");
 }

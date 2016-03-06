@@ -75,15 +75,22 @@ void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
 {
     painter.save();
 
+    QRect cursorRect(cursorPositions[0], rect.top(), cursorPositions[1] - cursorPositions[0], rect.height());
     // Draw translucent white fill for highlight
     painter.fillRect(
-        QRect(cursorPositions[0], rect.top(), cursorPositions[1] - cursorPositions[0], rect.bottom()),
+        cursorRect,
         QBrush(QColor(255, 255, 255, 50))
     );
 
+    // Draw vertical edges for individual bits
+    painter.setPen(QPen(Qt::gray, 1, Qt::DashLine));
+    for (int i = 1; i < bitCount; i++) {
+        int pos = cursorPositions[0] + (i * cursorRect.width() / bitCount);
+        painter.drawLine(pos, rect.top(), pos, rect.bottom());
+    }
+
     // Draw vertical edges
-    QPen pen(Qt::white, 1, Qt::DashLine);
-    painter.setPen(pen);
+    painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
     painter.drawLine(cursorPositions[0], rect.top(), cursorPositions[0], rect.bottom());
     painter.drawLine(cursorPositions[1], rect.top(), cursorPositions[1], rect.bottom());
 
@@ -99,6 +106,12 @@ range_t<int> Cursors::selection()
     } else {
         return {cursorPositions[1], cursorPositions[0]};
     }
+}
+
+void Cursors::setBits(int bits)
+{
+    bitCount = std::max(bits, 1);
+
 }
 
 void Cursors::setSelection(range_t<int> selection)

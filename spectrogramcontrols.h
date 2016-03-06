@@ -24,6 +24,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
+#include <QSpinBox>
 #include <QCheckBox>
 #include <QLabel>
 
@@ -57,8 +58,11 @@ public:
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
     QCheckBox *cursorsCheckBox;
+    QSpinBox *cursorBitsSpinBox;
     QLabel *pointerFrequencyLabel;
     QLabel *pointerTimeLabel;
     QLabel *timeSelectionFreqLabel;
     QLabel *timeSelectionTimeLabel;
+    QLabel *bitSelectionFreqLabel;
+    QLabel *bitSelectionTimeLabel;
 };
