@@ -37,8 +37,6 @@ SpectrogramPlot::SpectrogramPlot(SampleSource<std::complex<float>> *src)
     zoomLevel = 0;
     powerMax = 0.0f;
     powerMin = -50.0f;
-    timeScaleIsEnabled = true;
-    deltaDragIsEnabled = true;
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
@@ -51,17 +49,6 @@ SpectrogramPlot::~SpectrogramPlot()
 {
     delete fft;
     delete inputSource;
-}
-
-QSize SpectrogramPlot::sizeHint() const
-{
-    return QSize(1024, 2048);
-}
-
-void SpectrogramPlot::xyToFreqTime(int x, int y, float *freq, float *time)
-{
-    *freq = labs(x - (fftSize / 2)) * sampleRate / 2 / (float)fftSize;
-    *time = (float)lineToSample(y) / sampleRate;
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -149,25 +136,9 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
     }
 }
 
-void SpectrogramPlot::paintCursors(QPainter *painter, QRect rect)
-{
-    if (cursorStartX != -1) {
-        painter->save();
-        QPen pen(Qt::white, 1, Qt::DashLine);
-        painter->setPen(pen);
-        painter->drawLine(rect.left(), cursorStartY, rect.right(), cursorStartY);
-        painter->drawLine(cursorStartX, rect.top(), cursorStartX, rect.bottom());
-        painter->drawLine(rect.left(), cursorEndY, rect.right(), cursorEndY);
-        painter->drawLine(cursorEndX, rect.top(), cursorEndX, rect.bottom());
-        painter->restore();
-
-    }
-}
-
 void SpectrogramPlot::setSampleRate(int rate)
 {
     sampleRate = rate;
-    update();
 }
 
 void SpectrogramPlot::setFFTSize(int size)
@@ -188,33 +159,18 @@ void SpectrogramPlot::setPowerMax(int power)
 {
     powerMax = power;
     pixmapCache.clear();
-    update();
 }
 
 void SpectrogramPlot::setPowerMin(int power)
 {
     powerMin = power;
     pixmapCache.clear();
-    update();
 }
 
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
 }
-
-void SpectrogramPlot::setTimeScaleEnable(int state)
-{
-    timeScaleIsEnabled = (state == Qt::Checked);
-    pixmapCache.clear();
-    update();
-}
-
-void SpectrogramPlot::setDeltaDragEnable(int state)
-{
-    deltaDragIsEnabled = (state == Qt::Checked);
-}
-
 
 int SpectrogramPlot::getHeight()
 {

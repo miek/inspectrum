@@ -49,22 +49,12 @@ public:
 
     SampleSource<std::complex<float>> *inputSource = nullptr;
 
-signals:
-    void cursorFrequencyChanged(QString);
-    void cursorTimeChanged(QString);
-    void deltaFrequencyChanged(QString);
-    void deltaTimeChanged(QString);
-    void needUpdate();
-
 public slots:
     void setSampleRate(int rate);
     void setFFTSize(int size);
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
-    void setTimeScaleEnable(int state);
-    void setDeltaDragEnable(int state);
-    void update() { emit needUpdate(); };
 
 protected:
     void mouseReleaseEvent(QMouseEvent * event);
@@ -88,10 +78,6 @@ private:
     int zoomLevel;
     float powerMax;
     float powerMin;
-    bool timeScaleIsEnabled;
-    bool deltaDragIsEnabled;
-    int cursorStartX = -1, cursorStartY;
-    int cursorEndX, cursorEndY;
 
     QPixmap* getPixmapTile(off_t tile);
     float* getFFTTile(off_t tile);
@@ -100,7 +86,6 @@ private:
     int sampleToLine(off_t sample);
     QString sampleToTime(off_t sample);
     int linesPerTile();
-    void xyToFreqTime(int x, int y, float *freq, float *time);
 };
 
 class TileCacheKey
