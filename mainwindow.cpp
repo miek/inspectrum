@@ -64,3 +64,8 @@ void MainWindow::setSampleRate(QString rate)
 {
     input->setSampleRate(rate.toInt());
 }
+
+void MainWindow::setSampleRate(int rate)
+{
+    dock->sampleRate->setText(QString::number(rate));
+}

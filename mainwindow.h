@@ -35,6 +35,7 @@ public:
 public slots:
     void openFile(QString fileName);
     void setSampleRate(QString rate);
+    void setSampleRate(int rate);
 
 private:
     SpectrogramControls *dock;
