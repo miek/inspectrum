@@ -45,11 +45,6 @@ SpectrogramPlot::SpectrogramPlot(SampleSource<std::complex<float>> *src)
 
 }
 
-SpectrogramPlot::~SpectrogramPlot()
-{
-    delete fft;
-}
-
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
     if (!inputSource || inputSource->count() == 0)
@@ -143,8 +138,7 @@ void SpectrogramPlot::setSampleRate(int rate)
 void SpectrogramPlot::setFFTSize(int size)
 {
     fftSize = size;
-    delete fft;
-    fft = new FFT(fftSize);
+    fft.reset(new FFT(fftSize));
 
     window.reset(new float[fftSize]);
     for (int i = 0; i < fftSize; i++) {

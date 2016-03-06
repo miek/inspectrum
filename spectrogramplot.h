@@ -38,7 +38,6 @@ class SpectrogramPlot : public Plot
 
 public:
     SpectrogramPlot(SampleSource<std::complex<float>> *src);
-    ~SpectrogramPlot();
 
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 
@@ -66,7 +65,7 @@ private:
     const int linesPerGraduation = 50;
     const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
-    FFT *fft = nullptr;
+    std::unique_ptr<FFT> fft;
     std::unique_ptr<float[]> window;
     fftwf_complex *lineBuffer = nullptr;
     QCache<TileCacheKey, QPixmap> pixmapCache;
