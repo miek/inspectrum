@@ -120,6 +120,7 @@ void PlotView::invalidateEvent()
 void PlotView::setCursorBits(int bits)
 {
     cursors.setBits(bits);
+    cursorsMoved();
     viewport()->update();
 }
 
