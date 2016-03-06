@@ -48,7 +48,6 @@ SpectrogramPlot::SpectrogramPlot(SampleSource<std::complex<float>> *src)
 SpectrogramPlot::~SpectrogramPlot()
 {
     delete fft;
-    delete inputSource;
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
