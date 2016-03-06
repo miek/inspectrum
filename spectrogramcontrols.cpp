@@ -85,6 +85,22 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeSliderChanged(int)));
     connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
+    connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
+}
+
+void SpectrogramControls::clearCursorLabels()
+{
+    timeSelectionTimeLabel->setText("");
+    timeSelectionFreqLabel->setText("");
+    bitSelectionTimeLabel->setText("");
+    bitSelectionFreqLabel->setText("");
+}
+
+void SpectrogramControls::cursorsStateChanged(int state)
+{
+    if (state == Qt::Unchecked) {
+        clearCursorLabels();
+    }
 }
 
 void SpectrogramControls::setDefaults()
@@ -113,10 +129,12 @@ void SpectrogramControls::fileOpenButtonClicked()
 
 void SpectrogramControls::timeSelectionChanged(float time)
 {
-    timeSelectionTimeLabel->setText(QString::number(time) + "s");
-    timeSelectionFreqLabel->setText(QString::number(1 / time) + "Hz");
+    if (cursorsCheckBox->checkState() == Qt::Checked) {
+        timeSelectionTimeLabel->setText(QString::number(time) + "s");
+        timeSelectionFreqLabel->setText(QString::number(1 / time) + "Hz");
 
-    int bits = cursorBitsSpinBox->value();
-    bitSelectionTimeLabel->setText(QString::number(time / bits) + "s");
-    bitSelectionFreqLabel->setText(QString::number(bits / time) + "Hz");
+        int bits = cursorBitsSpinBox->value();
+        bitSelectionTimeLabel->setText(QString::number(time / bits) + "s");
+        bitSelectionFreqLabel->setText(QString::number(bits / time) + "Hz");
+    }
 }

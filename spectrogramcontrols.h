@@ -46,10 +46,13 @@ public slots:
 private slots:
     void fftSizeSliderChanged(int size);
     void fileOpenButtonClicked();
+    void cursorsStateChanged(int state);
 
 private:
     QWidget *widget;
     QFormLayout *layout;
+    void clearCursorLabels();
+
 public:
     QPushButton *fileOpenButton;
     QLineEdit *sampleRate;
