@@ -65,8 +65,8 @@ private:
     range_t<off_t> selectedSamples;
     std::pair<float, float> selectionFreq;
 
-    int fftSize;
-    int zoomLevel;
+    int fftSize = 1024;
+    int zoomLevel = 0;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
