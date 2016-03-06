@@ -74,6 +74,8 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
 
     cursorBitsSpinBox = new QSpinBox();
+    cursorBitsSpinBox->setMinimum(1);
+    cursorBitsSpinBox->setMaximum(9999);
     layout->addRow(new QLabel(tr("Bits:")), cursorBitsSpinBox);
 
     timeSelectionFreqLabel = new QLabel();
