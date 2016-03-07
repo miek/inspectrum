@@ -19,26 +19,12 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include <complex>
+#include <memory>
 
-class MainWindow : public QMainWindow
+class AbstractSampleSource
 {
-    Q_OBJECT
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
-
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
-
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    virtual ~AbstractSampleSource() {};
 };

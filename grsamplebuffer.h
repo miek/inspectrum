@@ -19,26 +19,23 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include <complex>
+#include <gnuradio/top_block.h>
+#include "memory_sink.h"
+#include "memory_source.h"
 
-class MainWindow : public QMainWindow
+#include "samplebuffer.h"
+
+template <typename Tin, typename Tout>
+class GRSampleBuffer : public SampleBuffer<Tin, Tout>
 {
-    Q_OBJECT
+private:
+    gr::top_block_sptr tb;
+    gr::blocks::memory_source::sptr mem_source;
+    gr::blocks::memory_sink::sptr mem_sink;
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
-
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
-
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    GRSampleBuffer(SampleSource<Tin> *src, gr::top_block_sptr tb, gr::blocks::memory_source::sptr mem_source, gr::blocks::memory_sink::sptr mem_sink)
+        : SampleBuffer<Tin, Tout>(src), tb(tb), mem_source(mem_source), mem_sink(mem_sink) {};
+    virtual void work(void *input, void *output, int count);
 };

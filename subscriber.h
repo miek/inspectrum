@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -19,26 +19,9 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
 
-class MainWindow : public QMainWindow
+class Subscriber
 {
-    Q_OBJECT
-
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
-
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
-
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    virtual void invalidateEvent() = 0;
 };

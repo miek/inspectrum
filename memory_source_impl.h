@@ -12,33 +12,41 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *
+ *ha
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef INCLUDED_GR_MEMORY_SOURCE_IMPL_H
+#define INCLUDED_GR_MEMORY_SOURCE_IMPL_H
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include "memory_source.h"
 
-class MainWindow : public QMainWindow
+namespace gr
 {
-    Q_OBJECT
+namespace blocks
+{
+
+class memory_source_impl : public memory_source
+{
+private:
+    size_t d_itemsize;
+    void *d_source;
+    size_t d_length;
+    size_t d_ptr = 0;
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
+    memory_source_impl(size_t itemsize);
+    ~memory_source_impl();
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+    void set_source(void *source, size_t length);
 
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    int work(int noutput_items,
+             gr_vector_const_void_star &input_items,
+             gr_vector_void_star &output_items);
 };
+
+} /* namespace blocks */
+} /* namespace gr */
+
+#endif /* INCLUDED_GR_MEMORY_SOURCE_IMPL_H */

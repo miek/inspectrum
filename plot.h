@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -19,26 +19,23 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include <QObject>
+#include <QPainter>
+#include "util.h"
 
-class MainWindow : public QMainWindow
+class Plot : public QObject
 {
-    Q_OBJECT
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
+    virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    int height() const { return _height; };
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+protected:
+    void setHeight(int height) { _height = height; };
 
 private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    // TODO: don't hardcode this
+    int _height = 200;
 };

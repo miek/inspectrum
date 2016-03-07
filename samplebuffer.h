@@ -19,26 +19,26 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include <complex>
+#include <memory>
+#include "samplesource.h"
 
-class MainWindow : public QMainWindow
+template <typename Tin, typename Tout>
+class SampleBuffer : public SampleSource<Tout>, public Subscriber
 {
-    Q_OBJECT
+private:
+    SampleSource<Tin> *src;
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
-
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
-
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    SampleBuffer(SampleSource<Tin> *src);
+    ~SampleBuffer();
+    void invalidateEvent();
+    virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
+    virtual void work(void *input, void *output, int count) = 0;
+    virtual off_t count() {
+        return src->count();
+    };
+    off_t rate() {
+        return src->rate();
+    };
 };

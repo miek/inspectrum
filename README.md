@@ -6,6 +6,8 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 ## Try it
 ### Prerequisites
 
+ * boost >=1.35
+ * gnuradio 3.7.x
  * qt5
  * fftw 3.x
  * cmake

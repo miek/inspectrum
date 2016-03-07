@@ -24,37 +24,46 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSlider>
+#include <QSpinBox>
 #include <QCheckBox>
 #include <QLabel>
 
-class SpectrogramControls : public QDockWidget {
-	Q_OBJECT
+class SpectrogramControls : public QDockWidget
+{
+    Q_OBJECT
 
 public:
-	SpectrogramControls(const QString & title, QWidget * parent);
+    SpectrogramControls(const QString & title, QWidget * parent);
+    void setDefaults();
 
 signals:
-	void fftSizeChanged(int size);
-	void openFile(QString fileName);
+    void fftOrZoomChanged(int fftSize, int zoomLevel);
+    void openFile(QString fileName);
+
+public slots:
+    void timeSelectionChanged(float time);
 
 private slots:
-	void fftSizeSliderChanged(int size);
-	void fileOpenButtonClicked();
+    void fftOrZoomChanged(int value);
+    void fileOpenButtonClicked();
+    void cursorsStateChanged(int state);
 
 private:
-	QWidget *widget;
-	QFormLayout *layout;
+    QWidget *widget;
+    QFormLayout *layout;
+    void clearCursorLabels();
+
 public:
-	QPushButton *fileOpenButton;
-	QLineEdit *sampleRate;
-	QSlider *fftSizeSlider;
-	QSlider *zoomLevelSlider;
-	QSlider *powerMaxSlider;
-	QSlider *powerMinSlider;
-	QCheckBox *timeScaleCheckBox;
-	QLabel *cursorFrequencyLabel;
-	QLabel *cursorTimeLabel;
-	QCheckBox *deltaDragCheckBox;
-	QLabel *deltaFrequencyLabel;
-	QLabel *deltaTimeLabel;
+    QPushButton *fileOpenButton;
+    QLineEdit *sampleRate;
+    QSlider *fftSizeSlider;
+    QSlider *zoomLevelSlider;
+    QSlider *powerMaxSlider;
+    QSlider *powerMinSlider;
+    QCheckBox *cursorsCheckBox;
+    QSpinBox *cursorBitsSpinBox;
+    QLabel *timeSelectionFreqLabel;
+    QLabel *timeSelectionTimeLabel;
+    QLabel *bitSelectionFreqLabel;
+    QLabel *bitSelectionTimeLabel;
 };

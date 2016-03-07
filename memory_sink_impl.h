@@ -17,28 +17,36 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef INCLUDED_GR_MEMORY_SINK_IMPL_H
+#define INCLUDED_GR_MEMORY_SINK_IMPL_H
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include "memory_sink.h"
 
-class MainWindow : public QMainWindow
+namespace gr
 {
-    Q_OBJECT
+namespace blocks
+{
+
+class memory_sink_impl : public memory_sink
+{
+private:
+    size_t d_itemsize;
+    void *d_sink;
+    size_t d_length;
+    size_t d_ptr = 0;
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
+    memory_sink_impl(size_t itemsize);
+    ~memory_sink_impl();
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+    void set_sink(void *sink, size_t length);
 
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    int work(int noutput_items,
+             gr_vector_const_void_star &input_items,
+             gr_vector_void_star &output_items);
 };
+
+} /* namespace blocks */
+} /* namespace gr */
+
+#endif /* INCLUDED_GR_MEMORY_SINK_IMPL_H */

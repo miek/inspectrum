@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -17,28 +17,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "plot.h"
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
-
-class MainWindow : public QMainWindow
+void Plot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
-    Q_OBJECT
+    painter.save();
+    QPen pen(Qt::white, 1, Qt::DashLine);
+    painter.setPen(pen);
+    painter.drawLine(rect.left(), rect.center().y(), rect.right(), rect.center().y());
+    painter.restore();
+}
 
-public:
-    MainWindow();
-    void changeSampleRate(int rate);
+void Plot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+}
 
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
-};
+void Plot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+
+}

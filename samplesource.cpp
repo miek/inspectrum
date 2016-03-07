@@ -17,28 +17,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "samplesource.h"
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
-
-class MainWindow : public QMainWindow
+template<typename T>
+void SampleSource<T>::subscribe(Subscriber *subscriber)
 {
-    Q_OBJECT
+	subscribers.insert(subscriber);
+}
 
-public:
-    MainWindow();
-    void changeSampleRate(int rate);
+template<typename T>
+void SampleSource<T>::invalidate()
+{
+	for (auto subscriber : subscribers) {
+		subscriber->invalidateEvent();
+	}
+}
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+template<typename T>
+void SampleSource<T>::unsubscribe(Subscriber *subscriber)
+{
+	subscribers.erase(subscriber);
+}
 
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
-};
+template class SampleSource<std::complex<float>>;
+template class SampleSource<float>;

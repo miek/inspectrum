@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -18,27 +18,23 @@
  */
 
 #pragma once
+#include <memory>
+#include "abstractsamplesource.h"
+#include "plot.h"
+#include "util.h"
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
-
-class MainWindow : public QMainWindow
+class TracePlot : public Plot
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
+	TracePlot(std::shared_ptr<AbstractSampleSource> source);
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+    void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    std::shared_ptr<AbstractSampleSource> source() { return sampleSource; };
 
 private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+	std::shared_ptr<AbstractSampleSource> sampleSource;
+
+	void plotTrace(QPainter &painter, QRect &rect, float *samples, off_t count, int step);
 };

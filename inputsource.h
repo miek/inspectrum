@@ -19,22 +19,27 @@
 
 #pragma once
 
-#include "fft.h"
-#include <fftw3.h>
-#include <memory>
+#include <complex>
+#include "samplesource.h"
 
-class InputSource
+class InputSource : public SampleSource<std::complex<float>>
 {
 private:
-    FILE *m_file;
-    off_t m_file_size;
-    off_t sampleCount;
-    fftwf_complex *m_data;
+    FILE *inputFile = nullptr;
+    off_t fileSize = 0;
+    off_t sampleCount = 0;
+    off_t sampleRate = 0;
+    std::complex<float> *mmapData = nullptr;
 
 public:
-    InputSource(const char *filename);
+    InputSource();
     ~InputSource();
-
-    bool getSamples(fftwf_complex *dest, off_t start, int length);
-    off_t getSampleCount() { return sampleCount; };
+    void cleanup();
+    void openFile(const char *filename);
+    std::unique_ptr<std::complex<float>[]> getSamples(off_t start, off_t length);
+    off_t count() {
+        return sampleCount;
+    };
+    void setSampleRate(off_t rate);
+    off_t rate();
 };

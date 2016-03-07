@@ -17,28 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "grsamplebuffer.h"
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
-
-class MainWindow : public QMainWindow
+template<typename Tin, typename Tout>
+void GRSampleBuffer<Tin, Tout>::work(void *input, void *output, int length)
 {
-    Q_OBJECT
+    mem_source->set_source(input, length);
+    mem_sink->set_sink(output, length);
+    tb->run();
+}
 
-public:
-    MainWindow();
-    void changeSampleRate(int rate);
-
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
-
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
-};
+template class GRSampleBuffer<std::complex<float>, std::complex<float>>;
+template class GRSampleBuffer<std::complex<float>, float>;

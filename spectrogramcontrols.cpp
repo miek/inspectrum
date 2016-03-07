@@ -24,74 +24,120 @@
 #include <cmath>
 
 SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent)
-	: QDockWidget::QDockWidget(title, parent)
+    : QDockWidget::QDockWidget(title, parent)
 {
-	widget = new QWidget(this);
-	layout = new QFormLayout(widget);
+    widget = new QWidget(this);
+    layout = new QFormLayout(widget);
 
-	fileOpenButton = new QPushButton("Open file...", widget);
-	layout->addRow(fileOpenButton);
+    fileOpenButton = new QPushButton("Open file...", widget);
+    layout->addRow(fileOpenButton);
 
-	sampleRate = new QLineEdit("8000000");
-	sampleRate->setValidator(new QIntValidator(this));
-	layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
+    sampleRate = new QLineEdit();
+    sampleRate->setValidator(new QIntValidator(this));
+    layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
-	fftSizeSlider = new QSlider(Qt::Horizontal, widget);
-	fftSizeSlider->setRange(7, 13);
-	fftSizeSlider->setValue(10);
-	layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
+    // Spectrogram settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
 
-	zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
-	zoomLevelSlider->setRange(0, 5);
-	zoomLevelSlider->setValue(0);
-	layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
+    fftSizeSlider = new QSlider(Qt::Horizontal, widget);
+    fftSizeSlider->setRange(7, 13);
+    layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
-	powerMaxSlider = new QSlider(Qt::Horizontal, widget);
-	powerMaxSlider->setRange(-100, 20);
-	powerMaxSlider->setValue(0);
-	layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
+    zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
+    zoomLevelSlider->setRange(0, 10);
+    layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
-	powerMinSlider = new QSlider(Qt::Horizontal, widget);
-	powerMinSlider->setRange(-100, 20);
-	powerMinSlider->setValue(-50);
-	layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
+    powerMaxSlider = new QSlider(Qt::Horizontal, widget);
+    powerMaxSlider->setRange(-100, 20);
+    layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
 
-	timeScaleCheckBox = new QCheckBox(widget);
-	timeScaleCheckBox->setCheckState(Qt::Checked);
-	layout->addRow(new QLabel(tr("time overlay:")), timeScaleCheckBox);
+    powerMinSlider = new QSlider(Qt::Horizontal, widget);
+    powerMinSlider->setRange(-100, 20);
+    layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
-	cursorFrequencyLabel = new QLabel();
-	layout->addRow(new QLabel(tr("Cursor frequency:")), cursorFrequencyLabel);
+    // Time selection settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Time selection</b>")));
 
-	cursorTimeLabel = new QLabel();
-	layout->addRow(new QLabel(tr("Cursor time:")), cursorTimeLabel);
+    cursorsCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
 
-	deltaDragCheckBox = new QCheckBox(widget);
-	deltaDragCheckBox->setCheckState(Qt::Checked);
-	layout->addRow(new QLabel(tr("Delta dragging:")), deltaDragCheckBox);
+    cursorBitsSpinBox = new QSpinBox();
+    cursorBitsSpinBox->setMinimum(1);
+    cursorBitsSpinBox->setMaximum(9999);
+    layout->addRow(new QLabel(tr("Bits:")), cursorBitsSpinBox);
 
-	deltaFrequencyLabel = new QLabel();
-	layout->addRow(new QLabel(tr("Delta frequency:")), deltaFrequencyLabel);
+    timeSelectionFreqLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Frequency:")), timeSelectionFreqLabel);
 
-	deltaTimeLabel = new QLabel();
-	layout->addRow(new QLabel(tr("Delta time:")), deltaTimeLabel);
+    timeSelectionTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Time:")), timeSelectionTimeLabel);
 
-	widget->setLayout(layout);
-	setWidget(widget);
+    bitSelectionFreqLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Bit frequency:")), bitSelectionFreqLabel);
 
-	connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeSliderChanged(int)));
-	connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
+    bitSelectionTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Bit time:")), bitSelectionTimeLabel);
+
+    widget->setLayout(layout);
+    setWidget(widget);
+
+    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
+    connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
+    connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
+    connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
 }
 
-void SpectrogramControls::fftSizeSliderChanged(int size)
+void SpectrogramControls::clearCursorLabels()
 {
-	emit fftSizeChanged((int)pow(2, size));
+    timeSelectionTimeLabel->setText("");
+    timeSelectionFreqLabel->setText("");
+    bitSelectionTimeLabel->setText("");
+    bitSelectionFreqLabel->setText("");
+}
+
+void SpectrogramControls::cursorsStateChanged(int state)
+{
+    if (state == Qt::Unchecked) {
+        clearCursorLabels();
+    }
+}
+
+void SpectrogramControls::setDefaults()
+{
+    sampleRate->setText("8000000");
+    fftSizeSlider->setValue(9);
+    zoomLevelSlider->setValue(0);
+    powerMaxSlider->setValue(0);
+    powerMinSlider->setValue(-50);
+    cursorsCheckBox->setCheckState(Qt::Unchecked);
+    cursorBitsSpinBox->setValue(1);
+}
+
+void SpectrogramControls::fftOrZoomChanged(int value)
+{
+    int fftSize = pow(2, fftSizeSlider->value());
+    int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
+    emit fftOrZoomChanged(fftSize, zoomLevel);
 }
 
 void SpectrogramControls::fileOpenButtonClicked()
 {
-	QString fileName = QFileDialog::getOpenFileName(
-		this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*)")
-	);
-	emit openFile(fileName);
+    QString fileName = QFileDialog::getOpenFileName(
+                           this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*)")
+                       );
+    emit openFile(fileName);
+}
+
+void SpectrogramControls::timeSelectionChanged(float time)
+{
+    if (cursorsCheckBox->checkState() == Qt::Checked) {
+        timeSelectionTimeLabel->setText(QString::number(time) + "s");
+        timeSelectionFreqLabel->setText(QString::number(1 / time) + "Hz");
+
+        int bits = cursorBitsSpinBox->value();
+        bitSelectionTimeLabel->setText(QString::number(time / bits) + "s");
+        bitSelectionFreqLabel->setText(QString::number(bits / time) + "Hz");
+    }
 }

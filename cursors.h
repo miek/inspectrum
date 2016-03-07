@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -19,26 +19,34 @@
 
 #pragma once
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include <QObject>
+#include <QPainter>
+#include <QPoint>
+#include "util.h"
 
-class MainWindow : public QMainWindow
+class Cursors : public QObject
 {
     Q_OBJECT
 
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
+    Cursors(QObject * parent);
+    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    range_t<int> selection();
+    void setBits(int bits);
+    void setSelection(range_t<int> selection);
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+signals:
+	void cursorsMoved();
+
+protected:
+	bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+	bool pointOverCursor(QPoint point, int &cursor);
+
+	int bitCount = 1;
+	bool dragging = false;
+	int selectedCursor = 0;
+	int cursorPositions[2] = {0, 50};
+
 };

@@ -17,28 +17,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef INCLUDED_GR_MEMORY_SOURCE_H
+#define INCLUDED_GR_MEMORY_SOURCE_H
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include "spectrogramcontrols.h"
-#include "plotview.h"
+#include <gnuradio/blocks/api.h>
+#include <gnuradio/sync_block.h>
 
-class MainWindow : public QMainWindow
+namespace gr
 {
-    Q_OBJECT
-
+namespace blocks
+{
+class memory_source : virtual public sync_block
+{
 public:
-    MainWindow();
-    void changeSampleRate(int rate);
+    typedef boost::shared_ptr<memory_source> sptr;
 
-public slots:
-    void openFile(QString fileName);
-    void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+    static sptr make(size_t itemsize);
 
-private:
-    SpectrogramControls *dock;
-    PlotView *plots;
-    InputSource *input;
+    virtual void set_source(void *source, size_t length) = 0;
 };
+
+} /* namespace blocks */
+} /* namespace gr */
+
+#endif /* INCLUDED_GR_MEMORY_SOURCE_H */
