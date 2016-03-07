@@ -120,21 +120,22 @@ void PlotView::setCursorBits(int bits)
     viewport()->update();
 }
 
-void PlotView::setFFTSize(int size)
+void PlotView::setFFTAndZoom(int size, int zoom)
 {
+    // Set new FFT size
     fftSize = size;
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setFFTSize(size);
-    horizontalScrollBar()->setSingleStep(size * 10 / pow(2, zoomLevel));
-    horizontalScrollBar()->setPageStep(size * 100 / pow(2, zoomLevel));
-    updateView();
-}
 
-void PlotView::setZoomLevel(int zoom)
-{
+    // Set new zoom level
     zoomLevel = zoom;
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setZoomLevel(zoom);
+
+    // Update horizontal (time) scrollbar
+    horizontalScrollBar()->setSingleStep(size * 10 / pow(2, zoomLevel));
+    horizontalScrollBar()->setPageStep(size * 100 / pow(2, zoomLevel));
+
     updateView();
 }
 

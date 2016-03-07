@@ -83,7 +83,8 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     widget->setLayout(layout);
     setWidget(widget);
 
-    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeSliderChanged(int)));
+    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
+    connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
     connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
     connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
 }
@@ -114,9 +115,9 @@ void SpectrogramControls::setDefaults()
     cursorBitsSpinBox->setValue(1);
 }
 
-void SpectrogramControls::fftSizeSliderChanged(int size)
+void SpectrogramControls::fftOrZoomChanged(int value)
 {
-    emit fftSizeChanged((int)pow(2, size));
+    emit fftOrZoomChanged((int)pow(2, fftSizeSlider->value()), zoomLevelSlider->value());
 }
 
 void SpectrogramControls::fileOpenButtonClicked()

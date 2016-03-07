@@ -44,8 +44,7 @@ public slots:
     void enableCursors(bool enable);
     void invalidateEvent();
     void setCursorBits(int bits);
-    void setFFTSize(int size);
-    void setZoomLevel(int zoom);
+    void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
 

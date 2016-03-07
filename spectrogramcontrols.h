@@ -37,14 +37,14 @@ public:
     void setDefaults();
 
 signals:
-    void fftSizeChanged(int size);
+    void fftOrZoomChanged(int fftSize, int zoomLevel);
     void openFile(QString fileName);
 
 public slots:
     void timeSelectionChanged(float time);
 
 private slots:
-    void fftSizeSliderChanged(int size);
+    void fftOrZoomChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
 
