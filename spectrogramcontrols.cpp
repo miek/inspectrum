@@ -117,7 +117,9 @@ void SpectrogramControls::setDefaults()
 
 void SpectrogramControls::fftOrZoomChanged(int value)
 {
-    emit fftOrZoomChanged((int)pow(2, fftSizeSlider->value()), zoomLevelSlider->value());
+    int fftSize = pow(2, fftSizeSlider->value());
+    int zoomLevel = pow(2, zoomLevelSlider->value());
+    emit fftOrZoomChanged(fftSize, zoomLevel);
 }
 
 void SpectrogramControls::fileOpenButtonClicked()

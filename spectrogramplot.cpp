@@ -162,7 +162,7 @@ void SpectrogramPlot::setPowerMin(int power)
 
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
-    zoomLevel = clamp(zoom, 0, (int)log2(fftSize));
+    zoomLevel = zoom;
 }
 
 int SpectrogramPlot::getHeight()
@@ -175,7 +175,7 @@ int SpectrogramPlot::getHeight()
 
 int SpectrogramPlot::getStride()
 {
-    return fftSize / pow(2, zoomLevel);
+    return fftSize / zoomLevel;
 }
 
 off_t SpectrogramPlot::lineToSample(off_t line)
