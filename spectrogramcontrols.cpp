@@ -118,7 +118,7 @@ void SpectrogramControls::setDefaults()
 void SpectrogramControls::fftOrZoomChanged(int value)
 {
     int fftSize = pow(2, fftSizeSlider->value());
-    int zoomLevel = pow(2, zoomLevelSlider->value());
+    int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
     emit fftOrZoomChanged(fftSize, zoomLevel);
 }
 
