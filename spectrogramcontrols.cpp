@@ -127,7 +127,8 @@ void SpectrogramControls::fileOpenButtonClicked()
     QString fileName = QFileDialog::getOpenFileName(
                            this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*)")
                        );
-    emit openFile(fileName);
+    if (!fileName.isEmpty())
+        emit openFile(fileName);
 }
 
 void SpectrogramControls::timeSelectionChanged(float time)
