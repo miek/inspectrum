@@ -42,6 +42,10 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     spectrogramPlot = new SpectrogramPlot(mainSampleSource);
     plots.emplace_back(spectrogramPlot);
 
+    iqPlot = createIQPlot(mainSampleSource);
+    plots.emplace_back(iqPlot);
+    plots.emplace_back(createQuadratureDemodPlot(static_cast<SampleSource<std::complex<float>>*>(iqPlot->source().get())));
+
     mainSampleSource->subscribe(this);
 }
 
