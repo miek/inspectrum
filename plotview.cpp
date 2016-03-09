@@ -169,7 +169,7 @@ void PlotView::paintEvent(QPaintEvent *event)
         int y = -verticalScrollBar()->value();                                  \
         for (auto&& plot : plots) {                                             \
             QRect rect = QRect(0, y, width(), plot->height());                  \
-            plot->paintFunc(painter, rect, {viewRange.first, viewRange.second});\
+            plot->paintFunc(painter, rect, viewRange);                          \
             y += plot->height();                                                \
         }                                                                       \
     }
@@ -178,7 +178,7 @@ void PlotView::paintEvent(QPaintEvent *event)
     PLOT_LAYER(paintMid);
     PLOT_LAYER(paintFront);
     if (cursorsEnabled)
-        cursors.paintFront(painter, rect, {viewRange.first, viewRange.second});
+        cursors.paintFront(painter, rect, viewRange);
 
 #undef PLOT_LAYER
 }

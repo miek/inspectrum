@@ -59,7 +59,7 @@ private:
     SpectrogramPlot *spectrogramPlot = nullptr;
     TracePlot *iqPlot = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
-    std::pair<off_t, off_t> viewRange;
+    range_t<off_t> viewRange;
     bool selection = false;
     range_t<off_t> selectedSamples;
     std::pair<float, float> selectionFreq;
