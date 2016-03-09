@@ -136,7 +136,7 @@ void PlotView::setFFTAndZoom(int size, int zoom)
     horizontalScrollBar()->setSingleStep(size * 10 / zoomLevel);
     horizontalScrollBar()->setPageStep(size * 100 / zoomLevel);
 
-    updateView();
+    updateView(true);
 }
 
 void PlotView::setPowerMin(int power)
@@ -207,13 +207,24 @@ void PlotView::scrollContentsBy(int dx, int dy)
     updateView();
 }
 
-void PlotView::updateView()
+void PlotView::updateView(bool reCenter)
 {
+    // Store old view for recentering
+    auto oldViewRange = viewRange;
+
     // Update current view
     viewRange = {
         horizontalScrollBar()->value(),
         horizontalScrollBar()->value() + width() * samplesPerLine()
     };
+
+    // Adjust time offset to zoom around central sample
+    if (reCenter) {
+        horizontalScrollBar()->setValue(
+            horizontalScrollBar()->value() + (oldViewRange.length() - viewRange.length()) / 2
+        );
+    }
+
     horizontalScrollBar()->setMaximum(mainSampleSource->count() - ((width() - 1) * samplesPerLine()));
 
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));

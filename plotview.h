@@ -74,5 +74,5 @@ private:
     TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);
     int plotsHeight();
     off_t samplesPerLine();
-    void updateView();
+    void updateView(bool reCenter = false);
 };
