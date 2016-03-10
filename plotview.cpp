@@ -18,6 +18,7 @@
  */
 
 #include "plotview.h"
+#include <QApplication>
 #include <QDebug>
 #include <QPainter>
 #include <QScrollBar>
@@ -105,6 +106,22 @@ void PlotView::enableCursors(bool enabled)
         cursors.setSelection({viewport()->rect().left() + margin, viewport()->rect().right() - margin});
     }
     viewport()->update();
+}
+
+bool PlotView::eventFilter(QObject * obj, QEvent *event)
+{
+    if (event->type() == QEvent::Wheel) {
+        QWheelEvent *wheelEvent = (QWheelEvent*)event;
+        if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+            if (wheelEvent->angleDelta().y() > 0) {
+                emit zoomIn();
+            } else if (wheelEvent->angleDelta().y() < 0) {
+                emit zoomOut();
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 void PlotView::invalidateEvent()

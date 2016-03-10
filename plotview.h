@@ -51,6 +51,7 @@ public slots:
     void setPowerMax(int power);
 
 protected:
+    bool eventFilter(QObject * obj, QEvent *event) override;
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent * event);
     void scrollContentsBy(int dx, int dy);
