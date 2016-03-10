@@ -47,6 +47,8 @@ MainWindow::MainWindow()
 
     // Connect dock outputs
     connect(plots, SIGNAL(timeSelectionChanged(float)), dock, SLOT(timeSelectionChanged(float)));
+    connect(plots, SIGNAL(zoomIn()), dock, SLOT(zoomIn()));
+    connect(plots, SIGNAL(zoomOut()), dock, SLOT(zoomOut()));
 
     // Set defaults after making connections so everything is in sync
     dock->setDefaults();

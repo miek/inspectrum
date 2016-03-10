@@ -142,3 +142,13 @@ void SpectrogramControls::timeSelectionChanged(float time)
         bitSelectionFreqLabel->setText(QString::number(bits / time) + "Hz");
     }
 }
+
+void SpectrogramControls::zoomIn()
+{
+    zoomLevelSlider->setValue(zoomLevelSlider->value() + 1);
+}
+
+void SpectrogramControls::zoomOut()
+{
+    zoomLevelSlider->setValue(zoomLevelSlider->value() - 1);
+}

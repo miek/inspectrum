@@ -42,6 +42,8 @@ signals:
 
 public slots:
     void timeSelectionChanged(float time);
+    void zoomIn();
+    void zoomOut();
 
 private slots:
     void fftOrZoomChanged(int value);
