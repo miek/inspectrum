@@ -50,15 +50,19 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sa
     if (!inputSource || inputSource->count() == 0)
         return;
 
-    off_t sampleOffset = sampleRange.minimum % getStride();
+    off_t sampleOffset = sampleRange.minimum % (getStride() * linesPerTile());
     off_t tileID = sampleRange.minimum - sampleOffset;
     int xoffset = sampleOffset / fftSize;
-    for (int x = rect.left(); x < rect.right(); x += linesPerTile()) {
-        QPixmap *tile = getPixmapTile(tileID);
+
+    // Paint first (possibly partial) tile
+    painter.drawPixmap(QRect(rect.left(), rect.y(), linesPerTile() - xoffset, fftSize), *getPixmapTile(tileID), QRect(xoffset, 0, linesPerTile() - xoffset, fftSize));
+    tileID += getStride() * linesPerTile();
+
+    // Paint remaining tiles
+    for (int x = linesPerTile() - xoffset; x < rect.right(); x += linesPerTile()) {
         // TODO: don't draw past rect.right()
         // TODO: handle partial final tile
-        painter.drawPixmap(QRect(x, rect.y(), linesPerTile() - xoffset, fftSize), *tile, QRect(xoffset, 0, linesPerTile() - xoffset, fftSize));
-        xoffset = 0;
+        painter.drawPixmap(QRect(x, rect.y(), linesPerTile(), fftSize), *getPixmapTile(tileID));
         tileID += getStride() * linesPerTile();
     }
 }
