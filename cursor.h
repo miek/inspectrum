@@ -20,35 +20,25 @@
 #pragma once
 
 #include <QObject>
-#include <QPainter>
 #include <QPoint>
-#include "cursor.h"
 #include "util.h"
 
-class Cursors : public QObject
+class Cursor : public QObject
 {
     Q_OBJECT
 
 public:
-    Cursors(QObject * parent);
-    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
-    range_t<int> selection();
-    void setSegments(int segments);
-    void setSelection(range_t<int> selection);
-
-public slots:
-	void cursorMoved();
+    Cursor(QObject * parent);
+    int pos();
+    void setPos(int newPos);
+	bool eventFilter(QObject *obj, QEvent *event);
 
 signals:
-	void cursorsMoved();
-
-protected:
-	bool eventFilter(QObject *obj, QEvent *event) override;
+	void posChanged();
 
 private:
-	bool pointOverCursor(QPoint point, int &cursor);
+	bool pointOverCursor(QPoint point);
 
-	Cursor *minCursor;
-	Cursor *maxCursor;
-	int segmentCount = 1;
+	bool dragging = false;
+	int cursorPosition = 0;
 };

@@ -23,51 +23,30 @@
 
 Cursors::Cursors(QObject * parent) : QObject::QObject(parent)
 {
-
+    minCursor = new Cursor(this);
+    maxCursor = new Cursor(this);
+    installEventFilter(minCursor);
+    installEventFilter(maxCursor);
+    connect(minCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
+    connect(maxCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
 }
 
-// Return true if point is over a cursor, put cursor ID in `cursor`
-bool Cursors::pointOverCursor(QPoint point, int &cursor)
+void Cursors::cursorMoved()
 {
-    int margin = 5;
-    for (int i = 0; i < 2; i++) {
-        range_t<int> range = {cursorPositions[i] - margin, cursorPositions[i] + margin};
-        if (range.contains(point.x())) {
-            cursor = i;
-            return true;
-        }
+    // Swap cursors if one has been dragged past the other
+    if (minCursor->pos() > maxCursor->pos()) {
+        std::swap(minCursor, maxCursor);
     }
-    return false;
+    emit cursorsMoved();
 }
 
 bool Cursors::eventFilter(QObject *obj, QEvent *event)
 {
-    // Start dragging on left mouse button press, if over a cursor
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::LeftButton) {
-            if (pointOverCursor(mouseEvent->pos(), selectedCursor)) {
-                dragging = true;
-                return true;
-            }
-        }
+    if (minCursor->eventFilter(obj, event))
+        return true;
+    if (maxCursor->eventFilter(obj, event))
+        return true;
 
-    // Update current cursor positon if we're dragging
-    } else if (event->type() == QEvent::MouseMove) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (dragging) {
-            cursorPositions[selectedCursor] = mouseEvent->pos().x();
-            emit cursorsMoved();
-        }
-
-    // Stop dragging on left mouse button release
-    } else if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::LeftButton) {
-            dragging = false;
-            return true;
-        }
-    }
     return false;
 }
 
@@ -75,7 +54,8 @@ void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
 {
     painter.save();
 
-    QRect cursorRect(cursorPositions[0], rect.top(), cursorPositions[1] - cursorPositions[0], rect.height());
+    QRect cursorRect(minCursor->pos(), rect.top(), maxCursor->pos() - minCursor->pos(), rect.height());
+
     // Draw translucent white fill for highlight
     painter.fillRect(
         cursorRect,
@@ -85,38 +65,31 @@ void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     // Draw vertical edges for individual segments
     painter.setPen(QPen(Qt::gray, 1, Qt::DashLine));
     for (int i = 1; i < segmentCount; i++) {
-        int pos = cursorPositions[0] + (i * cursorRect.width() / segmentCount);
+        int pos = minCursor->pos() + (i * cursorRect.width() / segmentCount);
         painter.drawLine(pos, rect.top(), pos, rect.bottom());
     }
 
     // Draw vertical edges
     painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
-    painter.drawLine(cursorPositions[0], rect.top(), cursorPositions[0], rect.bottom());
-    painter.drawLine(cursorPositions[1], rect.top(), cursorPositions[1], rect.bottom());
+    painter.drawLine(minCursor->pos(), rect.top(), minCursor->pos(), rect.bottom());
+    painter.drawLine(maxCursor->pos(), rect.top(), maxCursor->pos(), rect.bottom());
 
     painter.restore();
 }
 
 range_t<int> Cursors::selection()
 {
-    // TODO: ensure correct ordering during dragging, not here
-    if (cursorPositions[0] < cursorPositions[1]) {
-        return {cursorPositions[0], cursorPositions[1]};
-
-    } else {
-        return {cursorPositions[1], cursorPositions[0]};
-    }
+    return {minCursor->pos(), maxCursor->pos()};
 }
 
 void Cursors::setSegments(int segments)
 {
     segmentCount = std::max(segments, 1);
-
 }
 
 void Cursors::setSelection(range_t<int> selection)
 {
-    cursorPositions[0] = selection.minimum;
-    cursorPositions[1] = selection.maximum;
+    minCursor->setPos(selection.minimum);
+    maxCursor->setPos(selection.maximum);
     emit cursorsMoved();
 }
