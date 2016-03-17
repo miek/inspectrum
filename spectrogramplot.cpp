@@ -52,7 +52,7 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sa
 
     off_t sampleOffset = sampleRange.minimum % (getStride() * linesPerTile());
     off_t tileID = sampleRange.minimum - sampleOffset;
-    int xoffset = sampleOffset / fftSize;
+    int xoffset = sampleOffset / getStride();
 
     // Paint first (possibly partial) tile
     painter.drawPixmap(QRect(rect.left(), rect.y(), linesPerTile() - xoffset, fftSize), *getPixmapTile(tileID), QRect(xoffset, 0, linesPerTile() - xoffset, fftSize));
