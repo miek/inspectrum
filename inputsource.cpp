@@ -29,6 +29,8 @@
 #include <stdexcept>
 #include <algorithm>
 
+#include <QFileInfo>
+
 class ComplexF32SampleAdapter : public SampleAdapter {
 public:
     size_t sampleSize() override {
@@ -100,6 +102,21 @@ void InputSource::cleanup()
 
 void InputSource::openFile(const char *filename)
 {
+    QFileInfo fileInfo(filename);
+    const auto suffix = fileInfo.suffix();
+    if( (suffix == "cfile") || (suffix == "cf32") ) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
+    }
+    else if( suffix == "cs8" ) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS8SampleAdapter());
+    }
+    else if( suffix == "cu8" ) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
+    }
+    else {
+        throw std::runtime_error("Invalid file extension");
+    }
+
     FILE *file = fopen(filename, "rb");
     if (file == nullptr)
         throw std::runtime_error("Error opening file");

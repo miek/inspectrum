@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2015, Jared Boone <jared@sharebrained.com>
  *
  *  This file is part of inspectrum.
  *
@@ -125,7 +126,7 @@ void SpectrogramControls::fftOrZoomChanged(int value)
 void SpectrogramControls::fileOpenButtonClicked()
 {
     QString fileName = QFileDialog::getOpenFileName(
-                           this, tr("Open File"), "", tr("Sample file (*.cfile *.bin);;All files (*)")
+                           this, tr("Open File"), "", tr("complex<float> file (*.cfile *.cf32);;complex<int8> HackRF file (*.cs8);;complex<uint8> RTL-SDR file (*.cu8);;All files (*)")
                        );
     if (!fileName.isEmpty())
         emit openFile(fileName);
