@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2015, Jared Boone <jared@sharebrained.com>
  *
  *  This file is part of inspectrum.
  *
@@ -26,6 +27,53 @@
 #include <sys/stat.h>
 
 #include <stdexcept>
+#include <algorithm>
+
+class ComplexF32SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(std::complex<float>);
+    }
+
+    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const std::complex<float>*>(src);
+        std::copy(&s[start], &s[start + length], dest);
+    }
+};
+
+class ComplexS8SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(std::complex<int8_t>);
+    }
+    
+    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const std::complex<int8_t>*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const std::complex<int8_t>& v) -> std::complex<float> {
+                const float k = 1.0f / 128.0f;
+                return { v.real() * k, v.imag() * k };
+            }
+        );
+    }
+};
+
+class ComplexU8SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(std::complex<uint8_t>);
+    }
+    
+    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const std::complex<uint8_t>*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const std::complex<uint8_t>& v) -> std::complex<float> {
+                const float k = 1.0f / 128.0f;
+                return { v.real() * k - 1.0f, v.imag() * k - 1.0f };
+            }
+        );
+    }
+};
 
 InputSource::InputSource()
 {
