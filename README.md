@@ -45,7 +45,11 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 
     ./inspectrum
 
-Currently inspectrum can only read files with interleaved (complex) 32-bit floats, such as those produced by GNURadio or osmocom_fft.
+## Input
+inspectrum supports the following file types:
+ * `*.cf32`, `*.cfile` - Complex 32-bit floating point samples (GNURadio, osmocom_fft)
+ * `*.cs32` - Complex 8-bit signed integer samples (HackRF)
+ * `*.cu32` - Complex 8-bit unsigned integer samples (RTL-SDR)
 
 ## Features
  * Spectrogram with zoom/pan
