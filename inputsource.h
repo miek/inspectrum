@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2015, Jared Boone <jared@sharebrained.com>
  *
  *  This file is part of inspectrum.
  *
@@ -22,6 +23,12 @@
 #include <complex>
 #include "samplesource.h"
 
+class SampleAdapter {
+public:
+    virtual size_t sampleSize() = 0;
+    virtual void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) = 0;
+};
+
 class InputSource : public SampleSource<std::complex<float>>
 {
 private:
@@ -30,6 +37,7 @@ private:
     off_t sampleCount = 0;
     off_t sampleRate = 0;
     std::complex<float> *mmapData = nullptr;
+    std::unique_ptr<SampleAdapter> sampleAdapter;
 
 public:
     InputSource();
