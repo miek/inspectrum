@@ -36,7 +36,7 @@ private:
     off_t fileSize = 0;
     off_t sampleCount = 0;
     off_t sampleRate = 0;
-    std::complex<float> *mmapData = nullptr;
+    void *mmapData = nullptr;
     std::unique_ptr<SampleAdapter> sampleAdapter;
 
 public:

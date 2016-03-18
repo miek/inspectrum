@@ -125,9 +125,9 @@ void InputSource::openFile(const char *filename)
     if (fstat(fileno(file), &sb) != 0)
         throw std::runtime_error("Error fstating file");
     off_t size = sb.st_size;
-    sampleCount = size / sizeof(std::complex<float>);
+    sampleCount = size / sampleAdapter->sampleSize();
 
-    auto data = (std::complex<float>*)mmap(NULL, size, PROT_READ, MAP_SHARED, fileno(file), 0);
+    auto data = mmap(NULL, size, PROT_READ, MAP_SHARED, fileno(file), 0);
     if (data == nullptr)
         throw std::runtime_error("Error mmapping file");
 
@@ -166,6 +166,7 @@ std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_
         return nullptr;
 
     std::unique_ptr<std::complex<float>[]> dest(new std::complex<float>[length]);
-    memcpy(dest.get(), &mmapData[start], length * sizeof(std::complex<float>));
+    sampleAdapter->copyRange(mmapData, start, length, dest.get());
+
     return dest;
 }
