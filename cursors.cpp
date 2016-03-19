@@ -23,8 +23,8 @@
 
 Cursors::Cursors(QObject * parent) : QObject::QObject(parent)
 {
-    minCursor = new Cursor(this);
-    maxCursor = new Cursor(this);
+    minCursor = new Cursor(Qt::Vertical, this);
+    maxCursor = new Cursor(Qt::Vertical, this);
     installEventFilter(minCursor);
     installEventFilter(maxCursor);
     connect(minCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);

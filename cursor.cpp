@@ -21,16 +21,21 @@
 #include <QMouseEvent>
 #include "cursor.h"
 
-Cursor::Cursor(QObject * parent) : QObject::QObject(parent)
+Cursor::Cursor(Qt::Orientation orientation, QObject * parent) : QObject::QObject(parent), orientation(orientation)
 {
 
+}
+
+int Cursor::fromPoint(QPoint point)
+{
+    return (orientation == Qt::Vertical) ? point.x() : point.y();
 }
 
 bool Cursor::pointOverCursor(QPoint point)
 {
     const int margin = 5;
     range_t<int> range = {cursorPosition - margin, cursorPosition + margin};
-    return range.contains(point.x());
+    return range.contains(fromPoint(point));
 }
 
 bool Cursor::eventFilter(QObject *obj, QEvent *event)
@@ -49,14 +54,14 @@ bool Cursor::eventFilter(QObject *obj, QEvent *event)
     } else if (event->type() == QEvent::MouseMove) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (dragging) {
-            cursorPosition = mouseEvent->pos().x();
+            cursorPosition = fromPoint(mouseEvent->pos());
             emit posChanged();
         }
 
     // Stop dragging on left mouse button release
     } else if (event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::LeftButton) {
+        if (mouseEvent->button() == Qt::LeftButton && dragging) {
             dragging = false;
             return true;
         }

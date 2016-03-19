@@ -28,7 +28,7 @@ class Cursor : public QObject
     Q_OBJECT
 
 public:
-    Cursor(QObject * parent);
+    Cursor(Qt::Orientation orientation, QObject * parent);
     int pos();
     void setPos(int newPos);
 	bool eventFilter(QObject *obj, QEvent *event);
@@ -37,8 +37,10 @@ signals:
 	void posChanged();
 
 private:
+	int fromPoint(QPoint point);
 	bool pointOverCursor(QPoint point);
 
+	Qt::Orientation orientation;
 	bool dragging = false;
 	int cursorPosition = 0;
 };
