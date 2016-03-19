@@ -26,18 +26,19 @@
 #include <gnuradio/analog/quadrature_demod_cf.h>
 #include <gnuradio/blocks/multiply_const_cc.h>
 #include <gnuradio/filter/firdes.h>
-#include <gnuradio/filter/freq_xlating_fir_filter_ccf.h>
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
 
-PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
+PlotView::PlotView(InputSource *input) : cursors(this), tuner(this), viewRange({0, 0})
 {
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
     viewport()->installEventFilter(&cursors);
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
+    viewport()->installEventFilter(&tuner);
+    connect(&tuner, &Tuner::tunerMoved, this, &PlotView::tunerMoved);
 
     spectrogramPlot = new SpectrogramPlot(mainSampleSource);
     plots.emplace_back(spectrogramPlot);
@@ -59,10 +60,10 @@ TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)
         float centre = -0.05; //(selectionFreq.first + selectionFreq.second) / 2;
         float cutoff = 0.02; //std::abs(selectionFreq.first - centre);
         auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
-        auto filter = gr::filter::freq_xlating_fir_filter_ccf::make(1, lp_taps, centre, 1.0);
+        plotFilter = gr::filter::freq_xlating_fir_filter_ccf::make(1, lp_taps, centre, 1.0);
 
-        iq_tb->connect(iq_mem_source, 0, filter, 0);
-        iq_tb->connect(filter, 0, multiply, 0);
+        iq_tb->connect(iq_mem_source, 0, plotFilter, 0);
+        iq_tb->connect(plotFilter, 0, multiply, 0);
         iq_tb->connect(multiply, 0, iq_mem_sink, 0);
     } else {
         iq_tb->connect(iq_mem_source, 0, multiply, 0);
@@ -200,6 +201,7 @@ void PlotView::paintEvent(QPaintEvent *event)
     PLOT_LAYER(paintFront);
     if (cursorsEnabled)
         cursors.paintFront(painter, rect, viewRange);
+    tuner.paintFront(painter, rect, viewRange);
 
 #undef PLOT_LAYER
 }
@@ -226,6 +228,18 @@ off_t PlotView::samplesPerLine()
 void PlotView::scrollContentsBy(int dx, int dy)
 {
     updateView();
+}
+
+void PlotView::tunerMoved()
+{
+    float centre = 0.5f - tuner.centre() / (float)fftSize;
+    float cutoff = tuner.deviation() / (float)fftSize;
+    qDebug() << "centre: " << centre << " cutoff: " << cutoff;
+    auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
+    plotFilter->set_center_freq(centre);
+    plotFilter->set_taps(lp_taps);
+
+    viewport()->update();
 }
 
 void PlotView::updateView(bool reCenter)

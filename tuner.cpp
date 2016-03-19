@@ -42,7 +42,7 @@ void Tuner::cursorMoved()
 {
     Cursor *sender = static_cast<Cursor*>(QObject::sender());
     if (sender != cfCursor) {
-        _deviation = std::max(10, std::abs(sender->pos() - cfCursor->pos()));
+        _deviation = std::max(2, std::abs(sender->pos() - cfCursor->pos()));
     }
 
     updateCursors();
