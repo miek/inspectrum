@@ -43,6 +43,7 @@ list(APPEND inspectrum_sources
     spectrogramcontrols.cpp
     spectrogramplot.cpp
     traceplot.cpp
+    tuner.cpp
 )
 
 INCLUDE(FindPkgConfig)
