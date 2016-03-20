@@ -234,7 +234,6 @@ void PlotView::tunerMoved()
 {
     float centre = 0.5f - tuner.centre() / (float)fftSize;
     float cutoff = tuner.deviation() / (float)fftSize;
-    qDebug() << "centre: " << centre << " cutoff: " << cutoff;
     auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
     plotFilter->set_center_freq(centre);
     plotFilter->set_taps(lp_taps);
