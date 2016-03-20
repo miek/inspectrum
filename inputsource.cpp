@@ -121,16 +121,16 @@ void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
     const auto suffix = fileInfo.suffix();
-    if( (suffix == "cfile") || (suffix == "cf32") ) {
+    if( (suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
-    else if( suffix == "cs16" ) {
+    else if( (suffix == "cs16") || (suffix == "sc16") ) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS16SampleAdapter());
     }
-    else if( suffix == "cs8" ) {
+    else if( (suffix == "cs8") || (suffix == "sc8") ) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS8SampleAdapter());
     }
-    else if( suffix == "cu8" ) {
+    else if( (suffix == "cu8") || (suffix == "uc8") ) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
     }
     else {
