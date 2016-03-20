@@ -55,20 +55,19 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
 
 void TracePlot::plotTrace(QPainter &painter, QRect &rect, float *samples, off_t count, int step = 1)
 {
-    int xprev = 0;
-    int yprev = 0;
+    QVector<QPoint> points(count);
+    range_t<int> xRange{0, rect.width() - 2};
+    range_t<int> yRange{0, rect.height() - 2};
+    const float xStep = 1.0 / count * rect.width();
     for (off_t i = 0; i < count; i++) {
         float sample = samples[i*step];
-        int x = (float)i / count * rect.width();
+        int x = i * xStep;
         int y = rect.height() - ((sample * rect.height()/2) + rect.height()/2);
 
-        if (x < 0) x = 0;
-        if (y < 0) y = 0;
-        if (x >= rect.width()-1) x = rect.width()-2;
-        if (y >= rect.height()-1) y = rect.height()-2;
+        x = xRange.clip(x);
+        y = yRange.clip(y);
 
-        painter.drawLine(xprev + rect.x(), yprev + rect.y(), x + rect.x(), y + rect.y());
-        xprev = x;
-        yprev = y;
+        points[i] = {x + rect.x(), y + rect.y()};
     }
+    painter.drawLines(points);
 }
