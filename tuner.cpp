@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdlib>
 #include "tuner.h"
 
 Tuner::Tuner(QObject * parent) : QObject::QObject(parent)
