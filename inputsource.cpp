@@ -43,6 +43,23 @@ public:
     }
 };
 
+class ComplexS16SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(std::complex<int16_t>);
+    }
+
+    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const std::complex<int16_t>*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const std::complex<int16_t>& v) -> std::complex<float> {
+                const float k = 1.0f / 32768.0f;
+                return { v.real() * k, v.imag() * k };
+            }
+        );
+    }
+};
+
 class ComplexS8SampleAdapter : public SampleAdapter {
 public:
     size_t sampleSize() override {
@@ -104,13 +121,16 @@ void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
     const auto suffix = fileInfo.suffix();
-    if( (suffix == "cfile") || (suffix == "cf32") ) {
+    if( (suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
-    else if( suffix == "cs8" ) {
+    else if( (suffix == "cs16") || (suffix == "sc16") ) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS16SampleAdapter());
+    }
+    else if( (suffix == "cs8") || (suffix == "sc8") ) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS8SampleAdapter());
     }
-    else if( suffix == "cu8" ) {
+    else if( (suffix == "cu8") || (suffix == "uc8") ) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
     }
     else {
