@@ -26,6 +26,9 @@ TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : sampleSourc
 
 void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
+    painter.save();
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
 	auto firstSample = sampleRange.minimum;
 	auto length = sampleRange.length();
 
@@ -51,23 +54,25 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     } else {
     	throw std::runtime_error("TracePlot::paintMid: Unsupported source type");
     }
+
+    painter.restore();
 }
 
 void TracePlot::plotTrace(QPainter &painter, QRect &rect, float *samples, off_t count, int step = 1)
 {
     QPainterPath path;
-    range_t<int> xRange{0, rect.width() - 2};
-    range_t<int> yRange{0, rect.height() - 2};
+    range_t<float> xRange{0, rect.width() - 2.f};
+    range_t<float> yRange{0, rect.height() - 2.f};
     const float xStep = 1.0 / count * rect.width();
     for (off_t i = 0; i < count; i++) {
         float sample = samples[i*step];
-        int x = i * xStep;
-        int y = rect.height() - ((sample * rect.height()/2) + rect.height()/2);
+        float x = i * xStep;
+        float y = rect.height() - ((sample * rect.height()/2) + rect.height()/2);
 
         x = xRange.clip(x);
         y = yRange.clip(y);
 
-        path.lineTo(QPoint{x + rect.x(), y + rect.y()});
+        path.lineTo(QPointF{x + rect.x(), y + rect.y()});
     }
     painter.drawPath(path);
 }
