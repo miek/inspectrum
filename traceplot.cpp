@@ -67,12 +67,12 @@ void TracePlot::plotTrace(QPainter &painter, QRect &rect, float *samples, off_t 
     for (off_t i = 0; i < count; i++) {
         float sample = samples[i*step];
         float x = i * xStep;
-        float y = rect.height() - ((sample * rect.height()/2) + rect.height()/2);
+        float y = (1 - sample) * (rect.height() / 2);
 
         x = xRange.clip(x);
         y = yRange.clip(y);
 
-        path.lineTo(QPointF{x + rect.x(), y + rect.y()});
+        path.lineTo(x + rect.x(), y + rect.y());
     }
     painter.drawPath(path);
 }
