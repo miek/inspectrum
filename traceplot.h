@@ -36,5 +36,6 @@ public:
 private:
 	std::shared_ptr<AbstractSampleSource> sampleSource;
 
-	void plotTrace(QPainter &painter, QRect &rect, float *samples, off_t count, int step);
+	QImage drawTile(const QRect &rect, range_t<off_t> sampleRange);
+	void plotTrace(QPainter &painter, const QRect &rect, float *samples, off_t count, int step);
 };

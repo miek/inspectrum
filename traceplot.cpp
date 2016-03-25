@@ -26,7 +26,16 @@ TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : sampleSourc
 
 void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
-    painter.save();
+    auto image = drawTile(QRect(0, 0, rect.width(), rect.height()), sampleRange);
+    painter.drawImage(rect, image);
+}
+
+QImage TracePlot::drawTile(const QRect &rect, range_t<off_t> sampleRange)
+{
+    QImage image(rect.size(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
 	auto firstSample = sampleRange.minimum;
@@ -36,7 +45,7 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource.get())) {
         auto samples = src->getSamples(firstSample, length);
         if (samples == nullptr)
-            return;
+            return image;
 
         painter.setPen(Qt::red);
         plotTrace(painter, rect, reinterpret_cast<float*>(samples.get()), length, 2);
@@ -47,7 +56,7 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     } else if (auto src = dynamic_cast<SampleSource<float>*>(sampleSource.get())) {
         auto samples = src->getSamples(firstSample, length);
         if (samples == nullptr)
-            return;
+            return image;
 
         painter.setPen(Qt::green);
         plotTrace(painter, rect, samples.get(), length, 1);
@@ -55,10 +64,10 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     	throw std::runtime_error("TracePlot::paintMid: Unsupported source type");
     }
 
-    painter.restore();
+    return image;
 }
 
-void TracePlot::plotTrace(QPainter &painter, QRect &rect, float *samples, off_t count, int step = 1)
+void TracePlot::plotTrace(QPainter &painter, const QRect &rect, float *samples, off_t count, int step = 1)
 {
     QPainterPath path;
     range_t<float> xRange{0, rect.width() - 2.f};
