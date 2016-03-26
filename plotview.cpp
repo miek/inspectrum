@@ -21,6 +21,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QPainter>
+#include <QPixmapCache>
 #include <QScrollBar>
 #include <gnuradio/top_block.h>
 #include <gnuradio/analog/quadrature_demod_cf.h>
@@ -237,6 +238,9 @@ void PlotView::tunerMoved()
     auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
     plotFilter->set_center_freq(centre);
     plotFilter->set_taps(lp_taps);
+
+    // TODO: for invalidating traceplot cache, this shouldn't really go here
+    QPixmapCache::clear();
 
     viewport()->update();
 }

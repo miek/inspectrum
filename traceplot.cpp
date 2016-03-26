@@ -17,6 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QPixmapCache>
+#include <QTextStream>
 #include "samplesource.h"
 #include "traceplot.h"
 
@@ -33,7 +35,7 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     int xOffset = tileOffset / samplesPerColumn; // Number of columns to skip from first image tile
 
     // Paint first (possibly partial) tile
-    painter.drawImage(
+    painter.drawPixmap(
         QRect(rect.x(), rect.y(), tileWidth - xOffset, height()),
         getTile(tileID++, samplesPerTile),
         QRect(xOffset, 0, tileWidth - xOffset, height())
@@ -41,16 +43,25 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
 
     // Paint remaining tiles
     for (int x = tileWidth - xOffset; x < rect.right(); x += tileWidth) {
-        painter.drawImage(
+        painter.drawPixmap(
             QRect(x, rect.y(), tileWidth, height()),
             getTile(tileID++, samplesPerTile)
         );
     }
 }
 
-QImage TracePlot::getTile(off_t tileID, off_t sampleCount)
+QPixmap TracePlot::getTile(off_t tileID, off_t sampleCount)
 {
-    return drawTile(QRect(0, 0, tileWidth, height()), {tileID * sampleCount, (tileID + 1) * sampleCount});
+    QPixmap pixmap;
+    QString key;
+    QTextStream(&key) << "traceplot_" << this << "_" << tileID << "_" << sampleCount;
+    if (QPixmapCache::find(key, &pixmap))
+        return pixmap;
+
+    auto image = drawTile(QRect(0, 0, tileWidth, height()), {tileID * sampleCount, (tileID + 1) * sampleCount});
+    pixmap = QPixmap::fromImage(image);
+    QPixmapCache::insert(key, pixmap);
+    return pixmap;
 }
 
 QImage TracePlot::drawTile(const QRect &rect, range_t<off_t> sampleRange)
