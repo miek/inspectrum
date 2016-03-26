@@ -101,10 +101,13 @@ void TracePlot::plotTrace(QPainter &painter, const QRect &rect, float *samples, 
         float x = i * xStep;
         float y = (1 - sample) * (rect.height() / 2);
 
-        x = xRange.clip(x);
-        y = yRange.clip(y);
+        x = xRange.clip(x) + rect.x();
+        y = yRange.clip(y) + rect.y();
 
-        path.lineTo(x + rect.x(), y + rect.y());
+        if (i == 0)
+            path.moveTo(x, y);
+        else
+            path.lineTo(x, y);
     }
     painter.drawPath(path);
 }
