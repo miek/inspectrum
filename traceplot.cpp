@@ -26,8 +26,31 @@ TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : sampleSourc
 
 void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
-    auto image = drawTile(QRect(0, 0, rect.width(), rect.height()), sampleRange);
-    painter.drawImage(rect, image);
+    int samplesPerColumn = sampleRange.length() / rect.width();
+    int samplesPerTile = tileWidth * samplesPerColumn;
+    off_t tileID = sampleRange.minimum / samplesPerTile;
+    off_t tileOffset = sampleRange.minimum % samplesPerTile; // Number of samples to skip from first image tile
+    int xOffset = tileOffset / samplesPerColumn; // Number of columns to skip from first image tile
+
+    // Paint first (possibly partial) tile
+    painter.drawImage(
+        QRect(rect.x(), rect.y(), tileWidth - xOffset, height()),
+        getTile(tileID++, samplesPerTile),
+        QRect(xOffset, 0, tileWidth - xOffset, height())
+    );
+
+    // Paint remaining tiles
+    for (int x = tileWidth - xOffset; x < rect.right(); x += tileWidth) {
+        painter.drawImage(
+            QRect(x, rect.y(), tileWidth, height()),
+            getTile(tileID++, samplesPerTile)
+        );
+    }
+}
+
+QImage TracePlot::getTile(off_t tileID, off_t sampleCount)
+{
+    return drawTile(QRect(0, 0, tileWidth, height()), {tileID * sampleCount, (tileID + 1) * sampleCount});
 }
 
 QImage TracePlot::drawTile(const QRect &rect, range_t<off_t> sampleRange)

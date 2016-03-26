@@ -34,8 +34,10 @@ public:
     std::shared_ptr<AbstractSampleSource> source() { return sampleSource; };
 
 private:
+	const int tileWidth = 1000;
 	std::shared_ptr<AbstractSampleSource> sampleSource;
 
+	QImage getTile(off_t tileID, off_t sampleCount);
 	QImage drawTile(const QRect &rect, range_t<off_t> sampleRange);
 	void plotTrace(QPainter &painter, const QRect &rect, float *samples, off_t count, int step);
 };
