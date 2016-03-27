@@ -19,11 +19,12 @@
 
 #include <QPixmapCache>
 #include <QTextStream>
+#include <QtConcurrent>
 #include "samplesource.h"
 #include "traceplot.h"
 
 TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : sampleSource(source) {
-
+    connect(this, &TracePlot::imageReady, this, &TracePlot::handleImage);
 }
 
 void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -52,19 +53,22 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
 
 QPixmap TracePlot::getTile(off_t tileID, off_t sampleCount)
 {
-    QPixmap pixmap;
+    QPixmap pixmap(tileWidth, height());
     QString key;
     QTextStream(&key) << "traceplot_" << this << "_" << tileID << "_" << sampleCount;
     if (QPixmapCache::find(key, &pixmap))
         return pixmap;
 
-    auto image = drawTile(QRect(0, 0, tileWidth, height()), {tileID * sampleCount, (tileID + 1) * sampleCount});
-    pixmap = QPixmap::fromImage(image);
-    QPixmapCache::insert(key, pixmap);
+    if (!tasks.contains(key)) {
+        range_t<off_t> sampleRange{tileID * sampleCount, (tileID + 1) * sampleCount};
+        QtConcurrent::run(this, &TracePlot::drawTile, key, QRect(0, 0, tileWidth, height()), sampleRange);
+        tasks.insert(key);
+    }
+    pixmap.fill(Qt::transparent);
     return pixmap;
 }
 
-QImage TracePlot::drawTile(const QRect &rect, range_t<off_t> sampleRange)
+void TracePlot::drawTile(QString key, const QRect &rect, range_t<off_t> sampleRange)
 {
     QImage image(rect.size(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
@@ -79,7 +83,7 @@ QImage TracePlot::drawTile(const QRect &rect, range_t<off_t> sampleRange)
     if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource.get())) {
         auto samples = src->getSamples(firstSample, length);
         if (samples == nullptr)
-            return image;
+            return;
 
         painter.setPen(Qt::red);
         plotTrace(painter, rect, reinterpret_cast<float*>(samples.get()), length, 2);
@@ -90,7 +94,7 @@ QImage TracePlot::drawTile(const QRect &rect, range_t<off_t> sampleRange)
     } else if (auto src = dynamic_cast<SampleSource<float>*>(sampleSource.get())) {
         auto samples = src->getSamples(firstSample, length);
         if (samples == nullptr)
-            return image;
+            return;
 
         painter.setPen(Qt::green);
         plotTrace(painter, rect, samples.get(), length, 1);
@@ -98,7 +102,15 @@ QImage TracePlot::drawTile(const QRect &rect, range_t<off_t> sampleRange)
     	throw std::runtime_error("TracePlot::paintMid: Unsupported source type");
     }
 
-    return image;
+    emit imageReady(key, image);
+}
+
+void TracePlot::handleImage(QString key, QImage image)
+{
+    auto pixmap = QPixmap::fromImage(image);
+    QPixmapCache::insert(key, pixmap);
+    tasks.remove(key);
+    emit repaint();
 }
 
 void TracePlot::plotTrace(QPainter &painter, const QRect &rect, float *samples, off_t count, int step = 1)

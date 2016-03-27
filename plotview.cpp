@@ -46,7 +46,11 @@ PlotView::PlotView(InputSource *input) : cursors(this), tuner(this), viewRange({
 
     iqPlot = createIQPlot(mainSampleSource);
     plots.emplace_back(iqPlot);
-    plots.emplace_back(createQuadratureDemodPlot(static_cast<SampleSource<std::complex<float>>*>(iqPlot->source().get())));
+    auto quadDemodPlot = createQuadratureDemodPlot(static_cast<SampleSource<std::complex<float>>*>(iqPlot->source().get()));
+    plots.emplace_back(quadDemodPlot);
+
+    connect(iqPlot, &TracePlot::repaint, this, &PlotView::repaint);
+    connect(quadDemodPlot, &TracePlot::repaint, this, &PlotView::repaint);
 
     mainSampleSource->subscribe(this);
 }
@@ -134,6 +138,11 @@ void PlotView::invalidateEvent()
 {
     horizontalScrollBar()->setMinimum(0);
     horizontalScrollBar()->setMaximum(mainSampleSource->count());
+}
+
+void PlotView::repaint()
+{
+    viewport()->update();
 }
 
 void PlotView::setCursorSegments(int segments)

@@ -67,7 +67,7 @@ link_directories(
 )
 
 add_executable(inspectrum ${inspectrum_sources})
-qt5_use_modules(inspectrum Widgets)
+qt5_use_modules(inspectrum Widgets Concurrent)
 
 target_link_libraries(inspectrum
     ${Boost_LIBRARIES}
