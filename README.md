@@ -50,6 +50,7 @@ inspectrum supports the following file types:
  * `*.cf32`, `*.cfile` - Complex 32-bit floating point samples (GNURadio, osmocom_fft)
  * `*.cs32` - Complex 8-bit signed integer samples (HackRF)
  * `*.cu32` - Complex 8-bit unsigned integer samples (RTL-SDR)
+If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
 
 ## Features
  * Spectrogram with zoom/pan

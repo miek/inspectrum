@@ -134,7 +134,7 @@ void InputSource::openFile(const char *filename)
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
     }
     else {
-        throw std::runtime_error("Invalid file extension");
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
 
     FILE *file = fopen(filename, "rb");
