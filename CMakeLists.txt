@@ -54,6 +54,7 @@ pkg_check_modules(FFTW REQUIRED fftw3f)
 
 include_directories(
     ${GNURADIO_RUNTIME_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
     ${QT_INCLUDES}
     ${FFTW_INCLUDEDIR}
     ${FFTW_INCLUDE_DIRS}
