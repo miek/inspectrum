@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QMutex>
 #include <complex>
 #include <memory>
 #include "samplesource.h"
@@ -28,6 +29,7 @@ class SampleBuffer : public SampleSource<Tout>, public Subscriber
 {
 private:
     SampleSource<Tin> *src;
+    QMutex mutex;
 
 public:
     SampleBuffer(SampleSource<Tin> *src);
