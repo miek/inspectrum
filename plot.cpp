@@ -19,6 +19,11 @@
 
 #include "plot.h"
 
+bool Plot::mouseEvent(QEvent::Type type, QMouseEvent event)
+{
+
+}
+
 void Plot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
     painter.save();

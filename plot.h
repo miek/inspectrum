@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QMouseEvent>
 #include <QObject>
 #include <QPainter>
 #include "util.h"
@@ -28,6 +29,7 @@ class Plot : public QObject
 	Q_OBJECT
 
 public:
+    virtual bool mouseEvent(QEvent::Type type, QMouseEvent event);
     virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);

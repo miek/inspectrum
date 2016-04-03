@@ -123,6 +123,31 @@ void PlotView::enableCursors(bool enabled)
 
 bool PlotView::eventFilter(QObject * obj, QEvent *event)
 {
+    // Pass mouse events to individual plot objects
+    if (event->type() == QEvent::MouseButtonPress ||
+        event->type() == QEvent::MouseMove ||
+        event->type() == QEvent::MouseButtonRelease) {
+
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        int plotY = -verticalScrollBar()->value();
+        for (auto&& plot : plots) {
+            bool result = plot->mouseEvent(
+                event->type(),
+                QMouseEvent(
+                    event->type(),
+                    QPoint(mouseEvent->pos().x(), mouseEvent->pos().y() - plotY),
+                    mouseEvent->button(),
+                    mouseEvent->buttons(),
+                    QApplication::keyboardModifiers()
+                )
+            );
+            if (result)
+                return true;
+            plotY += plot->height();
+        }
+    }
+
+    // Handle wheel events for zooming
     if (event->type() == QEvent::Wheel) {
         QWheelEvent *wheelEvent = (QWheelEvent*)event;
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
