@@ -25,12 +25,16 @@
 
 class Plot : public QObject
 {
+	Q_OBJECT
 
 public:
     virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     int height() const { return _height; };
+
+signals:
+    void repaint();
 
 protected:
     void setHeight(int height) { _height = height; };

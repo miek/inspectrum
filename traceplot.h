@@ -35,7 +35,6 @@ public:
 
 signals:
 	void imageReady(QString key, QImage image);
-	void repaint();
 
 public slots:
 	void handleImage(QString key, QImage image);

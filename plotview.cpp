@@ -42,17 +42,20 @@ PlotView::PlotView(InputSource *input) : cursors(this), tuner(this), viewRange({
     connect(&tuner, &Tuner::tunerMoved, this, &PlotView::tunerMoved);
 
     spectrogramPlot = new SpectrogramPlot(mainSampleSource);
-    plots.emplace_back(spectrogramPlot);
-
     iqPlot = createIQPlot(mainSampleSource);
-    plots.emplace_back(iqPlot);
     auto quadDemodPlot = createQuadratureDemodPlot(static_cast<SampleSource<std::complex<float>>*>(iqPlot->source().get()));
-    plots.emplace_back(quadDemodPlot);
 
-    connect(iqPlot, &TracePlot::repaint, this, &PlotView::repaint);
-    connect(quadDemodPlot, &TracePlot::repaint, this, &PlotView::repaint);
+    addPlot(spectrogramPlot);
+    addPlot(iqPlot);
+    addPlot(quadDemodPlot);
 
     mainSampleSource->subscribe(this);
+}
+
+void PlotView::addPlot(Plot *plot)
+{
+    plots.emplace_back(plot);
+    connect(plot, &Plot::repaint, this, &PlotView::repaint);
 }
 
 TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)

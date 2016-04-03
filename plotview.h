@@ -79,6 +79,7 @@ private:
     int powerMax;
     bool cursorsEnabled;
 
+    void addPlot(Plot *plot);
     TracePlot* createIQPlot(SampleSource<std::complex<float>> *src);
     TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);
     int plotsHeight();
