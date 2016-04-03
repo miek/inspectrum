@@ -45,7 +45,7 @@ public slots:
     void cursorsMoved();
     void enableCursors(bool enable);
     void invalidateEvent();
-    void setCursorBits(int bits);
+    void setCursorSegments(int segments);
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);

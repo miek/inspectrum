@@ -82,10 +82,10 @@ void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
         QBrush(QColor(255, 255, 255, 50))
     );
 
-    // Draw vertical edges for individual bits
+    // Draw vertical edges for individual segments
     painter.setPen(QPen(Qt::gray, 1, Qt::DashLine));
-    for (int i = 1; i < bitCount; i++) {
-        int pos = cursorPositions[0] + (i * cursorRect.width() / bitCount);
+    for (int i = 1; i < segmentCount; i++) {
+        int pos = cursorPositions[0] + (i * cursorRect.width() / segmentCount);
         painter.drawLine(pos, rect.top(), pos, rect.bottom());
     }
 
@@ -108,9 +108,9 @@ range_t<int> Cursors::selection()
     }
 }
 
-void Cursors::setBits(int bits)
+void Cursors::setSegments(int segments)
 {
-    bitCount = std::max(bits, 1);
+    segmentCount = std::max(segments, 1);
 
 }
 

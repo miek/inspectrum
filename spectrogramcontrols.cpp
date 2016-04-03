@@ -64,22 +64,22 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     cursorsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
 
-    cursorBitsSpinBox = new QSpinBox();
-    cursorBitsSpinBox->setMinimum(1);
-    cursorBitsSpinBox->setMaximum(9999);
-    layout->addRow(new QLabel(tr("Bits:")), cursorBitsSpinBox);
+    cursorSymbolsSpinBox = new QSpinBox();
+    cursorSymbolsSpinBox->setMinimum(1);
+    cursorSymbolsSpinBox->setMaximum(9999);
+    layout->addRow(new QLabel(tr("Symbols:")), cursorSymbolsSpinBox);
 
-    timeSelectionFreqLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Frequency:")), timeSelectionFreqLabel);
+    rateLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Rate:")), rateLabel);
 
-    timeSelectionTimeLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Time:")), timeSelectionTimeLabel);
+    periodLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Period:")), periodLabel);
 
-    bitSelectionFreqLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Bit frequency:")), bitSelectionFreqLabel);
+    symbolRateLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Symbol rate:")), symbolRateLabel);
 
-    bitSelectionTimeLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Bit time:")), bitSelectionTimeLabel);
+    symbolPeriodLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
     widget->setLayout(layout);
     setWidget(widget);
@@ -92,10 +92,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
 void SpectrogramControls::clearCursorLabels()
 {
-    timeSelectionTimeLabel->setText("");
-    timeSelectionFreqLabel->setText("");
-    bitSelectionTimeLabel->setText("");
-    bitSelectionFreqLabel->setText("");
+    periodLabel->setText("");
+    rateLabel->setText("");
+    symbolPeriodLabel->setText("");
+    symbolRateLabel->setText("");
 }
 
 void SpectrogramControls::cursorsStateChanged(int state)
@@ -113,7 +113,7 @@ void SpectrogramControls::setDefaults()
     powerMaxSlider->setValue(0);
     powerMinSlider->setValue(-50);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
-    cursorBitsSpinBox->setValue(1);
+    cursorSymbolsSpinBox->setValue(1);
 }
 
 void SpectrogramControls::fftOrZoomChanged(int value)
@@ -135,12 +135,12 @@ void SpectrogramControls::fileOpenButtonClicked()
 void SpectrogramControls::timeSelectionChanged(float time)
 {
     if (cursorsCheckBox->checkState() == Qt::Checked) {
-        timeSelectionTimeLabel->setText(QString::number(time) + "s");
-        timeSelectionFreqLabel->setText(QString::number(1 / time) + "Hz");
+        periodLabel->setText(QString::number(time) + "s");
+        rateLabel->setText(QString::number(1 / time) + "Hz");
 
-        int bits = cursorBitsSpinBox->value();
-        bitSelectionTimeLabel->setText(QString::number(time / bits) + "s");
-        bitSelectionFreqLabel->setText(QString::number(bits / time) + "Hz");
+        int symbols = cursorSymbolsSpinBox->value();
+        symbolPeriodLabel->setText(QString::number(time / symbols) + "s");
+        symbolRateLabel->setText(QString::number(symbols / time) + "Hz");
     }
 }
 

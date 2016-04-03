@@ -130,9 +130,9 @@ void PlotView::invalidateEvent()
     horizontalScrollBar()->setMaximum(mainSampleSource->count());
 }
 
-void PlotView::setCursorBits(int bits)
+void PlotView::setCursorSegments(int segments)
 {
-    cursors.setBits(bits);
+    cursors.setSegments(segments);
     cursorsMoved();
     viewport()->update();
 }

@@ -63,9 +63,9 @@ public:
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
     QCheckBox *cursorsCheckBox;
-    QSpinBox *cursorBitsSpinBox;
-    QLabel *timeSelectionFreqLabel;
-    QLabel *timeSelectionTimeLabel;
-    QLabel *bitSelectionFreqLabel;
-    QLabel *bitSelectionTimeLabel;
+    QSpinBox *cursorSymbolsSpinBox;
+    QLabel *rateLabel;
+    QLabel *periodLabel;
+    QLabel *symbolRateLabel;
+    QLabel *symbolPeriodLabel;
 };

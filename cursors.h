@@ -32,7 +32,7 @@ public:
     Cursors(QObject * parent);
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     range_t<int> selection();
-    void setBits(int bits);
+    void setSegments(int segments);
     void setSelection(range_t<int> selection);
 
 signals:
@@ -44,7 +44,7 @@ protected:
 private:
 	bool pointOverCursor(QPoint point, int &cursor);
 
-	int bitCount = 1;
+	int segmentCount = 1;
 	bool dragging = false;
 	int selectedCursor = 0;
 	int cursorPositions[2] = {0, 50};

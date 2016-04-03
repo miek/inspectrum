@@ -43,7 +43,7 @@ MainWindow::MainWindow()
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMin(int)));
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
-    connect(dock->cursorBitsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorBits);
+    connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
 
     // Connect dock outputs
     connect(plots, SIGNAL(timeSelectionChanged(float)), dock, SLOT(timeSelectionChanged(float)));
