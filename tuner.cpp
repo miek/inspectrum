@@ -54,13 +54,13 @@ int Tuner::deviation()
     return _deviation;
 }
 
-bool Tuner::eventFilter(QObject *obj, QEvent *event)
+bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
-    if (minCursor->eventFilter(obj, event))
+    if (minCursor->mouseEvent(type, event))
         return true;
-    if (cfCursor->eventFilter(obj, event))
+    if (cfCursor->mouseEvent(type, event))
         return true;
-    if (maxCursor->eventFilter(obj, event))
+    if (maxCursor->mouseEvent(type, event))
         return true;
 
     return false;

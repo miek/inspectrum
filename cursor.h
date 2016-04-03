@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QMouseEvent>
 #include <QObject>
 #include <QPoint>
 #include "util.h"
@@ -31,7 +32,7 @@ public:
     Cursor(Qt::Orientation orientation, QObject * parent);
     int pos();
     void setPos(int newPos);
-	bool eventFilter(QObject *obj, QEvent *event);
+	bool mouseEvent(QEvent::Type type, QMouseEvent event);
 
 signals:
 	void posChanged();

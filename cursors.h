@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QMouseEvent>
 #include <QObject>
 #include <QPainter>
 #include <QPoint>
@@ -31,6 +32,7 @@ class Cursors : public QObject
 
 public:
     Cursors(QObject * parent);
+    bool mouseEvent(QEvent::Type type, QMouseEvent event);
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     range_t<int> selection();
     void setSegments(int segments);
@@ -42,8 +44,6 @@ public slots:
 signals:
 	void cursorsMoved();
 
-protected:
-	bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
 	bool pointOverCursor(QPoint point, int &cursor);

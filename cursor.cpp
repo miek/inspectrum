@@ -18,7 +18,6 @@
  */
 
 #include <QDebug>
-#include <QMouseEvent>
 #include "cursor.h"
 
 Cursor::Cursor(Qt::Orientation orientation, QObject * parent) : QObject::QObject(parent), orientation(orientation)
@@ -38,30 +37,27 @@ bool Cursor::pointOverCursor(QPoint point)
     return range.contains(fromPoint(point));
 }
 
-bool Cursor::eventFilter(QObject *obj, QEvent *event)
+bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
     // Start dragging on left mouse button press, if over a cursor
-    if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::LeftButton) {
-            if (pointOverCursor(mouseEvent->pos())) {
+    if (type == QEvent::MouseButtonPress) {
+        if (event.button() == Qt::LeftButton) {
+            if (pointOverCursor(event.pos())) {
                 dragging = true;
                 return true;
             }
         }
 
     // Update current cursor positon if we're dragging
-    } else if (event->type() == QEvent::MouseMove) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+    } else if (type == QEvent::MouseMove) {
         if (dragging) {
-            cursorPosition = fromPoint(mouseEvent->pos());
+            cursorPosition = fromPoint(event.pos());
             emit posChanged();
         }
 
     // Stop dragging on left mouse button release
-    } else if (event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        if (mouseEvent->button() == Qt::LeftButton && dragging) {
+    } else if (type == QEvent::MouseButtonRelease) {
+        if (event.button() == Qt::LeftButton && dragging) {
             dragging = false;
             return true;
         }

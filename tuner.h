@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QMouseEvent>
 #include <QObject>
 #include <QPainter>
 #include <QPoint>
@@ -31,9 +32,10 @@ class Tuner : public QObject
 
 public:
     Tuner(QObject * parent);
-    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     int centre();
     int deviation();
+    bool mouseEvent(QEvent::Type, QMouseEvent event);
+    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     void setCentre(int centre);
     void setDeviation(int dev);
 
@@ -43,8 +45,7 @@ public slots:
 signals:
 	void tunerMoved();
 
-protected:
-	bool eventFilter(QObject *obj, QEvent *event) override;
+private:
 	void updateCursors();
 
 	Cursor *minCursor;

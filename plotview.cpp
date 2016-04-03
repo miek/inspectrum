@@ -36,9 +36,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), tuner(this), viewRange({
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
-    viewport()->installEventFilter(&cursors);
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
-    viewport()->installEventFilter(&tuner);
     connect(&tuner, &Tuner::tunerMoved, this, &PlotView::tunerMoved);
 
     spectrogramPlot = new SpectrogramPlot(mainSampleSource);
@@ -49,6 +47,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), tuner(this), viewRange({
     addPlot(iqPlot);
     addPlot(quadDemodPlot);
 
+    viewport()->installEventFilter(this);
     mainSampleSource->subscribe(this);
 }
 
@@ -129,6 +128,13 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
         event->type() == QEvent::MouseButtonRelease) {
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+        if (cursors.mouseEvent(event->type(), *mouseEvent))
+            return true;
+
+        if (tuner.mouseEvent(event->type(), *mouseEvent))
+            return true;
+
         int plotY = -verticalScrollBar()->value();
         for (auto&& plot : plots) {
             bool result = plot->mouseEvent(

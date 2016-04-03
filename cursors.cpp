@@ -18,15 +18,12 @@
  */
 
 #include <QDebug>
-#include <QMouseEvent>
 #include "cursors.h"
 
 Cursors::Cursors(QObject * parent) : QObject::QObject(parent)
 {
     minCursor = new Cursor(Qt::Vertical, this);
     maxCursor = new Cursor(Qt::Vertical, this);
-    installEventFilter(minCursor);
-    installEventFilter(maxCursor);
     connect(minCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
     connect(maxCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
 }
@@ -40,11 +37,11 @@ void Cursors::cursorMoved()
     emit cursorsMoved();
 }
 
-bool Cursors::eventFilter(QObject *obj, QEvent *event)
+bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
-    if (minCursor->eventFilter(obj, event))
+    if (minCursor->mouseEvent(type, event))
         return true;
-    if (maxCursor->eventFilter(obj, event))
+    if (maxCursor->mouseEvent(type, event))
         return true;
 
     return false;
