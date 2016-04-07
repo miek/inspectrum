@@ -21,27 +21,25 @@
 #include <QApplication>
 #include <QDebug>
 #include <QPainter>
-#include <QPixmapCache>
 #include <QScrollBar>
 #include <gnuradio/top_block.h>
 #include <gnuradio/analog/quadrature_demod_cf.h>
 #include <gnuradio/blocks/multiply_const_cc.h>
-#include <gnuradio/filter/firdes.h>
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
 
-PlotView::PlotView(InputSource *input) : cursors(this), tuner(this), viewRange({0, 0})
+PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 {
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
-    connect(&tuner, &Tuner::tunerMoved, this, &PlotView::tunerMoved);
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
-    iqPlot = createIQPlot(mainSampleSource);
-    auto quadDemodPlot = createQuadratureDemodPlot(static_cast<SampleSource<std::complex<float>>*>(iqPlot->source().get()));
+    auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output()).get();
+    iqPlot = createIQPlot(tunerOutput);
+    auto quadDemodPlot = createQuadratureDemodPlot(tunerOutput);
 
     addPlot(spectrogramPlot);
     addPlot(iqPlot);
@@ -63,21 +61,11 @@ TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)
     auto iq_mem_source = gr::blocks::memory_source::make(8);
     auto iq_mem_sink = gr::blocks::memory_sink::make(8);
     auto multiply = gr::blocks::multiply_const_cc::make(20);
-    if (selection || true) {
-        float centre = -0.05; //(selectionFreq.first + selectionFreq.second) / 2;
-        float cutoff = 0.02; //std::abs(selectionFreq.first - centre);
-        auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
-        plotFilter = gr::filter::freq_xlating_fir_filter_ccf::make(1, lp_taps, centre, 1.0);
 
-        iq_tb->connect(iq_mem_source, 0, plotFilter, 0);
-        iq_tb->connect(plotFilter, 0, multiply, 0);
-        iq_tb->connect(multiply, 0, iq_mem_sink, 0);
-    } else {
-        iq_tb->connect(iq_mem_source, 0, multiply, 0);
-        iq_tb->connect(multiply, 0, iq_mem_sink, 0);
-    }
+    iq_tb->connect(iq_mem_source, 0, multiply, 0);
+    iq_tb->connect(multiply, 0, iq_mem_sink, 0);
 
-    auto iq_src = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(mainSampleSource, iq_tb, iq_mem_source, iq_mem_sink);
+    auto iq_src = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(src, iq_tb, iq_mem_source, iq_mem_sink);
     return new TracePlot(iq_src);
 }
 
@@ -130,9 +118,6 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
         if (cursors.mouseEvent(event->type(), *mouseEvent))
-            return true;
-
-        if (tuner.mouseEvent(event->type(), *mouseEvent))
             return true;
 
         int plotY = -verticalScrollBar()->value();
@@ -245,7 +230,6 @@ void PlotView::paintEvent(QPaintEvent *event)
     PLOT_LAYER(paintFront);
     if (cursorsEnabled)
         cursors.paintFront(painter, rect, viewRange);
-    tuner.paintFront(painter, rect, viewRange);
 
 #undef PLOT_LAYER
 }
@@ -272,20 +256,6 @@ off_t PlotView::samplesPerLine()
 void PlotView::scrollContentsBy(int dx, int dy)
 {
     updateView();
-}
-
-void PlotView::tunerMoved()
-{
-    float centre = 0.5f - tuner.centre() / (float)fftSize;
-    float cutoff = tuner.deviation() / (float)fftSize;
-    auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
-    plotFilter->set_center_freq(centre);
-    plotFilter->set_taps(lp_taps);
-
-    // TODO: for invalidating traceplot cache, this shouldn't really go here
-    QPixmapCache::clear();
-
-    viewport()->update();
 }
 
 void PlotView::updateView(bool reCenter)

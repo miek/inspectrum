@@ -19,11 +19,14 @@
 
 #pragma once
 
+#include <gnuradio/filter/freq_xlating_fir_filter_ccf.h>
 #include <QCache>
 #include <QWidget>
 #include "fft.h"
+#include "grsamplebuffer.h"
 #include "inputsource.h"
 #include "plot.h"
+#include "tuner.h"
 
 #include <memory>
 #include <math.h>
@@ -39,12 +42,15 @@ class SpectrogramPlot : public Plot
 public:
     SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src);
 
-    void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    std::shared_ptr<AbstractSampleSource> output() override;
+    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
+    void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
 
     QSize sizeHint() const;
     int getHeight();
     int getStride();
     off_t lineToSample(off_t line);
+    bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
 
     std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
 
@@ -54,11 +60,7 @@ public slots:
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
-
-protected:
-    void mouseReleaseEvent(QMouseEvent * event);
-    void mouseMoveEvent(QMouseEvent * event);
-    void mousePressEvent(QMouseEvent * event);
+    void tunerMoved();
 
 
 private:
@@ -78,9 +80,15 @@ private:
     float powerMax;
     float powerMin;
 
+    Tuner tuner;
+    std::shared_ptr<GRSampleBuffer<std::complex<float>, std::complex<float>>> tunerOutput;
+    gr::filter::freq_xlating_fir_filter_ccf::sptr tunerFilter;
+
     QPixmap* getPixmapTile(off_t tile);
     float* getFFTTile(off_t tile);
     void getLine(float *dest, off_t sample);
+    float getTunerCentre();
+    std::vector<float> getTunerTaps();
     void paintCursors(QPainter *painter, QRect rect);
     int sampleToLine(off_t sample);
     QString sampleToTime(off_t sample);

@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <gnuradio/filter/freq_xlating_fir_filter_ccf.h>
 #include <QAbstractScrollArea>
 #include <QPaintEvent>
 
@@ -29,7 +28,6 @@
 #include "samplesource.h"
 #include "spectrogramplot.h"
 #include "traceplot.h"
-#include "tuner.h"
 
 class PlotView : public QAbstractScrollArea, Subscriber
 {
@@ -52,7 +50,6 @@ public slots:
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
-    void tunerMoved();
 
 protected:
     bool eventFilter(QObject * obj, QEvent *event) override;
@@ -62,14 +59,11 @@ protected:
 
 private:
     Cursors cursors;
-    Tuner tuner;
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     SpectrogramPlot *spectrogramPlot = nullptr;
     TracePlot *iqPlot = nullptr;
-    gr::filter::freq_xlating_fir_filter_ccf::sptr plotFilter = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
     range_t<off_t> viewRange;
-    bool selection = false;
     range_t<off_t> selectedSamples;
     std::pair<float, float> selectionFreq;
 
