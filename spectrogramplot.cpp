@@ -34,7 +34,6 @@
 
 SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), tuner(this)
 {
-    sampleRate = 8000000;
     setFFTSize(512);
     zoomLevel = 0;
     powerMax = 0.0f;
@@ -153,6 +152,11 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
     }
 }
 
+int SpectrogramPlot::getStride()
+{
+    return fftSize / zoomLevel;
+}
+
 float SpectrogramPlot::getTunerCentre()
 {
     return 0.5f - tuner.centre() / (float)fftSize;
@@ -164,6 +168,11 @@ std::vector<float> SpectrogramPlot::getTunerTaps()
     return gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
 }
 
+int SpectrogramPlot::linesPerTile()
+{
+    return tileSize / fftSize;
+}
+
 bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
     return tuner.mouseEvent(type, event);
@@ -172,11 +181,6 @@ bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
 std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
 {
     return tunerOutput;
-}
-
-void SpectrogramPlot::setSampleRate(int rate)
-{
-    sampleRate = rate;
 }
 
 void SpectrogramPlot::setFFTSize(int size)
@@ -218,39 +222,6 @@ void SpectrogramPlot::tunerMoved()
     QPixmapCache::clear();
 
     emit repaint();
-}
-
-int SpectrogramPlot::getHeight()
-{
-    if (!inputSource)
-        return 0;
-
-    return inputSource->count() / getStride();
-}
-
-int SpectrogramPlot::getStride()
-{
-    return fftSize / zoomLevel;
-}
-
-off_t SpectrogramPlot::lineToSample(off_t line)
-{
-    return line * getStride();
-}
-
-int SpectrogramPlot::sampleToLine(off_t sample)
-{
-    return sample / getStride();
-}
-
-QString SpectrogramPlot::sampleToTime(off_t sample)
-{
-    return QString::number((float)sample / sampleRate).append("s");
-}
-
-int SpectrogramPlot::linesPerTile()
-{
-    return tileSize / fftSize;
 }
 
 uint qHash(const TileCacheKey &key, uint seed)

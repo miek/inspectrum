@@ -41,40 +41,29 @@ class SpectrogramPlot : public Plot
 
 public:
     SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src);
-
     std::shared_ptr<AbstractSampleSource> output() override;
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
-
-    QSize sizeHint() const;
-    int getHeight();
-    int getStride();
-    off_t lineToSample(off_t line);
     bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
 
-    std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
-
 public slots:
-    void setSampleRate(int rate);
     void setFFTSize(int size);
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
     void tunerMoved();
 
-
 private:
     const int linesPerGraduation = 50;
     const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
+    std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
     std::unique_ptr<FFT> fft;
     std::unique_ptr<float[]> window;
-    fftwf_complex *lineBuffer = nullptr;
     QCache<TileCacheKey, QPixmap> pixmapCache;
     QCache<TileCacheKey, float> fftCache;
     uint colormap[256];
 
-    int sampleRate;
     int fftSize;
     int zoomLevel;
     float powerMax;
@@ -87,11 +76,9 @@ private:
     QPixmap* getPixmapTile(off_t tile);
     float* getFFTTile(off_t tile);
     void getLine(float *dest, off_t sample);
+    int getStride();
     float getTunerCentre();
     std::vector<float> getTunerTaps();
-    void paintCursors(QPainter *painter, QRect rect);
-    int sampleToLine(off_t sample);
-    QString sampleToTime(off_t sample);
     int linesPerTile();
 };
 
