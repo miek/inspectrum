@@ -37,7 +37,7 @@ class SpectrogramPlot : public Plot
     Q_OBJECT
 
 public:
-    SpectrogramPlot(SampleSource<std::complex<float>> *src);
+    SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src);
 
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 
@@ -46,7 +46,7 @@ public:
     int getStride();
     off_t lineToSample(off_t line);
 
-    SampleSource<std::complex<float>> *inputSource = nullptr;
+    std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
 
 public slots:
     void setSampleRate(int rate);

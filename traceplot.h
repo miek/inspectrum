@@ -42,7 +42,6 @@ public slots:
 private:
 	QSet<QString> tasks;
 	const int tileWidth = 1000;
-	std::shared_ptr<AbstractSampleSource> sampleSource;
 
 	QPixmap getTile(off_t tileID, off_t sampleCount);
 	void drawTile(QString key, const QRect &rect, range_t<off_t> sampleRange);

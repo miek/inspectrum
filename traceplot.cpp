@@ -23,7 +23,7 @@
 #include "samplesource.h"
 #include "traceplot.h"
 
-TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : sampleSource(source) {
+TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : Plot(source) {
     connect(this, &TracePlot::imageReady, this, &TracePlot::handleImage);
 }
 

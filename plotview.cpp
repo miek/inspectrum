@@ -39,7 +39,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), tuner(this), viewRange({
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
     connect(&tuner, &Tuner::tunerMoved, this, &PlotView::tunerMoved);
 
-    spectrogramPlot = new SpectrogramPlot(mainSampleSource);
+    spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
     iqPlot = createIQPlot(mainSampleSource);
     auto quadDemodPlot = createQuadratureDemodPlot(static_cast<SampleSource<std::complex<float>>*>(iqPlot->source().get()));
 

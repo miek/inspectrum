@@ -29,9 +29,8 @@
 #include "util.h"
 
 
-SpectrogramPlot::SpectrogramPlot(SampleSource<std::complex<float>> *src)
+SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src)
 {
-    inputSource = src;
     sampleRate = 8000000;
     setFFTSize(512);
     zoomLevel = 0;
