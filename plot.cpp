@@ -26,7 +26,7 @@ Plot::Plot(std::shared_ptr<AbstractSampleSource> src) : sampleSource(src)
 
 bool Plot::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
-
+	return false;
 }
 
 std::shared_ptr<AbstractSampleSource> Plot::output()
