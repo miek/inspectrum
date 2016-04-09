@@ -56,9 +56,9 @@ int Tuner::deviation()
 
 bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
-    if (minCursor->mouseEvent(type, event))
-        return true;
     if (cfCursor->mouseEvent(type, event))
+        return true;
+    if (minCursor->mouseEvent(type, event))
         return true;
     if (maxCursor->mouseEvent(type, event))
         return true;
