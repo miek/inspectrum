@@ -70,7 +70,7 @@ void Tuner::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRang
 {
     painter.save();
 
-    QRect cursorRect(rect.left(), minCursor->pos(), rect.right(), maxCursor->pos() - minCursor->pos());
+    QRect cursorRect(rect.left(), rect.top() + minCursor->pos(), rect.right(), maxCursor->pos() - minCursor->pos());
 
     // Draw translucent white fill for highlight
     painter.fillRect(
@@ -80,12 +80,12 @@ void Tuner::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRang
 
     // Draw tuner edges
     painter.setPen(QPen(Qt::white, 1, Qt::SolidLine));
-    painter.drawLine(rect.left(), minCursor->pos(), rect.right(), minCursor->pos());
-    painter.drawLine(rect.left(), maxCursor->pos(), rect.right(), maxCursor->pos());
+    painter.drawLine(rect.left(), rect.top() + minCursor->pos(), rect.right(), rect.top() + minCursor->pos());
+    painter.drawLine(rect.left(), rect.top() + maxCursor->pos(), rect.right(), rect.top() + maxCursor->pos());
 
     // Draw centre freq
     painter.setPen(QPen(Qt::red, 1, Qt::SolidLine));
-    painter.drawLine(rect.left(), cfCursor->pos(), rect.right(), cfCursor->pos());
+    painter.drawLine(rect.left(), rect.top() + cfCursor->pos(), rect.right(), rect.top() + cfCursor->pos());
 
     painter.restore();
 }
