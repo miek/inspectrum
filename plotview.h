@@ -61,7 +61,6 @@ private:
     Cursors cursors;
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     SpectrogramPlot *spectrogramPlot = nullptr;
-    TracePlot *iqPlot = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
     range_t<off_t> viewRange;
     range_t<off_t> selectedSamples;
@@ -74,8 +73,6 @@ private:
     bool cursorsEnabled;
 
     void addPlot(Plot *plot);
-    TracePlot* createIQPlot(SampleSource<std::complex<float>> *src);
-    TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);
     int plotsHeight();
     off_t samplesPerLine();
     void updateView(bool reCenter = false);

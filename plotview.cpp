@@ -22,12 +22,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <QScrollBar>
-#include <gnuradio/top_block.h>
-#include <gnuradio/analog/quadrature_demod_cf.h>
-#include <gnuradio/blocks/multiply_const_cc.h>
-#include "grsamplebuffer.h"
-#include "memory_sink.h"
-#include "memory_source.h"
+#include "plots.h"
 
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 {
@@ -37,13 +32,11 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
-    auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output()).get();
-    iqPlot = createIQPlot(tunerOutput);
-    auto quadDemodPlot = createQuadratureDemodPlot(tunerOutput);
+    auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output());
 
     addPlot(spectrogramPlot);
-    addPlot(iqPlot);
-    addPlot(quadDemodPlot);
+    addPlot(Plots::samplePlot(tunerOutput));
+    addPlot(Plots::frequencyPlot(tunerOutput));
 
     viewport()->installEventFilter(this);
     mainSampleSource->subscribe(this);
@@ -53,36 +46,6 @@ void PlotView::addPlot(Plot *plot)
 {
     plots.emplace_back(plot);
     connect(plot, &Plot::repaint, this, &PlotView::repaint);
-}
-
-TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)
-{
-    gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
-    auto iq_mem_source = gr::blocks::memory_source::make(8);
-    auto iq_mem_sink = gr::blocks::memory_sink::make(8);
-    auto multiply = gr::blocks::multiply_const_cc::make(20);
-
-    iq_tb->connect(iq_mem_source, 0, multiply, 0);
-    iq_tb->connect(multiply, 0, iq_mem_sink, 0);
-
-    auto iq_src = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(src, iq_tb, iq_mem_source, iq_mem_sink);
-    return new TracePlot(iq_src);
-}
-
-TracePlot* PlotView::createQuadratureDemodPlot(SampleSource<std::complex<float>> *src)
-{
-    gr::top_block_sptr quad_demod_tb = gr::make_top_block("quad_demod");
-    auto quad_demod_mem_source = gr::blocks::memory_source::make(8);
-    auto quad_demod_mem_sink = gr::blocks::memory_sink::make(4);
-    auto quad_demod = gr::analog::quadrature_demod_cf::make(5);
-    quad_demod_tb->connect(quad_demod_mem_source, 0, quad_demod, 0);
-    quad_demod_tb->connect(quad_demod, 0, quad_demod_mem_sink, 0);
-
-    return new TracePlot(
-        std::make_shared<GRSampleBuffer<std::complex<float>, float>>(
-            dynamic_cast<SampleSource<std::complex<float>>*>(src), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink
-        )
-    );
 }
 
 void PlotView::cursorsMoved()

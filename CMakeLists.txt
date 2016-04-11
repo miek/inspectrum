@@ -37,6 +37,7 @@ list(APPEND inspectrum_sources
     memory_sink_impl.cc
     memory_source_impl.cc
     plot.cpp
+    plots.cpp
     plotview.cpp
     samplebuffer.cpp
     samplesource.cpp
