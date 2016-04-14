@@ -26,6 +26,12 @@ void SampleSource<T>::subscribe(Subscriber *subscriber)
 }
 
 template<typename T>
+std::type_index SampleSource<T>::sampleType()
+{
+	return typeid(T);
+}
+
+template<typename T>
 void SampleSource<T>::invalidate()
 {
 	for (auto subscriber : subscribers) {
