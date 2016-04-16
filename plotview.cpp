@@ -20,6 +20,7 @@
 #include "plotview.h"
 #include <QApplication>
 #include <QDebug>
+#include <QMenu>
 #include <QPainter>
 #include <QScrollBar>
 #include "plots.h"
@@ -46,6 +47,27 @@ void PlotView::addPlot(Plot *plot)
 {
     plots.emplace_back(plot);
     connect(plot, &Plot::repaint, this, &PlotView::repaint);
+}
+
+void PlotView::contextMenuEvent(QContextMenuEvent * event)
+{
+    QMenu menu;
+    // TODO: get the selected plot
+    auto src = plots[0]->output();
+    auto compatiblePlots = as_range(Plots::plots.equal_range(src->sampleType()));
+    for (auto p : compatiblePlots) {
+        auto action = new QAction("Add plot", &menu);
+        auto plotCreator = p.second;
+        connect(
+            action, &QAction::triggered,
+            this, [=]() {
+                addPlot(plotCreator(src));
+            }
+        );
+        menu.addAction(action);
+    }
+    if (menu.exec(event->globalPos()))
+        updateView(false);
 }
 
 void PlotView::cursorsMoved()
