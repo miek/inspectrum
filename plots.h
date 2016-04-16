@@ -28,6 +28,17 @@ class Plots
 {
 
 public:
+    static std::multimap<std::type_index, std::function<Plot*(std::shared_ptr<AbstractSampleSource>)>> plots;
+
     static Plot* samplePlot(std::shared_ptr<AbstractSampleSource> source);
     static Plot* frequencyPlot(std::shared_ptr<AbstractSampleSource> source);
+
+    static class _init
+    {
+    public:
+        _init() {
+            plots.emplace(typeid(std::complex<float>), samplePlot);
+            plots.emplace(typeid(std::complex<float>), frequencyPlot);
+        };
+    } _initializer;
 };

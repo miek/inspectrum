@@ -26,6 +26,9 @@
 
 #include "plots.h"
 
+std::multimap<std::type_index, std::function<Plot*(std::shared_ptr<AbstractSampleSource>)>> Plots::plots;
+Plots::_init Plots::_initializer;
+
 Plot* Plots::samplePlot(std::shared_ptr<AbstractSampleSource> source)
 {
     return new TracePlot(source);
