@@ -66,8 +66,9 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     auto src = selectedPlot->output();
     auto compatiblePlots = as_range(Plots::plots.equal_range(src->sampleType()));
     for (auto p : compatiblePlots) {
-        auto action = new QAction("Add plot", &menu);
-        auto plotCreator = p.second;
+        auto plotInfo = p.second;
+        auto action = new QAction(QString("Add %1").arg(plotInfo.name), &menu);
+        auto plotCreator = plotInfo.creator;
         connect(
             action, &QAction::triggered,
             this, [=]() {

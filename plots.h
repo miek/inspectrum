@@ -24,11 +24,17 @@
 #include "plot.h"
 #include "samplesource.h"
 
+struct PlotInfo
+{
+    const char *name;
+    std::function<Plot*(std::shared_ptr<AbstractSampleSource>)> creator;
+};
+
 class Plots
 {
 
 public:
-    static std::multimap<std::type_index, std::function<Plot*(std::shared_ptr<AbstractSampleSource>)>> plots;
+    static std::multimap<std::type_index, PlotInfo> plots;
 
     static Plot* samplePlot(std::shared_ptr<AbstractSampleSource> source);
     static Plot* frequencyPlot(std::shared_ptr<AbstractSampleSource> source);
@@ -37,8 +43,8 @@ public:
     {
     public:
         _init() {
-            plots.emplace(typeid(std::complex<float>), samplePlot);
-            plots.emplace(typeid(std::complex<float>), frequencyPlot);
+            plots.emplace(typeid(std::complex<float>), PlotInfo{"sample plot", samplePlot});
+            plots.emplace(typeid(std::complex<float>), PlotInfo{"frequency plot", frequencyPlot});
         };
     } _initializer;
 };
