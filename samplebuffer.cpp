@@ -53,3 +53,4 @@ void SampleBuffer<Tin, Tout>::invalidateEvent()
 
 template class SampleBuffer<std::complex<float>, std::complex<float>>;
 template class SampleBuffer<std::complex<float>, float>;
+template class SampleBuffer<float, float>;
