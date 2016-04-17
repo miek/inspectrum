@@ -52,8 +52,18 @@ void PlotView::addPlot(Plot *plot)
 void PlotView::contextMenuEvent(QContextMenuEvent * event)
 {
     QMenu menu;
-    // TODO: get the selected plot
-    auto src = plots[0]->output();
+
+    Plot *selectedPlot = nullptr;
+    int y = -verticalScrollBar()->value();
+    for (auto&& plot : plots) {
+        if (range_t<int>{y, y + plot->height()}.contains(event->pos().y()))
+            selectedPlot = plot.get();
+        y += plot->height();
+    }
+    if (selectedPlot == nullptr)
+        return;
+
+    auto src = selectedPlot->output();
     auto compatiblePlots = as_range(Plots::plots.equal_range(src->sampleType()));
     for (auto p : compatiblePlots) {
         auto action = new QAction("Add plot", &menu);
