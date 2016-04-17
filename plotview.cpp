@@ -36,8 +36,6 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output());
 
     addPlot(spectrogramPlot);
-    addPlot(Plots::samplePlot(tunerOutput));
-    addPlot(Plots::frequencyPlot(tunerOutput));
 
     viewport()->installEventFilter(this);
     mainSampleSource->subscribe(this);
