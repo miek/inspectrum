@@ -51,6 +51,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
 {
     QMenu menu;
 
+    // Get selected plot
     Plot *selectedPlot = nullptr;
     int y = -verticalScrollBar()->value();
     for (auto&& plot : plots) {
@@ -61,11 +62,14 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     if (selectedPlot == nullptr)
         return;
 
+    // Add actions to add derived plots
+    // that are compatible with selectedPlot's output
+    QMenu *plotsMenu = menu.addMenu("Add derived plot");
     auto src = selectedPlot->output();
     auto compatiblePlots = as_range(Plots::plots.equal_range(src->sampleType()));
     for (auto p : compatiblePlots) {
         auto plotInfo = p.second;
-        auto action = new QAction(QString("Add %1").arg(plotInfo.name), &menu);
+        auto action = new QAction(QString("Add %1").arg(plotInfo.name), plotsMenu);
         auto plotCreator = plotInfo.creator;
         connect(
             action, &QAction::triggered,
@@ -73,7 +77,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
                 addPlot(plotCreator(src));
             }
         );
-        menu.addAction(action);
+        plotsMenu->addAction(action);
     }
     if (menu.exec(event->globalPos()))
         updateView(false);
