@@ -74,6 +74,7 @@ private:
     bool cursorsEnabled;
 
     void addPlot(Plot *plot);
+    void extractSymbols(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
     off_t samplesPerLine();
     void updateView(bool reCenter = false);

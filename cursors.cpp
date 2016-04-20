@@ -74,6 +74,11 @@ void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     painter.restore();
 }
 
+int Cursors::segments()
+{
+    return segmentCount;
+}
+
 range_t<int> Cursors::selection()
 {
     return {minCursor->pos(), maxCursor->pos()};

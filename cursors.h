@@ -32,6 +32,7 @@ class Cursors : public QObject
 
 public:
     Cursors(QObject * parent);
+    int segments();
     bool mouseEvent(QEvent::Type type, QMouseEvent event);
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     range_t<int> selection();

@@ -79,6 +79,18 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
         );
         plotsMenu->addAction(action);
     }
+
+    // Add action to extract symbols from selected plot
+    auto extract = new QAction("Extract symbols...", &menu);
+    connect(
+        extract, &QAction::triggered,
+        this, [=]() {
+            extractSymbols(src);
+        }
+    );
+    extract->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
+    menu.addAction(extract);
+
     if (menu.exec(event->globalPos()))
         updateView(false);
 }
@@ -149,6 +161,25 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
         }
     }
     return false;
+}
+
+void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
+{
+    if (!cursorsEnabled)
+        return;
+    auto floatSrc = std::dynamic_pointer_cast<SampleSource<float>>(src);
+    if (!floatSrc)
+        return;
+    auto samples = floatSrc->getSamples(selectedSamples.minimum, selectedSamples.length());
+    auto step = selectedSamples.length() / cursors.segments();
+    auto symbols = std::vector<float>();
+    for (auto i = step / 2; i < selectedSamples.length(); i += step)
+    {
+        symbols.push_back(samples[i]);
+    }
+    for (auto f : symbols)
+        std::cout << f << ", ";
+    std::cout << std::endl << std::flush;
 }
 
 void PlotView::invalidateEvent()
