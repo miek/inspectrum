@@ -40,6 +40,12 @@ void SampleSource<T>::invalidate()
 }
 
 template<typename T>
+int SampleSource<T>::subscriberCount()
+{
+	return subscribers.size();
+}
+
+template<typename T>
 void SampleSource<T>::unsubscribe(Subscriber *subscriber)
 {
 	subscribers.erase(subscriber);

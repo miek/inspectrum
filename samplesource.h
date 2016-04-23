@@ -38,6 +38,7 @@ public:
     virtual off_t rate() = 0;
     std::type_index sampleType() override;
     void subscribe(Subscriber *subscriber);
+    int subscriberCount();
     void unsubscribe(Subscriber *subscriber);
 
 protected:
