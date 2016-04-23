@@ -80,6 +80,7 @@ private:
     float getTunerCentre();
     std::vector<float> getTunerTaps();
     int linesPerTile();
+    bool tunerEnabled();
 };
 
 class TileCacheKey

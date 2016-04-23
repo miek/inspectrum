@@ -60,7 +60,8 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
 
 void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
-    tuner.paintFront(painter, rect, sampleRange);
+    if (tunerEnabled())
+        tuner.paintFront(painter, rect, sampleRange);
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -175,7 +176,10 @@ int SpectrogramPlot::linesPerTile()
 
 bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
-    return tuner.mouseEvent(type, event);
+    if (tunerEnabled())
+        return tuner.mouseEvent(type, event);
+
+    return false;
 }
 
 std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
@@ -211,6 +215,11 @@ void SpectrogramPlot::setPowerMin(int power)
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;
+}
+
+bool SpectrogramPlot::tunerEnabled()
+{
+    return (tunerOutput->subscriberCount() > 0);
 }
 
 void SpectrogramPlot::tunerMoved()
