@@ -20,6 +20,7 @@
 
 #include "inputsource.h"
 
+#include <errno.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -137,9 +138,13 @@ void InputSource::openFile(const char *filename)
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
 
+    errno = 0;
     FILE *file = fopen(filename, "rb");
-    if (file == nullptr)
-        throw std::runtime_error("Error opening file");
+    if (file == nullptr) {
+        std::stringstream ss;
+        ss << "Error opening file: " << strerror(errno) << " (" << errno << ")";
+        throw std::runtime_error(ss.str());
+    }
 
     struct stat sb;
     if (fstat(fileno(file), &sb) != 0)
