@@ -35,13 +35,14 @@ SampleBuffer<Tin, Tout>::~SampleBuffer()
 template <typename Tin, typename Tout>
 std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
 {
-    auto samples = src->getSamples(start, length);
+    auto margin = std::min(start, 128L);
+    auto samples = src->getSamples(start - margin, length + margin);
     if (samples == nullptr)
     	return nullptr;
 
     std::unique_ptr<Tout[]> dest(new Tout[length]);
     QMutexLocker ml(&mutex);
-    work(samples.get(), dest.get(), length);
+    work(samples.get() + margin, dest.get(), length);
     return dest;
 }
 
