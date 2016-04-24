@@ -45,12 +45,14 @@ public slots:
     void cursorsMoved();
     void enableCursors(bool enable);
     void invalidateEvent();
+    void repaint();
     void setCursorSegments(int segments);
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
 
 protected:
+    void contextMenuEvent(QContextMenuEvent * event) override;
     bool eventFilter(QObject * obj, QEvent *event) override;
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent * event);
@@ -60,10 +62,8 @@ private:
     Cursors cursors;
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     SpectrogramPlot *spectrogramPlot = nullptr;
-    TracePlot *iqPlot = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
     range_t<off_t> viewRange;
-    bool selection = false;
     range_t<off_t> selectedSamples;
     std::pair<float, float> selectionFreq;
 
@@ -73,8 +73,8 @@ private:
     int powerMax;
     bool cursorsEnabled;
 
-    TracePlot* createIQPlot(SampleSource<std::complex<float>> *src);
-    TracePlot* createQuadratureDemodPlot(SampleSource<std::complex<float>> *src);
+    void addPlot(Plot *plot);
+    void extractSymbols(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
     off_t samplesPerLine();
     void updateView(bool reCenter = false);

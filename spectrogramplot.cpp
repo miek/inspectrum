@@ -23,16 +23,17 @@
 #include <QElapsedTimer>
 #include <QPainter>
 #include <QPaintEvent>
+#include <QPixmapCache>
 #include <QRect>
+#include <gnuradio/top_block.h>
+#include <gnuradio/filter/firdes.h>
 
 #include <cstdlib>
 #include "util.h"
 
 
-SpectrogramPlot::SpectrogramPlot(SampleSource<std::complex<float>> *src)
+SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), tuner(this)
 {
-    inputSource = src;
-    sampleRate = 8000000;
     setFFTSize(512);
     zoomLevel = 0;
     powerMax = 0.0f;
@@ -43,6 +44,24 @@ SpectrogramPlot::SpectrogramPlot(SampleSource<std::complex<float>> *src)
         colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
     }
 
+    auto tunerFlowGraph = gr::make_top_block("tuner");
+    auto memSource = gr::blocks::memory_source::make(8);
+    auto memSink = gr::blocks::memory_sink::make(8);
+    tunerFilter = gr::filter::freq_xlating_fir_filter_ccf::make(1, getTunerTaps(), getTunerCentre(), 1.0);
+
+    tunerFlowGraph->connect(memSource, 0, tunerFilter, 0);
+    tunerFlowGraph->connect(tunerFilter, 0, memSink, 0);
+
+    tunerOutput = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(
+        inputSource.get(), tunerFlowGraph, memSource, memSink
+    );
+    connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
+}
+
+void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+    if (tunerEnabled())
+        tuner.paintFront(painter, rect, sampleRange);
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -134,9 +153,39 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
     }
 }
 
-void SpectrogramPlot::setSampleRate(int rate)
+int SpectrogramPlot::getStride()
 {
-    sampleRate = rate;
+    return fftSize / zoomLevel;
+}
+
+float SpectrogramPlot::getTunerCentre()
+{
+    return 0.5f - tuner.centre() / (float)fftSize;
+}
+
+std::vector<float> SpectrogramPlot::getTunerTaps()
+{
+    float gain = pow(10.0f, powerMax / -10.0f);
+    float cutoff = tuner.deviation() / (float)fftSize;
+    return gr::filter::firdes::low_pass(gain, 1.0, cutoff, cutoff / 2);
+}
+
+int SpectrogramPlot::linesPerTile()
+{
+    return tileSize / fftSize;
+}
+
+bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
+{
+    if (tunerEnabled())
+        return tuner.mouseEvent(type, event);
+
+    return false;
+}
+
+std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
+{
+    return tunerOutput;
 }
 
 void SpectrogramPlot::setFFTSize(int size)
@@ -156,6 +205,7 @@ void SpectrogramPlot::setPowerMax(int power)
 {
     powerMax = power;
     pixmapCache.clear();
+    tunerMoved();
 }
 
 void SpectrogramPlot::setPowerMin(int power)
@@ -169,37 +219,20 @@ void SpectrogramPlot::setZoomLevel(int zoom)
     zoomLevel = zoom;
 }
 
-int SpectrogramPlot::getHeight()
+bool SpectrogramPlot::tunerEnabled()
 {
-    if (!inputSource)
-        return 0;
-
-    return inputSource->count() / getStride();
+    return (tunerOutput->subscriberCount() > 0);
 }
 
-int SpectrogramPlot::getStride()
+void SpectrogramPlot::tunerMoved()
 {
-    return fftSize / zoomLevel;
-}
+    tunerFilter->set_center_freq(getTunerCentre());
+    tunerFilter->set_taps(getTunerTaps());
 
-off_t SpectrogramPlot::lineToSample(off_t line)
-{
-    return line * getStride();
-}
+    // TODO: for invalidating traceplot cache, this shouldn't really go here
+    QPixmapCache::clear();
 
-int SpectrogramPlot::sampleToLine(off_t sample)
-{
-    return sample / getStride();
-}
-
-QString SpectrogramPlot::sampleToTime(off_t sample)
-{
-    return QString::number((float)sample / sampleRate).append("s");
-}
-
-int SpectrogramPlot::linesPerTile()
-{
-    return tileSize / fftSize;
+    emit repaint();
 }
 
 uint qHash(const TileCacheKey &key, uint seed)

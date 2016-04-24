@@ -17,15 +17,65 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QPixmapCache>
+#include <QTextStream>
+#include <QtConcurrent>
 #include "samplesource.h"
 #include "traceplot.h"
 
-TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : sampleSource(source) {
-
+TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : Plot(source) {
+    connect(this, &TracePlot::imageReady, this, &TracePlot::handleImage);
 }
 
 void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
 {
+    int samplesPerColumn = sampleRange.length() / rect.width();
+    int samplesPerTile = tileWidth * samplesPerColumn;
+    off_t tileID = sampleRange.minimum / samplesPerTile;
+    off_t tileOffset = sampleRange.minimum % samplesPerTile; // Number of samples to skip from first image tile
+    int xOffset = tileOffset / samplesPerColumn; // Number of columns to skip from first image tile
+
+    // Paint first (possibly partial) tile
+    painter.drawPixmap(
+        QRect(rect.x(), rect.y(), tileWidth - xOffset, height()),
+        getTile(tileID++, samplesPerTile),
+        QRect(xOffset, 0, tileWidth - xOffset, height())
+    );
+
+    // Paint remaining tiles
+    for (int x = tileWidth - xOffset; x < rect.right(); x += tileWidth) {
+        painter.drawPixmap(
+            QRect(x, rect.y(), tileWidth, height()),
+            getTile(tileID++, samplesPerTile)
+        );
+    }
+}
+
+QPixmap TracePlot::getTile(off_t tileID, off_t sampleCount)
+{
+    QPixmap pixmap(tileWidth, height());
+    QString key;
+    QTextStream(&key) << "traceplot_" << this << "_" << tileID << "_" << sampleCount;
+    if (QPixmapCache::find(key, &pixmap))
+        return pixmap;
+
+    if (!tasks.contains(key)) {
+        range_t<off_t> sampleRange{tileID * sampleCount, (tileID + 1) * sampleCount};
+        QtConcurrent::run(this, &TracePlot::drawTile, key, QRect(0, 0, tileWidth, height()), sampleRange);
+        tasks.insert(key);
+    }
+    pixmap.fill(Qt::transparent);
+    return pixmap;
+}
+
+void TracePlot::drawTile(QString key, const QRect &rect, range_t<off_t> sampleRange)
+{
+    QImage image(rect.size(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
 	auto firstSample = sampleRange.minimum;
 	auto length = sampleRange.length();
 
@@ -51,24 +101,36 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     } else {
     	throw std::runtime_error("TracePlot::paintMid: Unsupported source type");
     }
+
+    emit imageReady(key, image);
 }
 
-void TracePlot::plotTrace(QPainter &painter, QRect &rect, float *samples, off_t count, int step = 1)
+void TracePlot::handleImage(QString key, QImage image)
 {
-    int xprev = 0;
-    int yprev = 0;
+    auto pixmap = QPixmap::fromImage(image);
+    QPixmapCache::insert(key, pixmap);
+    tasks.remove(key);
+    emit repaint();
+}
+
+void TracePlot::plotTrace(QPainter &painter, const QRect &rect, float *samples, off_t count, int step = 1)
+{
+    QPainterPath path;
+    range_t<float> xRange{0, rect.width() - 2.f};
+    range_t<float> yRange{0, rect.height() - 2.f};
+    const float xStep = 1.0 / count * rect.width();
     for (off_t i = 0; i < count; i++) {
         float sample = samples[i*step];
-        int x = (float)i / count * rect.width();
-        int y = rect.height() - ((sample * rect.height()/2) + rect.height()/2);
+        float x = i * xStep;
+        float y = (1 - sample) * (rect.height() / 2);
 
-        if (x < 0) x = 0;
-        if (y < 0) y = 0;
-        if (x >= rect.width()-1) x = rect.width()-2;
-        if (y >= rect.height()-1) y = rect.height()-2;
+        x = xRange.clip(x) + rect.x();
+        y = yRange.clip(y) + rect.y();
 
-        painter.drawLine(xprev + rect.x(), yprev + rect.y(), x + rect.x(), y + rect.y());
-        xprev = x;
-        yprev = y;
+        if (i == 0)
+            path.moveTo(x, y);
+        else
+            path.lineTo(x, y);
     }
+    painter.drawPath(path);
 }

@@ -19,11 +19,14 @@
 
 #pragma once
 
+#include <gnuradio/filter/freq_xlating_fir_filter_ccf.h>
 #include <QCache>
 #include <QWidget>
 #include "fft.h"
+#include "grsamplebuffer.h"
 #include "inputsource.h"
 #include "plot.h"
+#include "tuner.h"
 
 #include <memory>
 #include <math.h>
@@ -37,54 +40,47 @@ class SpectrogramPlot : public Plot
     Q_OBJECT
 
 public:
-    SpectrogramPlot(SampleSource<std::complex<float>> *src);
-
-    void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
-
-    QSize sizeHint() const;
-    int getHeight();
-    int getStride();
-    off_t lineToSample(off_t line);
-
-    SampleSource<std::complex<float>> *inputSource = nullptr;
+    SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src);
+    std::shared_ptr<AbstractSampleSource> output() override;
+    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
+    void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
+    bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
 
 public slots:
-    void setSampleRate(int rate);
     void setFFTSize(int size);
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
-
-protected:
-    void mouseReleaseEvent(QMouseEvent * event);
-    void mouseMoveEvent(QMouseEvent * event);
-    void mousePressEvent(QMouseEvent * event);
-
+    void tunerMoved();
 
 private:
     const int linesPerGraduation = 50;
     const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
+    std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
     std::unique_ptr<FFT> fft;
     std::unique_ptr<float[]> window;
-    fftwf_complex *lineBuffer = nullptr;
     QCache<TileCacheKey, QPixmap> pixmapCache;
     QCache<TileCacheKey, float> fftCache;
     uint colormap[256];
 
-    int sampleRate;
     int fftSize;
     int zoomLevel;
     float powerMax;
     float powerMin;
 
+    Tuner tuner;
+    std::shared_ptr<GRSampleBuffer<std::complex<float>, std::complex<float>>> tunerOutput;
+    gr::filter::freq_xlating_fir_filter_ccf::sptr tunerFilter;
+
     QPixmap* getPixmapTile(off_t tile);
     float* getFFTTile(off_t tile);
     void getLine(float *dest, off_t sample);
-    void paintCursors(QPainter *painter, QRect rect);
-    int sampleToLine(off_t sample);
-    QString sampleToTime(off_t sample);
+    int getStride();
+    float getTunerCentre();
+    std::vector<float> getTunerTaps();
     int linesPerTile();
+    bool tunerEnabled();
 };
 
 class TileCacheKey

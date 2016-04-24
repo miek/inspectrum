@@ -29,3 +29,4 @@ void GRSampleBuffer<Tin, Tout>::work(void *input, void *output, int length)
 
 template class GRSampleBuffer<std::complex<float>, std::complex<float>>;
 template class GRSampleBuffer<std::complex<float>, float>;
+template class GRSampleBuffer<float, float>;

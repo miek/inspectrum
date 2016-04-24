@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -19,31 +19,37 @@
 
 #pragma once
 
-#include <complex>
-#include <memory>
-#include <set>
-#include "abstractsamplesource.h"
-#include "subscriber.h"
+#include <QMouseEvent>
+#include <QObject>
+#include <QPainter>
+#include <QPoint>
+#include "cursor.h"
+#include "util.h"
 
-template<typename T>
-class SampleSource : public AbstractSampleSource
+class Tuner : public QObject
 {
+    Q_OBJECT
 
 public:
-    virtual ~SampleSource() {};
+    Tuner(QObject * parent);
+    int centre();
+    int deviation();
+    bool mouseEvent(QEvent::Type, QMouseEvent event);
+    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    void setCentre(int centre);
+    void setDeviation(int dev);
 
-    virtual std::unique_ptr<T[]> getSamples(off_t start, off_t length) = 0;
-    virtual void invalidateEvent() { };
-    virtual off_t count() = 0;
-    virtual off_t rate() = 0;
-    std::type_index sampleType() override;
-    void subscribe(Subscriber *subscriber);
-    int subscriberCount();
-    void unsubscribe(Subscriber *subscriber);
+public slots:
+	void cursorMoved();
 
-protected:
-	virtual void invalidate();
+signals:
+	void tunerMoved();
 
 private:
-	std::set<Subscriber*> subscribers;
+	void updateCursors();
+
+	Cursor *minCursor;
+	Cursor *cfCursor;
+	Cursor *maxCursor;
+	int _deviation;
 };

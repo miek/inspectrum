@@ -21,10 +21,12 @@
 
 #include <complex>
 #include <memory>
+#include <typeindex>
 
 class AbstractSampleSource
 {
 
 public:
     virtual ~AbstractSampleSource() {};
+    virtual std::type_index sampleType() = 0;
 };

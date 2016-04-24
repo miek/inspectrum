@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -19,31 +19,29 @@
 
 #pragma once
 
-#include <complex>
-#include <memory>
-#include <set>
-#include "abstractsamplesource.h"
-#include "subscriber.h"
+#include <QMouseEvent>
+#include <QObject>
+#include <QPoint>
+#include "util.h"
 
-template<typename T>
-class SampleSource : public AbstractSampleSource
+class Cursor : public QObject
 {
+    Q_OBJECT
 
 public:
-    virtual ~SampleSource() {};
+    Cursor(Qt::Orientation orientation, QObject * parent);
+    int pos();
+    void setPos(int newPos);
+	bool mouseEvent(QEvent::Type type, QMouseEvent event);
 
-    virtual std::unique_ptr<T[]> getSamples(off_t start, off_t length) = 0;
-    virtual void invalidateEvent() { };
-    virtual off_t count() = 0;
-    virtual off_t rate() = 0;
-    std::type_index sampleType() override;
-    void subscribe(Subscriber *subscriber);
-    int subscriberCount();
-    void unsubscribe(Subscriber *subscriber);
-
-protected:
-	virtual void invalidate();
+signals:
+	void posChanged();
 
 private:
-	std::set<Subscriber*> subscribers;
+	int fromPoint(QPoint point);
+	bool pointOverCursor(QPoint point);
+
+	Qt::Orientation orientation;
+	bool dragging = false;
+	int cursorPosition = 0;
 };

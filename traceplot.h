@@ -33,8 +33,17 @@ public:
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     std::shared_ptr<AbstractSampleSource> source() { return sampleSource; };
 
-private:
-	std::shared_ptr<AbstractSampleSource> sampleSource;
+signals:
+	void imageReady(QString key, QImage image);
 
-	void plotTrace(QPainter &painter, QRect &rect, float *samples, off_t count, int step);
+public slots:
+	void handleImage(QString key, QImage image);
+
+private:
+	QSet<QString> tasks;
+	const int tileWidth = 1000;
+
+	QPixmap getTile(off_t tileID, off_t sampleCount);
+	void drawTile(QString key, const QRect &rect, range_t<off_t> sampleRange);
+	void plotTrace(QPainter &painter, const QRect &rect, float *samples, off_t count, int step);
 };

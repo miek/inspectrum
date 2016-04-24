@@ -27,6 +27,7 @@ endif (NOT CMAKE_CXX_FLAGS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 list(APPEND inspectrum_sources 
+    cursor.cpp
     cursors.cpp
     main.cpp
     fft.cpp
@@ -36,12 +37,14 @@ list(APPEND inspectrum_sources
     memory_sink_impl.cc
     memory_source_impl.cc
     plot.cpp
+    plots.cpp
     plotview.cpp
     samplebuffer.cpp
     samplesource.cpp
     spectrogramcontrols.cpp
     spectrogramplot.cpp
     traceplot.cpp
+    tuner.cpp
 )
 
 INCLUDE(FindPkgConfig)
@@ -65,7 +68,7 @@ link_directories(
 )
 
 add_executable(inspectrum ${inspectrum_sources})
-qt5_use_modules(inspectrum Widgets)
+qt5_use_modules(inspectrum Widgets Concurrent)
 
 target_link_libraries(inspectrum
     ${Boost_LIBRARIES}

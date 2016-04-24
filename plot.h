@@ -19,21 +19,32 @@
 
 #pragma once
 
+#include <QMouseEvent>
 #include <QObject>
 #include <QPainter>
+#include "abstractsamplesource.h"
 #include "util.h"
 
 class Plot : public QObject
 {
+	Q_OBJECT
 
 public:
+    Plot(std::shared_ptr<AbstractSampleSource> src);
+    virtual bool mouseEvent(QEvent::Type type, QMouseEvent event);
+    virtual std::shared_ptr<AbstractSampleSource> output();
     virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     int height() const { return _height; };
 
+signals:
+    void repaint();
+
 protected:
     void setHeight(int height) { _height = height; };
+
+    std::shared_ptr<AbstractSampleSource> sampleSource;
 
 private:
     // TODO: don't hardcode this

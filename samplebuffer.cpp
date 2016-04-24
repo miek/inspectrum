@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QMutexLocker>
 #include "samplebuffer.h"
 
 template <typename Tin, typename Tout>
@@ -34,12 +35,14 @@ SampleBuffer<Tin, Tout>::~SampleBuffer()
 template <typename Tin, typename Tout>
 std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
 {
-    auto samples = src->getSamples(start, length);
+    auto margin = std::min(start, 128L);
+    auto samples = src->getSamples(start - margin, length + margin);
     if (samples == nullptr)
     	return nullptr;
 
     std::unique_ptr<Tout[]> dest(new Tout[length]);
-    work(samples.get(), dest.get(), length);
+    QMutexLocker ml(&mutex);
+    work(samples.get() + margin, dest.get(), length);
     return dest;
 }
 
@@ -51,3 +54,4 @@ void SampleBuffer<Tin, Tout>::invalidateEvent()
 
 template class SampleBuffer<std::complex<float>, std::complex<float>>;
 template class SampleBuffer<std::complex<float>, float>;
+template class SampleBuffer<float, float>;

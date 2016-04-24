@@ -20,69 +20,79 @@
 #include "plotview.h"
 #include <QApplication>
 #include <QDebug>
+#include <QMenu>
 #include <QPainter>
 #include <QScrollBar>
-#include <gnuradio/top_block.h>
-#include <gnuradio/analog/quadrature_demod_cf.h>
-#include <gnuradio/blocks/multiply_const_cc.h>
-#include <gnuradio/filter/firdes.h>
-#include <gnuradio/filter/freq_xlating_fir_filter_ccf.h>
-#include "grsamplebuffer.h"
-#include "memory_sink.h"
-#include "memory_source.h"
+#include "plots.h"
 
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 {
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
-    viewport()->installEventFilter(&cursors);
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
 
-    spectrogramPlot = new SpectrogramPlot(mainSampleSource);
-    plots.emplace_back(spectrogramPlot);
+    spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
+    auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output());
 
+    addPlot(spectrogramPlot);
+
+    viewport()->installEventFilter(this);
     mainSampleSource->subscribe(this);
 }
 
-TracePlot* PlotView::createIQPlot(SampleSource<std::complex<float>> *src)
+void PlotView::addPlot(Plot *plot)
 {
-    gr::top_block_sptr iq_tb = gr::make_top_block("multiply");
-    auto iq_mem_source = gr::blocks::memory_source::make(8);
-    auto iq_mem_sink = gr::blocks::memory_sink::make(8);
-    auto multiply = gr::blocks::multiply_const_cc::make(20);
-    if (selection || true) {
-        float centre = -0.05; //(selectionFreq.first + selectionFreq.second) / 2;
-        float cutoff = 0.02; //std::abs(selectionFreq.first - centre);
-        auto lp_taps = gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
-        auto filter = gr::filter::freq_xlating_fir_filter_ccf::make(1, lp_taps, centre, 1.0);
-
-        iq_tb->connect(iq_mem_source, 0, filter, 0);
-        iq_tb->connect(filter, 0, multiply, 0);
-        iq_tb->connect(multiply, 0, iq_mem_sink, 0);
-    } else {
-        iq_tb->connect(iq_mem_source, 0, multiply, 0);
-        iq_tb->connect(multiply, 0, iq_mem_sink, 0);
-    }
-
-    auto iq_src = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(mainSampleSource, iq_tb, iq_mem_source, iq_mem_sink);
-    return new TracePlot(iq_src);
+    plots.emplace_back(plot);
+    connect(plot, &Plot::repaint, this, &PlotView::repaint);
 }
 
-TracePlot* PlotView::createQuadratureDemodPlot(SampleSource<std::complex<float>> *src)
+void PlotView::contextMenuEvent(QContextMenuEvent * event)
 {
-    gr::top_block_sptr quad_demod_tb = gr::make_top_block("quad_demod");
-    auto quad_demod_mem_source = gr::blocks::memory_source::make(8);
-    auto quad_demod_mem_sink = gr::blocks::memory_sink::make(4);
-    auto quad_demod = gr::analog::quadrature_demod_cf::make(5);
-    quad_demod_tb->connect(quad_demod_mem_source, 0, quad_demod, 0);
-    quad_demod_tb->connect(quad_demod, 0, quad_demod_mem_sink, 0);
+    QMenu menu;
 
-    return new TracePlot(
-        std::make_shared<GRSampleBuffer<std::complex<float>, float>>(
-            dynamic_cast<SampleSource<std::complex<float>>*>(src), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink
-        )
+    // Get selected plot
+    Plot *selectedPlot = nullptr;
+    int y = -verticalScrollBar()->value();
+    for (auto&& plot : plots) {
+        if (range_t<int>{y, y + plot->height()}.contains(event->pos().y()))
+            selectedPlot = plot.get();
+        y += plot->height();
+    }
+    if (selectedPlot == nullptr)
+        return;
+
+    // Add actions to add derived plots
+    // that are compatible with selectedPlot's output
+    QMenu *plotsMenu = menu.addMenu("Add derived plot");
+    auto src = selectedPlot->output();
+    auto compatiblePlots = as_range(Plots::plots.equal_range(src->sampleType()));
+    for (auto p : compatiblePlots) {
+        auto plotInfo = p.second;
+        auto action = new QAction(QString("Add %1").arg(plotInfo.name), plotsMenu);
+        auto plotCreator = plotInfo.creator;
+        connect(
+            action, &QAction::triggered,
+            this, [=]() {
+                addPlot(plotCreator(src));
+            }
+        );
+        plotsMenu->addAction(action);
+    }
+
+    // Add action to extract symbols from selected plot
+    auto extract = new QAction("Extract symbols...", &menu);
+    connect(
+        extract, &QAction::triggered,
+        this, [=]() {
+            extractSymbols(src);
+        }
     );
+    extract->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
+    menu.addAction(extract);
+
+    if (menu.exec(event->globalPos()))
+        updateView(false);
 }
 
 void PlotView::cursorsMoved()
@@ -110,6 +120,35 @@ void PlotView::enableCursors(bool enabled)
 
 bool PlotView::eventFilter(QObject * obj, QEvent *event)
 {
+    // Pass mouse events to individual plot objects
+    if (event->type() == QEvent::MouseButtonPress ||
+        event->type() == QEvent::MouseMove ||
+        event->type() == QEvent::MouseButtonRelease) {
+
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+
+        if (cursors.mouseEvent(event->type(), *mouseEvent))
+            return true;
+
+        int plotY = -verticalScrollBar()->value();
+        for (auto&& plot : plots) {
+            bool result = plot->mouseEvent(
+                event->type(),
+                QMouseEvent(
+                    event->type(),
+                    QPoint(mouseEvent->pos().x(), mouseEvent->pos().y() - plotY),
+                    mouseEvent->button(),
+                    mouseEvent->buttons(),
+                    QApplication::keyboardModifiers()
+                )
+            );
+            if (result)
+                return true;
+            plotY += plot->height();
+        }
+    }
+
+    // Handle wheel events for zooming
     if (event->type() == QEvent::Wheel) {
         QWheelEvent *wheelEvent = (QWheelEvent*)event;
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
@@ -124,10 +163,34 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
     return false;
 }
 
+void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
+{
+    if (!cursorsEnabled)
+        return;
+    auto floatSrc = std::dynamic_pointer_cast<SampleSource<float>>(src);
+    if (!floatSrc)
+        return;
+    auto samples = floatSrc->getSamples(selectedSamples.minimum, selectedSamples.length());
+    auto step = selectedSamples.length() / cursors.segments();
+    auto symbols = std::vector<float>();
+    for (auto i = step / 2; i < selectedSamples.length(); i += step)
+    {
+        symbols.push_back(samples[i]);
+    }
+    for (auto f : symbols)
+        std::cout << f << ", ";
+    std::cout << std::endl << std::flush;
+}
+
 void PlotView::invalidateEvent()
 {
     horizontalScrollBar()->setMinimum(0);
     horizontalScrollBar()->setMaximum(mainSampleSource->count());
+}
+
+void PlotView::repaint()
+{
+    viewport()->update();
 }
 
 void PlotView::setCursorSegments(int segments)
