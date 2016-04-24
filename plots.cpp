@@ -19,6 +19,7 @@
 
 #include <gnuradio/top_block.h>
 #include <gnuradio/analog/quadrature_demod_cf.h>
+#include <gnuradio/blocks/complex_to_mag.h>
 #include <gnuradio/blocks/threshold_ff.h>
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
@@ -33,6 +34,22 @@ Plots::_init Plots::_initializer;
 Plot* Plots::samplePlot(std::shared_ptr<AbstractSampleSource> source)
 {
     return new TracePlot(source);
+}
+
+Plot* Plots::amplitudePlot(std::shared_ptr<AbstractSampleSource> source)
+{
+    gr::top_block_sptr tb = gr::make_top_block("amp");
+    auto memSrc = gr::blocks::memory_source::make(8);
+    auto memSink = gr::blocks::memory_sink::make(4);
+    auto complexToMag = gr::blocks::complex_to_mag::make();
+    tb->connect(memSrc, 0, complexToMag, 0);
+    tb->connect(complexToMag, 0, memSink, 0);
+
+    return new TracePlot(
+        std::make_shared<GRSampleBuffer<std::complex<float>, float>>(
+            std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(source).get(), tb, memSrc, memSink
+        )
+    );
 }
 
 Plot* Plots::frequencyPlot(std::shared_ptr<AbstractSampleSource> source)

@@ -37,6 +37,7 @@ public:
     static std::multimap<std::type_index, PlotInfo> plots;
 
     static Plot* samplePlot(std::shared_ptr<AbstractSampleSource> source);
+    static Plot* amplitudePlot(std::shared_ptr<AbstractSampleSource> source);
     static Plot* frequencyPlot(std::shared_ptr<AbstractSampleSource> source);
     static Plot* thresholdPlot(std::shared_ptr<AbstractSampleSource> source);
 
@@ -45,6 +46,7 @@ public:
     public:
         _init() {
             plots.emplace(typeid(std::complex<float>), PlotInfo{"sample plot", samplePlot});
+            plots.emplace(typeid(std::complex<float>), PlotInfo{"amplitude plot", amplitudePlot});
             plots.emplace(typeid(std::complex<float>), PlotInfo{"frequency plot", frequencyPlot});
             plots.emplace(typeid(float), PlotInfo{"threshold plot", thresholdPlot});
         };
