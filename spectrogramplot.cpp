@@ -165,8 +165,9 @@ float SpectrogramPlot::getTunerCentre()
 
 std::vector<float> SpectrogramPlot::getTunerTaps()
 {
+    float gain = pow(10.0f, powerMax / -10.0f);
     float cutoff = tuner.deviation() / (float)fftSize;
-    return gr::filter::firdes::low_pass(1.0, 1.0, cutoff, cutoff / 2);
+    return gr::filter::firdes::low_pass(gain, 1.0, cutoff, cutoff / 2);
 }
 
 int SpectrogramPlot::linesPerTile()
@@ -204,6 +205,7 @@ void SpectrogramPlot::setPowerMax(int power)
 {
     powerMax = power;
     pixmapCache.clear();
+    tunerMoved();
 }
 
 void SpectrogramPlot::setPowerMin(int power)
