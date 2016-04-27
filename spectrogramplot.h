@@ -19,7 +19,8 @@
 
 #pragma once
 
-#include <gnuradio/filter/freq_xlating_fir_filter_ccf.h>
+#include <gnuradio/blocks/rotator_cc.h>
+#include <gnuradio/filter/fir_filter_ccf.h>
 #include <QCache>
 #include <QWidget>
 #include "fft.h"
@@ -71,13 +72,14 @@ private:
 
     Tuner tuner;
     std::shared_ptr<GRSampleBuffer<std::complex<float>, std::complex<float>>> tunerOutput;
-    gr::filter::freq_xlating_fir_filter_ccf::sptr tunerFilter;
+    gr::blocks::rotator_cc::sptr tunerRotator;
+    gr::filter::fir_filter_ccf::sptr tunerFilter;
 
     QPixmap* getPixmapTile(off_t tile);
     float* getFFTTile(off_t tile);
     void getLine(float *dest, off_t sample);
     int getStride();
-    float getTunerCentre();
+    float getTunerPhaseInc();
     std::vector<float> getTunerTaps();
     int linesPerTile();
     bool tunerEnabled();

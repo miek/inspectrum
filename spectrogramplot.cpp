@@ -47,9 +47,11 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     auto tunerFlowGraph = gr::make_top_block("tuner");
     auto memSource = gr::blocks::memory_source::make(8);
     auto memSink = gr::blocks::memory_sink::make(8);
-    tunerFilter = gr::filter::freq_xlating_fir_filter_ccf::make(1, getTunerTaps(), getTunerCentre(), 1.0);
+    tunerRotator = gr::blocks::rotator_cc::make(getTunerPhaseInc());
+    tunerFilter = gr::filter::fir_filter_ccf::make(1, getTunerTaps());
 
-    tunerFlowGraph->connect(memSource, 0, tunerFilter, 0);
+    tunerFlowGraph->connect(memSource, 0, tunerRotator, 0);
+    tunerFlowGraph->connect(tunerRotator, 0, tunerFilter, 0);
     tunerFlowGraph->connect(tunerFilter, 0, memSink, 0);
 
     tunerOutput = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(
@@ -158,9 +160,10 @@ int SpectrogramPlot::getStride()
     return fftSize / zoomLevel;
 }
 
-float SpectrogramPlot::getTunerCentre()
+float SpectrogramPlot::getTunerPhaseInc()
 {
-    return 0.5f - tuner.centre() / (float)fftSize;
+    auto freq = 0.5f - tuner.centre() / (float)fftSize;
+    return -freq * Tau;
 }
 
 std::vector<float> SpectrogramPlot::getTunerTaps()
@@ -226,7 +229,7 @@ bool SpectrogramPlot::tunerEnabled()
 
 void SpectrogramPlot::tunerMoved()
 {
-    tunerFilter->set_center_freq(getTunerCentre());
+    tunerRotator->set_phase_inc(getTunerPhaseInc());
     tunerFilter->set_taps(getTunerTaps());
 
     // TODO: for invalidating traceplot cache, this shouldn't really go here
