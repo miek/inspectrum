@@ -47,7 +47,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     auto tunerFlowGraph = gr::make_top_block("tuner");
     auto memSource = gr::blocks::memory_source::make(8);
     auto memSink = gr::blocks::memory_sink::make(8);
-    tunerRotator = gr::blocks::rotator_cc::make(getTunerPhaseInc());
+    tunerRotator = gr::blocks::rotator_ex_cc::make(getTunerPhaseInc());
     tunerFilter = gr::filter::fir_filter_ccf::make(1, getTunerTaps());
 
     tunerFlowGraph->connect(memSource, 0, tunerRotator, 0);

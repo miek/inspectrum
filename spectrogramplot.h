@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <gnuradio/blocks/rotator_cc.h>
+#include "rotator_ex_cc.h"
 #include <gnuradio/filter/fir_filter_ccf.h>
 #include <QCache>
 #include <QWidget>
@@ -72,7 +72,7 @@ private:
 
     Tuner tuner;
     std::shared_ptr<GRSampleBuffer<std::complex<float>, std::complex<float>>> tunerOutput;
-    gr::blocks::rotator_cc::sptr tunerRotator;
+    gr::blocks::rotator_ex_cc::sptr tunerRotator;
     gr::filter::fir_filter_ccf::sptr tunerFilter;
 
     QPixmap* getPixmapTile(off_t tile);
