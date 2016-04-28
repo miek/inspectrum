@@ -34,7 +34,7 @@ public:
 
     static sptr make(size_t itemsize);
 
-    virtual void set_source(void *source, size_t length) = 0;
+    virtual void set_source(void *source, size_t length, uint64_t sampleid) = 0;
 };
 
 } /* namespace blocks */

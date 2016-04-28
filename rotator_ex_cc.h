@@ -38,6 +38,7 @@ namespace gr {
     {
     private:
       rotator d_r;
+      double d_phase_inc;
 
     public:
       // gr::blocks::rotator_cc::sptr

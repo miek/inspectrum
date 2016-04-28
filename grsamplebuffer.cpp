@@ -20,9 +20,9 @@
 #include "grsamplebuffer.h"
 
 template<typename Tin, typename Tout>
-void GRSampleBuffer<Tin, Tout>::work(void *input, void *output, int length)
+void GRSampleBuffer<Tin, Tout>::work(void *input, void *output, int length, off_t sampleid)
 {
-    mem_source->set_source(input, length);
+    mem_source->set_source(input, length, sampleid);
     mem_sink->set_sink(output, length);
     tb->run();
 }

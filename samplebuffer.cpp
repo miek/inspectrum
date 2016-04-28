@@ -42,7 +42,7 @@ std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t l
 
     std::unique_ptr<Tout[]> dest(new Tout[length]);
     QMutexLocker ml(&mutex);
-    work(samples.get() + margin, dest.get(), length);
+    work(samples.get() + margin, dest.get(), length, start);
     return dest;
 }
 

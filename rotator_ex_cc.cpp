@@ -40,6 +40,7 @@ namespace gr {
                       io_signature::make(1, 1, sizeof(gr_complex)),
                       io_signature::make(1, 1, sizeof(gr_complex)))
     {
+      d_phase_inc = phase_inc;
       set_phase_inc(phase_inc);
     }
 
@@ -50,6 +51,7 @@ namespace gr {
     void
     rotator_ex_cc::set_phase_inc(double phase_inc)
     {
+      d_phase_inc = phase_inc;
       d_r.set_phase_incr( exp(gr_complex(0, phase_inc)) );
     }
 
@@ -60,6 +62,12 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *)input_items[0];
       gr_complex *out = (gr_complex *)output_items[0];
+
+      std::vector<tag_t> tags;
+      gr::block::get_tags_in_window(tags, 0, 0, noutput_items-1, pmt::string_to_symbol("block_start"));
+      for (auto&& tag : tags)
+        if (tag.offset == 0)
+          d_r.set_phase( exp(gr_complex(0, fmod(d_phase_inc * pmt::to_uint64(tag.value), 2 * M_PI))) );
 
 #if 0
       for (int i=0; i<noutput_items; i++)

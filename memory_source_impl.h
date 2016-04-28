@@ -34,12 +34,13 @@ private:
     void *d_source;
     size_t d_length;
     size_t d_ptr = 0;
+    uint64_t d_sampleid;
 
 public:
     memory_source_impl(size_t itemsize);
     ~memory_source_impl();
 
-    void set_source(void *source, size_t length);
+    void set_source(void *source, size_t length, uint64_t sampleid);
 
     int work(int noutput_items,
              gr_vector_const_void_star &input_items,

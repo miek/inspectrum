@@ -44,11 +44,12 @@ namespace gr {
     }
 
     void
-    memory_source_impl::set_source(void *source, size_t length)
+    memory_source_impl::set_source(void *source, size_t length, uint64_t sampleid)
     {
       d_source = source;
       d_length = length;
       d_ptr = 0;
+      d_sampleid = sampleid;
     }
 
     int
@@ -61,6 +62,9 @@ namespace gr {
 
       if(!d_source)
         return noutput_items;
+
+      if (d_ptr == 0)
+        add_item_tag(0, 0, pmt::string_to_symbol("block_start"), pmt::from_uint64(d_sampleid));
 
       nwritten = std::min((long)(d_length - d_ptr), (long)noutput_items);
 

@@ -37,5 +37,5 @@ private:
 public:
     GRSampleBuffer(SampleSource<Tin> *src, gr::top_block_sptr tb, gr::blocks::memory_source::sptr mem_source, gr::blocks::memory_sink::sptr mem_sink)
         : SampleBuffer<Tin, Tout>(src), tb(tb), mem_source(mem_source), mem_sink(mem_sink) {};
-    virtual void work(void *input, void *output, int count);
+    virtual void work(void *input, void *output, int count, off_t sampleid);
 };

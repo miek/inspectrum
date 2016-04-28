@@ -36,7 +36,7 @@ public:
     ~SampleBuffer();
     void invalidateEvent();
     virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
-    virtual void work(void *input, void *output, int count) = 0;
+    virtual void work(void *input, void *output, int count, off_t sampleid) = 0;
     virtual off_t count() {
         return src->count();
     };
