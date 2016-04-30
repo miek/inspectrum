@@ -171,7 +171,7 @@ void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
     if (!floatSrc)
         return;
     auto samples = floatSrc->getSamples(selectedSamples.minimum, selectedSamples.length());
-    auto step = selectedSamples.length() / cursors.segments();
+    auto step = (float)selectedSamples.length() / cursors.segments();
     auto symbols = std::vector<float>();
     for (auto i = step / 2; i < selectedSamples.length(); i += step)
     {
