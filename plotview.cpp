@@ -102,10 +102,15 @@ void PlotView::cursorsMoved()
         horizontalScrollBar()->value() + cursors.selection().maximum * samplesPerLine()
     };
 
+    emitTimeSelection();
+    viewport()->update();
+}
+
+void PlotView::emitTimeSelection()
+{
     off_t sampleCount = selectedSamples.length();
     float selectionTime = sampleCount / (float)mainSampleSource->rate();
     emit timeSelectionChanged(selectionTime);
-    viewport()->update();
 }
 
 void PlotView::enableCursors(bool enabled)
@@ -196,9 +201,15 @@ void PlotView::repaint()
 
 void PlotView::setCursorSegments(int segments)
 {
+    // Calculate number of samples per segment
+    float sampPerSeg = (float)selectedSamples.length() / cursors.segments();
+
+    // Alter selection to keep samples per segment the same
+    selectedSamples.maximum = selectedSamples.minimum + (segments * sampPerSeg + 0.5f);
+
     cursors.setSegments(segments);
-    cursorsMoved();
-    viewport()->update();
+    updateView();
+    emitTimeSelection();
 }
 
 void PlotView::setFFTAndZoom(int size, int zoom)

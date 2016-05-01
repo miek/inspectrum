@@ -74,6 +74,7 @@ private:
     bool cursorsEnabled;
 
     void addPlot(Plot *plot);
+    void emitTimeSelection();
     void extractSymbols(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
     off_t samplesPerLine();
