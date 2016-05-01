@@ -93,5 +93,4 @@ void Cursors::setSelection(range_t<int> selection)
 {
     minCursor->setPos(selection.minimum);
     maxCursor->setPos(selection.maximum);
-    emit cursorsMoved();
 }

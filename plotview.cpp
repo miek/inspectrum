@@ -114,6 +114,7 @@ void PlotView::enableCursors(bool enabled)
     if (enabled) {
         int margin = viewport()->rect().width() / 3;
         cursors.setSelection({viewport()->rect().left() + margin, viewport()->rect().right() - margin});
+        cursorsMoved();
     }
     viewport()->update();
 }
