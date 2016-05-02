@@ -37,7 +37,7 @@ template <typename Tin, typename Tout>
 std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
 {
     // TODO: base this on the actual history required
-    auto history = std::min(start, 256L);
+    auto history = std::min(start, (off_t)256);
     auto samples = src->getSamples(start - history, length + history);
     if (samples == nullptr)
     	return nullptr;
