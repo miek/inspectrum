@@ -121,7 +121,7 @@ void InputSource::cleanup()
 void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
-    const auto suffix = fileInfo.suffix();
+    const auto suffix = fileInfo.suffix().toLower();
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
