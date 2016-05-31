@@ -131,7 +131,12 @@ void SpectrogramControls::fftOrZoomChanged(int value)
 void SpectrogramControls::fileOpenButtonClicked()
 {
     QString fileName = QFileDialog::getOpenFileName(
-                           this, tr("Open File"), "", tr("complex<float> file (*.cfile *.cf32);;complex<int8> HackRF file (*.cs8);;complex<uint8> RTL-SDR file (*.cu8);;All files (*)")
+                           this, tr("Open File"), "",
+                           tr("complex<float> file (*.cfile *.cf32 *.fc32);;"
+                              "complex<int8> HackRF file (*.cs8 *.sc8 *.c8);;"
+                              "complex<int16> Fancy file (*.cs16 *.sc16 *.c16);;"
+                              "complex<uint8> RTL-SDR file (*.cu8 *.uc8);;"
+                              "All files (*)")
                        );
     if (!fileName.isEmpty())
         emit openFile(fileName);
