@@ -147,7 +147,7 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
         for (int i = 0; i < fftSize; i++) {
             // Start from the middle of the FFTW array and wrap
             // to rearrange the data
-            int k = (i + fftSize / 2) & (fftSize - 1);
+            int k = i ^ (fftSize >> 1);
             auto s = buffer[k] * invFFTSize;
             float power = s.real() * s.real() + s.imag() * s.imag();
             float logPower = log2f(power) * logMultiplier;
