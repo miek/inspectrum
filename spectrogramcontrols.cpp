@@ -50,11 +50,11 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
-    powerMaxSlider->setRange(-100, 20);
+    powerMaxSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
 
     powerMinSlider = new QSlider(Qt::Horizontal, widget);
-    powerMinSlider->setRange(-100, 20);
+    powerMinSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
     // Time selection settings
@@ -111,7 +111,7 @@ void SpectrogramControls::setDefaults()
     fftSizeSlider->setValue(9);
     zoomLevelSlider->setValue(0);
     powerMaxSlider->setValue(0);
-    powerMinSlider->setValue(-50);
+    powerMinSlider->setValue(-100);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
 }

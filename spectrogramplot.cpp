@@ -143,15 +143,15 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
 
         fft->process(buffer.get(), buffer.get());
         const float invFFTSize = 1.0f / fftSize;
-        const float dbMult = 5.0f / log2f(10.0f);
+        const float logMultiplier = 10.0f / log2f(10.0f);
         for (int i = 0; i < fftSize; i++) {
             // Start from the middle of the FFTW array and wrap
             // to rearrange the data
             int k = (i + fftSize / 2) & (fftSize - 1);
             auto s = buffer[k] * invFFTSize;
             float power = s.real() * s.real() + s.imag() * s.imag();
-            float magdb = log2f(power) * dbMult;
-            *dest = magdb;
+            float logPower = log2f(power) * logMultiplier;
+            *dest = logPower;
             dest++;
         }
     }
