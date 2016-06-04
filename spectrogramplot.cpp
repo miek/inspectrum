@@ -150,7 +150,7 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
             float re = buffer[k].real();
             float im = buffer[k].imag();
             float mag = sqrt(re * re + im * im) / fftSize;
-            float magdb = 10 * log2(mag) / log2(10);
+            float magdb = 10 * log2f(mag) / log2f(10);
             *dest = magdb;
             dest++;
         }
