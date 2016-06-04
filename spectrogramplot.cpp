@@ -98,13 +98,14 @@ QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
     obj = new QPixmap(linesPerTile(), fftSize);
     QImage image(linesPerTile(), fftSize, QImage::Format_RGB32);
     float powerRange = -1.0f / std::abs(int(powerMin - powerMax));
-    for (int x = 0; x < linesPerTile(); x++) {
-        float *line = &fftTile[x * fftSize];
-        for (int y = 0; y < fftSize; y++) {
-            float normPower = (line[y] - powerMax) * powerRange;
+    for (int y = 0; y < fftSize; y++) {
+        auto scanLine = (QRgb*)image.scanLine(fftSize - y - 1);
+        for (int x = 0; x < linesPerTile(); x++) {
+            float *fftLine = &fftTile[x * fftSize];
+            float normPower = (fftLine[y] - powerMax) * powerRange;
             normPower = clamp(normPower, 0.0f, 1.0f);
 
-            image.setPixel(x, fftSize - y - 1, colormap[(uint8_t)(normPower * (256 - 1))]);
+            scanLine[x] = colormap[(uint8_t)(normPower * (256 - 1))];
         }
     }
     obj->convertFromImage(image);
