@@ -138,8 +138,7 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
             return;
 
         for (int i = 0; i < fftSize; i++) {
-            buffer[i].real(buffer[i].real() * window[i]);
-            buffer[i].imag(buffer[i].imag() * window[i]);
+            buffer[i] *= window[i];
         }
 
         fft->process(buffer.get(), buffer.get());
@@ -147,9 +146,8 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
             // Start from the middle of the FFTW array and wrap
             // to rearrange the data
             int k = (i + fftSize / 2) & (fftSize - 1);
-            float re = buffer[k].real();
-            float im = buffer[k].imag();
-            float mag = sqrt(re * re + im * im) / fftSize;
+            auto s = buffer[k] / (float)fftSize;
+            float mag = sqrt(s.real() * s.real() + s.imag() * s.imag());
             float magdb = 10 * log2f(mag) / log2f(10);
             *dest = magdb;
             dest++;
