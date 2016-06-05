@@ -55,6 +55,7 @@ find_package(Boost COMPONENTS system program_options REQUIRED)
 set(GR_REQUIRED_COMPONENTS RUNTIME ANALOG BLOCKS FILTER PMT)
 find_package(Gnuradio REQUIRED)
 pkg_check_modules(FFTW REQUIRED fftw3f)
+find_package(Liquid REQUIRED)
 
 include_directories(
     ${GNURADIO_RUNTIME_INCLUDE_DIRS}
@@ -62,6 +63,7 @@ include_directories(
     ${QT_INCLUDES}
     ${FFTW_INCLUDEDIR}
     ${FFTW_INCLUDE_DIRS}
+    ${LIQUID_INCLUDES}
 )
 
 link_directories(
@@ -76,6 +78,7 @@ target_link_libraries(inspectrum
     ${GNURADIO_ALL_LIBRARIES}
     ${QT_LIBRARIES}
     ${FFTW_LIBRARIES}
+    ${LIQUID_LIBRARIES}
     ${extraLibs}
 )
 set(INSTALL_DEFAULT_BINDIR "bin" CACHE STRING "Appended to CMAKE_INSTALL_PREFIX")
