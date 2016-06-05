@@ -25,8 +25,7 @@
 #include <QPaintEvent>
 #include <QPixmapCache>
 #include <QRect>
-#include <gnuradio/top_block.h>
-#include <gnuradio/filter/firdes.h>
+#include <liquid/liquid.h>
 
 #include <cstdlib>
 #include "util.h"
@@ -171,9 +170,15 @@ float SpectrogramPlot::getTunerPhaseInc()
 
 std::vector<float> SpectrogramPlot::getTunerTaps()
 {
-    float gain = pow(10.0f, powerMax / -10.0f);
     float cutoff = tuner.deviation() / (float)fftSize;
-    return gr::filter::firdes::low_pass(gain, 1.0, cutoff, cutoff / 2);
+    float gain = pow(10.0f, powerMax / -10.0f);
+    auto atten = 60.0f;
+    auto len = estimate_req_filter_len(0.05f, atten);
+    auto taps = std::vector<float>(len);
+    liquid_firdes_kaiser(len, cutoff, atten, 0.0f, taps.data());
+    std::transform(taps.begin(), taps.end(), taps.begin(),
+                   std::bind1st(std::multiplies<float>(), gain));
+    return taps;
 }
 
 int SpectrogramPlot::linesPerTile()
