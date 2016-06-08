@@ -39,7 +39,6 @@ list(APPEND inspectrum_sources
     plot.cpp
     plots.cpp
     plotview.cpp
-    rotator_ex_cc.cpp
     samplebuffer.cpp
     samplesource.cpp
     spectrogramcontrols.cpp
