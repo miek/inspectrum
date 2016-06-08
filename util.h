@@ -21,6 +21,8 @@
 #pragma once
 #include <algorithm>
 
+static const double Tau = M_PI * 2.0;
+
 template <class T> const T& clamp (const T& value, const T& min, const T& max)
 {
     return std::min(max, std::max(min, value));

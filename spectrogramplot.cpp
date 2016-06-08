@@ -43,20 +43,9 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
         colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
     }
 
-    auto tunerFlowGraph = gr::make_top_block("tuner");
-    auto memSource = gr::blocks::memory_source::make(8);
-    auto memSink = gr::blocks::memory_sink::make(8);
-    tunerRotator = gr::blocks::rotator_ex_cc::make(getTunerPhaseInc());
-    tunerFilter = gr::filter::fir_filter_ccf::make(1, getTunerTaps());
-
-    tunerFlowGraph->connect(memSource, 0, tunerRotator, 0);
-    tunerFlowGraph->connect(tunerRotator, 0, tunerFilter, 0);
-    tunerFlowGraph->connect(tunerFilter, 0, memSink, 0);
-
-    tunerOutput = std::make_shared<GRSampleBuffer<std::complex<float>, std::complex<float>>>(
-        inputSource.get(), tunerFlowGraph, memSource, memSink
-    );
+    tunerTransform = std::make_shared<TunerTransform>(src.get());
     connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
+    tunerMoved();
 }
 
 void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -165,7 +154,7 @@ int SpectrogramPlot::getStride()
 float SpectrogramPlot::getTunerPhaseInc()
 {
     auto freq = 0.5f - tuner.centre() / (float)fftSize;
-    return -freq * Tau;
+    return freq * Tau;
 }
 
 std::vector<float> SpectrogramPlot::getTunerTaps()
@@ -196,7 +185,7 @@ bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
 
 std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
 {
-    return tunerOutput;
+    return tunerTransform;
 }
 
 void SpectrogramPlot::setFFTSize(int size)
@@ -232,13 +221,13 @@ void SpectrogramPlot::setZoomLevel(int zoom)
 
 bool SpectrogramPlot::tunerEnabled()
 {
-    return (tunerOutput->subscriberCount() > 0);
+    return (tunerTransform->subscriberCount() > 0);
 }
 
 void SpectrogramPlot::tunerMoved()
 {
-    tunerRotator->set_phase_inc(getTunerPhaseInc());
-    tunerFilter->set_taps(getTunerTaps());
+    tunerTransform->setFrequency(getTunerPhaseInc());
+    tunerTransform->setTaps(getTunerTaps());
 
     // TODO: for invalidating traceplot cache, this shouldn't really go here
     QPixmapCache::clear();

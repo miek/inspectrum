@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "rotator_ex_cc.h"
-#include <gnuradio/filter/fir_filter_ccf.h>
 #include <QCache>
 #include <QWidget>
 #include "fft.h"
@@ -28,11 +26,10 @@
 #include "inputsource.h"
 #include "plot.h"
 #include "tuner.h"
+#include "tunertransform.h"
 
 #include <memory>
 #include <math.h>
-
-static const double Tau = M_PI * 2.0;
 
 class TileCacheKey;
 
@@ -71,9 +68,7 @@ private:
     float powerMin;
 
     Tuner tuner;
-    std::shared_ptr<GRSampleBuffer<std::complex<float>, std::complex<float>>> tunerOutput;
-    gr::blocks::rotator_ex_cc::sptr tunerRotator;
-    gr::filter::fir_filter_ccf::sptr tunerFilter;
+    std::shared_ptr<TunerTransform> tunerTransform;
 
     QPixmap* getPixmapTile(off_t tile);
     float* getFFTTile(off_t tile);
