@@ -34,10 +34,7 @@ list(APPEND inspectrum_sources
     fft.cpp
     frequencydemod.cpp
     mainwindow.cpp
-    grsamplebuffer.cpp
     inputsource.cpp
-    memory_sink_impl.cc
-    memory_source_impl.cc
     plot.cpp
     plots.cpp
     plotview.cpp
@@ -54,15 +51,10 @@ list(APPEND inspectrum_sources
 INCLUDE(FindPkgConfig)
 
 find_package(Qt5Widgets REQUIRED)
-find_package(Boost COMPONENTS system program_options REQUIRED)
-set(GR_REQUIRED_COMPONENTS RUNTIME ANALOG BLOCKS FILTER PMT)
-find_package(Gnuradio REQUIRED)
 pkg_check_modules(FFTW REQUIRED fftw3f)
 find_package(Liquid REQUIRED)
 
 include_directories(
-    ${GNURADIO_RUNTIME_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
     ${QT_INCLUDES}
     ${FFTW_INCLUDEDIR}
     ${FFTW_INCLUDE_DIRS}
@@ -77,8 +69,6 @@ add_executable(inspectrum ${inspectrum_sources})
 qt5_use_modules(inspectrum Widgets Concurrent)
 
 target_link_libraries(inspectrum
-    ${Boost_LIBRARIES}
-    ${GNURADIO_ALL_LIBRARIES}
     ${QT_LIBRARIES}
     ${FFTW_LIBRARIES}
     ${LIQUID_LIBRARIES}

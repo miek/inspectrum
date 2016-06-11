@@ -19,10 +19,6 @@
 
 #include <amplitudedemod.h>
 #include <frequencydemod.h>
-#include <gnuradio/top_block.h>
-#include "grsamplebuffer.h"
-#include "memory_sink.h"
-#include "memory_source.h"
 #include "threshold.h"
 #include "traceplot.h"
 

@@ -18,6 +18,7 @@
  */
 
 #include "plotview.h"
+#include <iostream>
 #include <QApplication>
 #include <QDebug>
 #include <QMenu>

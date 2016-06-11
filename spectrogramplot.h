@@ -22,7 +22,6 @@
 #include <QCache>
 #include <QWidget>
 #include "fft.h"
-#include "grsamplebuffer.h"
 #include "inputsource.h"
 #include "plot.h"
 #include "tuner.h"
