@@ -18,8 +18,8 @@
  */
 
 #include <amplitudedemod.h>
+#include <frequencydemod.h>
 #include <gnuradio/top_block.h>
-#include <gnuradio/analog/quadrature_demod_cf.h>
 #include <gnuradio/blocks/threshold_ff.h>
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
@@ -47,16 +47,9 @@ Plot* Plots::amplitudePlot(std::shared_ptr<AbstractSampleSource> source)
 
 Plot* Plots::frequencyPlot(std::shared_ptr<AbstractSampleSource> source)
 {
-    gr::top_block_sptr quad_demod_tb = gr::make_top_block("quad_demod");
-    auto quad_demod_mem_source = gr::blocks::memory_source::make(8);
-    auto quad_demod_mem_sink = gr::blocks::memory_sink::make(4);
-    auto quad_demod = gr::analog::quadrature_demod_cf::make(5);
-    quad_demod_tb->connect(quad_demod_mem_source, 0, quad_demod, 0);
-    quad_demod_tb->connect(quad_demod, 0, quad_demod_mem_sink, 0);
-
     return new TracePlot(
-        std::make_shared<GRSampleBuffer<std::complex<float>, float>>(
-            std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(source).get(), quad_demod_tb, quad_demod_mem_source, quad_demod_mem_sink
+        std::make_shared<FrequencyDemod>(
+            std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(source).get()
         )
     );
 }

@@ -32,6 +32,7 @@ list(APPEND inspectrum_sources
     cursors.cpp
     main.cpp
     fft.cpp
+    frequencydemod.cpp
     mainwindow.cpp
     grsamplebuffer.cpp
     inputsource.cpp
