@@ -20,10 +20,10 @@
 #include <amplitudedemod.h>
 #include <frequencydemod.h>
 #include <gnuradio/top_block.h>
-#include <gnuradio/blocks/threshold_ff.h>
 #include "grsamplebuffer.h"
 #include "memory_sink.h"
 #include "memory_source.h"
+#include "threshold.h"
 #include "traceplot.h"
 
 #include "plots.h"
@@ -56,16 +56,9 @@ Plot* Plots::frequencyPlot(std::shared_ptr<AbstractSampleSource> source)
 
 Plot* Plots::thresholdPlot(std::shared_ptr<AbstractSampleSource> source)
 {
-    gr::top_block_sptr tb = gr::make_top_block("threshold");
-    auto memSrc = gr::blocks::memory_source::make(4);
-    auto memSink = gr::blocks::memory_sink::make(4);
-    auto threshold = gr::blocks::threshold_ff::make(-0.1, 0.1);
-    tb->connect(memSrc, 0, threshold, 0);
-    tb->connect(threshold, 0, memSink, 0);
-
     return new TracePlot(
-        std::make_shared<GRSampleBuffer<float, float>>(
-            std::dynamic_pointer_cast<SampleSource<float>>(source).get(), tb, memSrc, memSink
+        std::make_shared<Threshold>(
+            std::dynamic_pointer_cast<SampleSource<float>>(source).get()
         )
     );
 }
