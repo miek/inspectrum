@@ -25,6 +25,7 @@ before_script:
   - pushd /tmp
   - git clone https://github.com/jgaeddert/liquid-dsp.git
   - cd liquid-dsp
+  - ./bootstrap.sh
   - ./configure
   - make
   - popd
