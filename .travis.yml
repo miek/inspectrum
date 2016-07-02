@@ -1,0 +1,36 @@
+language: c
+
+cache: apt
+
+sudo: false
+#sudo: required
+#dist: trusty
+
+addons:
+  apt:
+    packages:
+      - qtbase5-dev
+      - qtdeclarative5-dev
+      - libfftw3-dev
+
+compiler:
+#  - clang
+  - gcc
+
+#before_install:
+#  - sudo apt-get update -q
+#  - sudo apt-get install -y gnuradio qtbase5-dev libfftw3-dev libboost-all-dev
+
+before_script:
+  - pushd /tmp
+  - git clone https://github.com/jgaeddert/liquid-dsp.git
+  - cd liquid-dsp
+  - ./configure
+  - make
+  - popd
+
+script:
+  - mkdir build
+  - cd build
+  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-dsp/libliquid.so -DLIQUID_INCLUDES=/tmp/liquid-dsp/include/ ..
+  - make
