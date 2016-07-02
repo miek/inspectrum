@@ -8,9 +8,11 @@ sudo: false
 
 addons:
   apt:
+    sources:
+      - ubuntu-sdk-team
     packages:
-#      - qtbase5-dev
-#      - qtdeclarative5-dev
+      - qtbase5-dev
+      - qtdeclarative5-dev
       - libfftw3-dev
 
 compiler:
