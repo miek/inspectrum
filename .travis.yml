@@ -9,8 +9,8 @@ sudo: false
 addons:
   apt:
     packages:
-      - qtbase5-dev
-      - qtdeclarative5-dev
+#      - qtbase5-dev
+#      - qtdeclarative5-dev
       - libfftw3-dev
 
 compiler:
