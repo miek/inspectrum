@@ -6,10 +6,11 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 ## Try it
 ### Prerequisites
 
- * qt5
- * fftw 3.x
  * cmake
+ * fftw 3.x
+ * [liquid-dsp](https://github.com/jgaeddert/liquid-dsp)
  * pkg-config
+ * qt5
 
 ### Building on Debian-based distros
 
