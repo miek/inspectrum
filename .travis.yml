@@ -2,7 +2,8 @@ language: c
 
 cache: apt
 
-sudo: false
+sudo: required
+dist: trusty
 
 addons:
   apt:
