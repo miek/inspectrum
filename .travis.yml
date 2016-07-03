@@ -24,15 +24,17 @@ compiler:
 
 before_script:
   - pushd /tmp
+  - mkdir liquid-install
   - git clone https://github.com/jgaeddert/liquid-dsp.git
   - cd liquid-dsp
   - ./bootstrap.sh
-  - ./configure
+  - ./configure --prefix=/tmp/liquid-install/
   - make
+  - make install
   - popd
 
 script:
   - mkdir build
   - cd build
-  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-dsp/libliquid.so -DLIQUID_INCLUDES=/tmp/liquid-dsp/include/ ..
+  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-install/lib/libliquid.so -DLIQUID_INCLUDES=/tmp/liquid-install/include/ ..
   - make
