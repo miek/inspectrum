@@ -9,6 +9,16 @@ os:
   - linux
   - osx
 
+compiler:
+  - clang
+  - gcc
+
+matrix:
+  exclude:
+    # /usr/bin/gcc on OS X is clang, so it's not meaningful to build against both.
+    - os: osx
+      compiler: gcc
+
 addons:
   apt:
     sources:
@@ -17,10 +27,6 @@ addons:
       - qtbase5-dev
       - qtdeclarative5-dev
       - libfftw3-dev
-
-compiler:
-  - clang
-  - gcc
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
