@@ -20,6 +20,7 @@
 #pragma once
 
 #include "samplebuffer.h"
+#include <vector>
 
 class TunerTransform : public SampleBuffer<std::complex<float>, std::complex<float>>
 {
