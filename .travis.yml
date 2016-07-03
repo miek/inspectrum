@@ -5,6 +5,10 @@ cache: apt
 sudo: required
 dist: trusty
 
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     sources:
@@ -15,12 +19,13 @@ addons:
       - libfftw3-dev
 
 compiler:
-#  - clang
+  - clang
   - gcc
 
-#before_install:
-#  - sudo apt-get update -q
-#  - sudo apt-get install -y gnuradio qtbase5-dev libfftw3-dev libboost-all-dev
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  # cmake and pkg-config are already installed, liquid-dsp is handled by before_script.
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5 fftw; fi
 
 before_script:
   - pushd /tmp
@@ -36,5 +41,7 @@ before_script:
 script:
   - mkdir build
   - cd build
-  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-install/lib/libliquid.so -DLIQUID_INCLUDES=/tmp/liquid-install/include/ ..
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then DYLIB_SUFFIX=dylib; else DYLIB_SUFFIX=so; fi
+  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-install/lib/libliquid.$DYLIB_SUFFIX -DLIQUID_INCLUDES=/tmp/liquid-install/include/ ..
   - make
