@@ -54,14 +54,9 @@ inspectrum supports the following file types:
 If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
 
 ## Features
- * Spectrogram with zoom/pan
  * Large (multi-gigabyte) file support
-
-## Goals
- * Be fast and light
- * Make as many settings as possible work in realtime. I want this to be a useful tool for visually learning about DSP by tweaking around with things like FFT settings, filter widths or clock synchronisation.
- * Support large files - as large as possible, but at least several GBs.
- * Future features: filtering, demodulation, clock sync. Probably based on GNURadio.
+ * Spectrogram with zoom/pan
+ * Plots of amplitude, frequency and IQ samples
  
 ## Contact
  * #inspectrum on freenode IRC
