@@ -10,8 +10,8 @@ os:
   - osx
 
 compiler:
-  - clang
   - gcc
+  - clang
 
 matrix:
   exclude:
