@@ -20,6 +20,7 @@
 
 #pragma once
 #include <algorithm>
+#include <math.h>
 
 static const double Tau = M_PI * 2.0;
 
