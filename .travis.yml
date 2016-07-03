@@ -3,16 +3,14 @@ language: c
 cache: apt
 
 sudo: false
-#sudo: required
-#dist: trusty
 
 addons:
   apt:
     sources:
-      - ubuntu-sdk-team
+#      - ubuntu-sdk-team
     packages:
-      - qtbase5-dev
-      - qtdeclarative5-dev
+#      - qtbase5-dev
+#      - qtdeclarative5-dev
       - libfftw3-dev
 
 compiler:
