@@ -52,6 +52,53 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> 
 {
     if (tunerEnabled())
         tuner.paintFront(painter, rect, sampleRange);
+
+    float startTime = (float)sampleRange.minimum / sampleRate;
+    float stopTime = (float)sampleRange.maximum / sampleRate;
+    float duration = stopTime - startTime;
+
+    painter.save();
+
+    QPen pen(Qt::white, 1, Qt::SolidLine);
+    painter.setPen(pen);
+    QFontMetrics fm(painter.font());
+
+    int tickWidth = 80;
+    int maxTicks = rect.width() / tickWidth;
+
+    double durationPerTick = 10 * pow(10, floor(log(duration / maxTicks) / log(10)));
+
+    double firstTick = int(startTime / durationPerTick) * durationPerTick;
+
+    double tick = firstTick;
+
+    while (tick <= stopTime) {
+
+        off_t tickSample = tick * sampleRate;
+        int tickLine = (tickSample - sampleRange.minimum) / getStride();
+
+        char buf[128];
+        snprintf(buf, sizeof(buf), "%.06f", tick);
+        painter.drawLine(tickLine, 0, tickLine, 30);
+        painter.drawText(tickLine + 2, 25, buf);
+
+        tick += durationPerTick;
+    }
+
+    // Draw small ticks
+    durationPerTick /= 10;
+    firstTick = int(startTime / durationPerTick) * durationPerTick;
+    tick = firstTick;
+    while (tick <= stopTime) {
+
+        off_t tickSample = tick * sampleRate;
+        int tickLine = (tickSample - sampleRange.minimum) / getStride();
+
+        painter.drawLine(tickLine, 0, tickLine, 10);
+        tick += durationPerTick;
+    }
+
+    painter.restore();
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -239,3 +286,10 @@ uint qHash(const TileCacheKey &key, uint seed)
 {
     return key.fftSize ^ key.zoomLevel ^ key.sample ^ seed;
 }
+
+void SpectrogramPlot::setSampleRate(off_t rate)
+{
+    sampleRate = rate;
+    emit repaint();
+}
+

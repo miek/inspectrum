@@ -35,6 +35,7 @@ class PlotView : public QAbstractScrollArea, Subscriber
 
 public:
     PlotView(InputSource *input);
+    void setSampleRate(off_t rate);
 
 signals:
     void timeSelectionChanged(float time);

@@ -64,6 +64,7 @@ void MainWindow::openFile(QString fileName)
 void MainWindow::setSampleRate(QString rate)
 {
     input->setSampleRate(rate.toInt());
+    plots->setSampleRate(rate.toInt());
 }
 
 void MainWindow::setSampleRate(int rate)

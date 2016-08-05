@@ -333,3 +333,9 @@ void PlotView::updateView(bool reCenter)
     // Re-paint
     viewport()->update();
 }
+
+void PlotView::setSampleRate(off_t rate)
+{
+    spectrogramPlot->setSampleRate(rate);
+}
+
