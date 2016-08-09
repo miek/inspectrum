@@ -42,8 +42,6 @@ public:
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
     bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
-    void setSampleRate(off_t rate);
-    void setTimeScaleEnable(bool enabled);
 
 public slots:
     void setFFTSize(int size);
@@ -67,8 +65,6 @@ private:
     int zoomLevel;
     float powerMax;
     float powerMin;
-    off_t sampleRate = 0;
-    bool timeScaleIsEnabled;
 
     Tuner tuner;
     std::shared_ptr<TunerTransform> tunerTransform;
@@ -81,7 +77,6 @@ private:
     std::vector<float> getTunerTaps();
     int linesPerTile();
     bool tunerEnabled();
-    void paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 };
 
 class TileCacheKey
