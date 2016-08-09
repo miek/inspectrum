@@ -392,6 +392,7 @@ void PlotView::updateView(bool reCenter)
 void PlotView::setSampleRate(off_t rate)
 {
     sampleRate = rate;
+    emitTimeSelection();
 }
 
 void PlotView::enableTimeScale(bool enabled)
