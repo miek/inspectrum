@@ -44,14 +44,14 @@ signals:
 
 public slots:
     void cursorsMoved();
-    void enableCursors(bool enable);
+    void enableCursors(bool enabled);
+    void enableTimeScale(bool enabled);
     void invalidateEvent();
     void repaint();
     void setCursorSegments(int segments);
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
-    void setTimeScaleEnable(int state);
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event) override;
@@ -74,6 +74,8 @@ private:
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
+    off_t sampleRate = 0;
+    bool timeScaleEnabled;
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
@@ -81,4 +83,5 @@ private:
     int plotsHeight();
     off_t samplesPerLine();
     void updateView(bool reCenter = false);
+    void paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 };
