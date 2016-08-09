@@ -31,6 +31,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     enableCursors(false);
+    enableTimeScale(true);
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
@@ -273,8 +274,62 @@ void PlotView::paintEvent(QPaintEvent *event)
     if (cursorsEnabled)
         cursors.paintFront(painter, rect, viewRange);
 
+    if (timeScaleEnabled)
+        paintTimeScale(painter, rect, viewRange);
+
 #undef PLOT_LAYER
 }
+
+void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+{
+    float startTime = (float)sampleRange.minimum / sampleRate;
+    float stopTime = (float)sampleRange.maximum / sampleRate;
+    float duration = stopTime - startTime;
+
+    painter.save();
+
+    QPen pen(Qt::white, 1, Qt::SolidLine);
+    painter.setPen(pen);
+    QFontMetrics fm(painter.font());
+
+    int tickWidth = 80;
+    int maxTicks = rect.width() / tickWidth;
+
+    double durationPerTick = 10 * pow(10, floor(log(duration / maxTicks) / log(10)));
+
+    double firstTick = int(startTime / durationPerTick) * durationPerTick;
+
+    double tick = firstTick;
+
+    while (tick <= stopTime) {
+
+        off_t tickSample = tick * sampleRate;
+        int tickLine = (tickSample - sampleRange.minimum) / samplesPerLine();
+
+        char buf[128];
+        snprintf(buf, sizeof(buf), "%.06f", tick);
+        painter.drawLine(tickLine, 0, tickLine, 30);
+        painter.drawText(tickLine + 2, 25, buf);
+
+        tick += durationPerTick;
+    }
+
+    // Draw small ticks
+    durationPerTick /= 10;
+    firstTick = int(startTime / durationPerTick) * durationPerTick;
+    tick = firstTick;
+    while (tick <= stopTime) {
+
+        off_t tickSample = tick * sampleRate;
+        int tickLine = (tickSample - sampleRange.minimum) / samplesPerLine();
+
+        painter.drawLine(tickLine, 0, tickLine, 10);
+        tick += durationPerTick;
+    }
+
+    painter.restore();
+}
+
 
 int PlotView::plotsHeight()
 {
@@ -333,3 +388,16 @@ void PlotView::updateView(bool reCenter)
     // Re-paint
     viewport()->update();
 }
+
+void PlotView::setSampleRate(off_t rate)
+{
+    sampleRate = rate;
+    spectrogramPlot->setSampleRate(rate);
+}
+
+void PlotView::enableTimeScale(bool enabled)
+{
+    timeScaleEnabled = enabled;
+    viewport()->update();
+}
+

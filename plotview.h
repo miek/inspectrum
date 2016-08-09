@@ -35,6 +35,7 @@ class PlotView : public QAbstractScrollArea, Subscriber
 
 public:
     PlotView(InputSource *input);
+    void setSampleRate(off_t rate);
 
 signals:
     void timeSelectionChanged(float time);
@@ -43,7 +44,8 @@ signals:
 
 public slots:
     void cursorsMoved();
-    void enableCursors(bool enable);
+    void enableCursors(bool enabled);
+    void enableTimeScale(bool enabled);
     void invalidateEvent();
     void repaint();
     void setCursorSegments(int segments);
@@ -72,6 +74,8 @@ private:
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
+    off_t sampleRate = 0;
+    bool timeScaleEnabled;
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
@@ -79,4 +83,5 @@ private:
     int plotsHeight();
     off_t samplesPerLine();
     void updateView(bool reCenter = false);
+    void paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 };
