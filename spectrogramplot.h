@@ -32,12 +32,13 @@
 
 class TileCacheKey;
 
-class SpectrogramPlot : public Plot
+class SpectrogramPlot : public Plot, public Subscriber
 {
     Q_OBJECT
 
 public:
     SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src);
+    void invalidateEvent() override;
     std::shared_ptr<AbstractSampleSource> output() override;
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
