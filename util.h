@@ -20,7 +20,9 @@
 
 #pragma once
 #include <algorithm>
+#include <map>
 #include <math.h>
+#include <sstream>
 
 static const double Tau = M_PI * 2.0;
 
@@ -93,3 +95,5 @@ struct range_t {
         return !contains(value);
     }
 };
+
+std::string formatSIValue(float value);

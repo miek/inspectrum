@@ -23,6 +23,7 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <cmath>
+#include "util.h"
 
 SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent)
     : QDockWidget::QDockWidget(title, parent)
@@ -139,12 +140,12 @@ void SpectrogramControls::fileOpenButtonClicked()
 void SpectrogramControls::timeSelectionChanged(float time)
 {
     if (cursorsCheckBox->checkState() == Qt::Checked) {
-        periodLabel->setText(QString::number(time) + "s");
-        rateLabel->setText(QString::number(1 / time) + "Hz");
+        periodLabel->setText(QString::fromStdString(formatSIValue(time)) + "s");
+        rateLabel->setText(QString::fromStdString(formatSIValue(1 / time)) + "Hz");
 
         int symbols = cursorSymbolsSpinBox->value();
-        symbolPeriodLabel->setText(QString::number(time / symbols) + "s");
-        symbolRateLabel->setText(QString::number(symbols / time) + "Hz");
+        symbolPeriodLabel->setText(QString::fromStdString(formatSIValue(time / symbols)) + "s");
+        symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Hz");
     }
 }
 

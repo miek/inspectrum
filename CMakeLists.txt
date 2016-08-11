@@ -46,6 +46,7 @@ list(APPEND inspectrum_sources
     traceplot.cpp
     tuner.cpp
     tunertransform.cpp
+    util.cpp
 )
 
 INCLUDE(FindPkgConfig)
