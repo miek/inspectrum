@@ -135,8 +135,9 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
-        if (cursors.mouseEvent(event->type(), *mouseEvent))
-            return true;
+        if (cursorsEnabled)
+            if (cursors.mouseEvent(event->type(), *mouseEvent))
+                return true;
 
         int plotY = -verticalScrollBar()->value();
         for (auto&& plot : plots) {
