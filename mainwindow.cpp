@@ -19,6 +19,7 @@
 
 #include <QtWidgets>
 #include <QRubberBand>
+#include <sstream>
 
 #include "mainwindow.h"
 #include "util.h"
@@ -59,6 +60,26 @@ void MainWindow::openFile(QString fileName)
 {
     QString title="%1: %2";
     this->setWindowTitle(title.arg(QApplication::applicationName(),fileName.section('/',-1,-1)));
+
+    // Try to parse osmocom_fft filenames and extract the sample rate and center frequency.
+    // Example file name: "name-f2.411200e+09-s5.000000e+06-t20160807180210.cfile"
+    QRegExp rx("(.*)-f(.*)-s(.*)-.*\\.cfile");
+    QString basename = fileName.section('/',-1,-1);
+
+    if (rx.exactMatch(basename)) {
+        QString centerfreq = rx.cap(2);
+        QString samplerate = rx.cap(3);
+
+        std::stringstream ss(samplerate.toUtf8().constData());
+
+        // Needs to be a double as the number is in scientific format
+        double rate;
+        ss >> rate;
+        if (!ss.fail()) {
+            setSampleRate(rate);
+        }
+    }
+
     input->openFile(fileName.toUtf8().constData());
 }
 
