@@ -42,6 +42,10 @@ int main(int argc, char *argv[])
     // Process the actual command line
     parser.process(a);
 
+    const QStringList args = parser.positionalArguments();
+    if (args.size()>=1)
+        mainWin.openFile(args.at(0));
+
     if (parser.isSet(rateOption)) {
         bool ok;
         // Use toDouble just for scientific notation support
@@ -52,10 +56,6 @@ int main(int argc, char *argv[])
         }
         mainWin.setSampleRate(rate);
     }
-
-    const QStringList args = parser.positionalArguments();
-    if (args.size()>=1)
-        mainWin.openFile(args.at(0));
 
     mainWin.show();
     return a.exec();
