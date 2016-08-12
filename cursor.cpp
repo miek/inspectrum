@@ -17,10 +17,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
+#include <QApplication>
 #include "cursor.h"
 
-Cursor::Cursor(Qt::Orientation orientation, QObject * parent) : QObject::QObject(parent), orientation(orientation)
+Cursor::Cursor(Qt::Orientation orientation, Qt::CursorShape mouseCursorShape, QObject * parent) : QObject::QObject(parent), orientation(orientation), cursorShape(mouseCursorShape)
 {
 
 }
@@ -39,6 +39,18 @@ bool Cursor::pointOverCursor(QPoint point)
 
 bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
+    // If the mouse pointer moves over a cursor, display a resize pointer
+    if (pointOverCursor(event.pos()) && type != QEvent::Leave) {
+        if (!cursorOverrided) {
+            cursorOverrided = true;
+            QApplication::setOverrideCursor(QCursor(cursorShape));
+        }
+    // Restore pointer if it moves off the cursor, or leaves the widget
+    } else if (cursorOverrided) {
+        cursorOverrided = false;
+        QApplication::restoreOverrideCursor();
+    }
+
     // Start dragging on left mouse button press, if over a cursor
     if (type == QEvent::MouseButtonPress) {
         if (event.button() == Qt::LeftButton) {

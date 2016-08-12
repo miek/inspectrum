@@ -29,19 +29,21 @@ class Cursor : public QObject
     Q_OBJECT
 
 public:
-    Cursor(Qt::Orientation orientation, QObject * parent);
+    Cursor(Qt::Orientation orientation, Qt::CursorShape mouseCursorShape, QObject * parent);
     int pos();
     void setPos(int newPos);
-	bool mouseEvent(QEvent::Type type, QMouseEvent event);
+    bool mouseEvent(QEvent::Type type, QMouseEvent event);
 
 signals:
-	void posChanged();
+    void posChanged();
 
 private:
-	int fromPoint(QPoint point);
-	bool pointOverCursor(QPoint point);
+    int fromPoint(QPoint point);
+    bool pointOverCursor(QPoint point);
 
-	Qt::Orientation orientation;
-	bool dragging = false;
-	int cursorPosition = 0;
+    Qt::Orientation orientation;
+    Qt::CursorShape cursorShape;
+    bool dragging = false;
+    bool cursorOverrided = false;
+    int cursorPosition = 0;
 };

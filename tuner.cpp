@@ -22,9 +22,9 @@
 
 Tuner::Tuner(QObject * parent) : QObject::QObject(parent)
 {
-    minCursor = new Cursor(Qt::Horizontal, this);
-    cfCursor = new Cursor(Qt::Horizontal, this);
-    maxCursor = new Cursor(Qt::Horizontal, this);
+    minCursor = new Cursor(Qt::Horizontal, Qt::SizeVerCursor, this);
+    cfCursor = new Cursor(Qt::Horizontal, Qt::SizeAllCursor, this);
+    maxCursor = new Cursor(Qt::Horizontal, Qt::SizeVerCursor, this);
     connect(minCursor, &Cursor::posChanged, this, &Tuner::cursorMoved);
     connect(cfCursor, &Cursor::posChanged, this, &Tuner::cursorMoved);
     connect(maxCursor, &Cursor::posChanged, this, &Tuner::cursorMoved);

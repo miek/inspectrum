@@ -22,8 +22,8 @@
 
 Cursors::Cursors(QObject * parent) : QObject::QObject(parent)
 {
-    minCursor = new Cursor(Qt::Vertical, this);
-    maxCursor = new Cursor(Qt::Vertical, this);
+    minCursor = new Cursor(Qt::Vertical, Qt::SizeHorCursor, this);
+    maxCursor = new Cursor(Qt::Vertical, Qt::SizeHorCursor, this);
     connect(minCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
     connect(maxCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
 }

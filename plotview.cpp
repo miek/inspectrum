@@ -30,6 +30,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 {
     mainSampleSource = input;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setMouseTracking(true);
     enableCursors(false);
     enableTimeScale(true);
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
@@ -131,7 +132,8 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
     // Pass mouse events to individual plot objects
     if (event->type() == QEvent::MouseButtonPress ||
         event->type() == QEvent::MouseMove ||
-        event->type() == QEvent::MouseButtonRelease) {
+        event->type() == QEvent::MouseButtonRelease ||
+        event->type() == QEvent::Leave) {
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
