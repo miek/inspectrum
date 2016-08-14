@@ -29,5 +29,5 @@ void AmplitudeDemod::work(void *input, void *output, int count, off_t sampleid)
     auto in = static_cast<std::complex<float>*>(input);
     auto out = static_cast<float*>(output);
     std::transform(in, in + count, out,
-                   [](std::complex<float> s) { return std::norm(s); });
+                   [](std::complex<float> s) { return std::norm(s) * 2.0f - 1.0f; });
 }
