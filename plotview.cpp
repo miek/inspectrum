@@ -19,11 +19,18 @@
 
 #include "plotview.h"
 #include <iostream>
+#include <fstream>
 #include <QApplication>
 #include <QDebug>
 #include <QMenu>
 #include <QPainter>
 #include <QScrollBar>
+#include <QFileDialog>
+#include <QRadioButton>
+#include <QVBoxLayout>
+#include <QGroupBox>
+#include <QGridLayout>
+#include <QSpinBox>
 #include "plots.h"
 
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
@@ -93,6 +100,17 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     );
     extract->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
     menu.addAction(extract);
+
+    // Add action to export the selected samples into a file
+    auto save = new QAction("Export samples to file...", &menu);
+    connect(
+        save, &QAction::triggered,
+        this, [=]() {
+            exportSamples(src);
+        }
+    );
+    save->setEnabled(src->sampleType() == typeid(std::complex<float>));
+    menu.addAction(save);
 
     if (menu.exec(event->globalPos()))
         updateView(false);
@@ -191,6 +209,74 @@ void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
     for (auto f : symbols)
         std::cout << f << ", ";
     std::cout << std::endl << std::flush;
+}
+
+void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
+{
+    auto complexSrc = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(src);
+    if (!complexSrc) {
+        return;
+    }
+
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setOption(QFileDialog::DontUseNativeDialog, true);
+
+    QGroupBox groupBox("Selection To Export", &dialog);
+    QVBoxLayout vbox(&groupBox);
+
+    QRadioButton cursorSelection("Cursor Selection", &groupBox);
+    QRadioButton currentView("Current View", &groupBox);
+    QRadioButton completeFile("Complete File", &groupBox);
+
+    if (cursorsEnabled) {
+        cursorSelection.setChecked(true);
+    } else {
+        currentView.setChecked(true);
+        cursorSelection.setEnabled(false);
+    }
+
+    vbox.addWidget(&cursorSelection);
+    vbox.addWidget(&currentView);
+    vbox.addWidget(&completeFile);
+    vbox.addStretch(1);
+
+    groupBox.setLayout(&vbox);
+
+    QGridLayout *l = dialog.findChild<QGridLayout*>();
+    l->addWidget(&groupBox, 4, 1);
+
+    QGroupBox groupBox2("Decimation");
+    QSpinBox decimation(&groupBox2);
+    decimation.setValue(1);
+
+    QVBoxLayout vbox2;
+    vbox2.addWidget(&decimation);
+
+    groupBox2.setLayout(&vbox2);
+    l->addWidget(&groupBox2, 4, 2);
+
+    if (dialog.exec()) {
+        QStringList fileNames = dialog.selectedFiles();
+       
+        off_t start, length;
+        if(cursorSelection.isChecked()) {
+            start = selectedSamples.minimum;
+            length = selectedSamples.length();
+        } else if(currentView.isChecked()) {
+            start = viewRange.minimum;
+            length = viewRange.length();
+        } else {
+            start = 0;
+            length = complexSrc->count();
+        }
+
+        auto samples = complexSrc->getSamples(start, length);
+        std::ofstream os (fileNames[0].toStdString(), std::ios::binary);
+        for (auto i = 0; i < length; i += decimation.value()) {
+            os.write((const char*)&samples[i], 8);
+        }
+    }
 }
 
 void PlotView::invalidateEvent()
