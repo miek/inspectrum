@@ -36,6 +36,7 @@ public:
     virtual void invalidateEvent() { };
     virtual off_t count() = 0;
     virtual off_t rate() = 0;
+    virtual float relativeBandwidth() = 0;
     std::type_index sampleType() override;
     void subscribe(Subscriber *subscriber);
     int subscriberCount();

@@ -61,3 +61,13 @@ void TunerTransform::setTaps(std::vector<float> taps)
 {
     this->taps = taps;
 }
+
+float TunerTransform::relativeBandwidth() {
+    return bandwidth;
+}
+
+void TunerTransform::setRelativeBandwith(float bandwidth)
+{
+    this->bandwidth = bandwidth;
+}
+
