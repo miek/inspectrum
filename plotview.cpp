@@ -227,7 +227,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 
     QRadioButton cursorSelection("Cursor Selection", &groupBox);
     QRadioButton currentView("Current View", &groupBox);
-    QRadioButton completeFile("Complete File", &groupBox);
+    QRadioButton completeFile("Complete File (Experimental)", &groupBox);
 
     if (cursorsEnabled) {
         cursorSelection.setChecked(true);
@@ -259,22 +259,30 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
     if (dialog.exec()) {
         QStringList fileNames = dialog.selectedFiles();
        
-        off_t start, length;
-        if(cursorSelection.isChecked()) {
+        off_t start, end;
+        if (cursorSelection.isChecked()) {
             start = selectedSamples.minimum;
-            length = selectedSamples.length();
+            end = start + selectedSamples.length();
         } else if(currentView.isChecked()) {
             start = viewRange.minimum;
-            length = viewRange.length();
+            end = start + viewRange.length();
         } else {
             start = 0;
-            length = complexSrc->count();
+            end = complexSrc->count();
         }
 
-        auto samples = complexSrc->getSamples(start, length);
         std::ofstream os (fileNames[0].toStdString(), std::ios::binary);
-        for (auto i = 0; i < length; i += decimation.value()) {
-            os.write((const char*)&samples[i], 8);
+
+        off_t index;
+        // viewRange.length() is used as some less arbitrary step value
+        off_t step = viewRange.length();
+
+        for (index = start; index < end; index += step) {
+            off_t length = std::min(step, end - index); 
+            auto samples = complexSrc->getSamples(index, length);
+            for (auto i = 0; i < length; i += decimation.value()) {
+                os.write((const char*)&samples[i], 8);
+            }
         }
     }
 }
