@@ -187,7 +187,7 @@ std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_
     if(start < 0 || length < 0)
         return nullptr;
 
-    if (start + length >= sampleCount)
+    if (start + length > sampleCount)
         return nullptr;
 
     std::unique_ptr<std::complex<float>[]> dest(new std::complex<float>[length]);
