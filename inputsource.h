@@ -50,4 +50,7 @@ public:
     };
     void setSampleRate(off_t rate);
     off_t rate();
+    float relativeBandwidth() {
+        return 1;
+    }
 };

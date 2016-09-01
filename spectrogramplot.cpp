@@ -34,7 +34,7 @@
 SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), tuner(this)
 {
     setFFTSize(512);
-    zoomLevel = 0;
+    zoomLevel = 1;
     powerMax = 0.0f;
     powerMin = -50.0f;
 
@@ -45,7 +45,6 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
 
     tunerTransform = std::make_shared<TunerTransform>(src.get());
     connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
-    tunerMoved();
     src->subscribe(this);
 }
 
@@ -236,6 +235,7 @@ void SpectrogramPlot::tunerMoved()
 {
     tunerTransform->setFrequency(getTunerPhaseInc());
     tunerTransform->setTaps(getTunerTaps());
+    tunerTransform->setRelativeBandwith(tuner.deviation() * 2.0 / getStride());
 
     // TODO: for invalidating traceplot cache, this shouldn't really go here
     QPixmapCache::clear();

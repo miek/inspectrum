@@ -43,4 +43,8 @@ public:
     off_t rate() {
         return src->rate();
     };
+
+    float relativeBandwidth() {
+        return 1;
+    }
 };
