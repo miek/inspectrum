@@ -280,8 +280,10 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
         for (index = start; index < end; index += step) {
             off_t length = std::min(step, end - index); 
             auto samples = complexSrc->getSamples(index, length);
-            for (auto i = 0; i < length; i += decimation.value()) {
-                os.write((const char*)&samples[i], 8);
+            if (samples != nullptr) {
+                for (auto i = 0; i < length; i += decimation.value()) {
+                    os.write((const char*)&samples[i], 8);
+                }
             }
         }
     }
