@@ -39,11 +39,12 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setMouseTracking(true);
     enableCursors(false);
-    enableTimeScale(true);
     connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
     auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output());
+
+    enableScales(true);
 
     addPlot(spectrogramPlot);
 
@@ -373,8 +374,10 @@ void PlotView::paintEvent(QPaintEvent *event)
     if (cursorsEnabled)
         cursors.paintFront(painter, rect, viewRange);
 
-    if (timeScaleEnabled)
+    if (timeScaleEnabled) {
         paintTimeScale(painter, rect, viewRange);
+    }
+
 
 #undef PLOT_LAYER
 }
@@ -428,7 +431,6 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sam
 
     painter.restore();
 }
-
 
 int PlotView::plotsHeight()
 {
@@ -491,12 +493,20 @@ void PlotView::updateView(bool reCenter)
 void PlotView::setSampleRate(off_t rate)
 {
     sampleRate = rate;
+
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setSampleRate(rate);
+
     emitTimeSelection();
 }
 
-void PlotView::enableTimeScale(bool enabled)
+void PlotView::enableScales(bool enabled)
 {
     timeScaleEnabled = enabled;
+
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->enableScales(enabled);
+
     viewport()->update();
 }
 

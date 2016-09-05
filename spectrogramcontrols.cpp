@@ -58,9 +58,9 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     powerMinSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
-    timeScaleCheckBox = new QCheckBox(widget);
-    timeScaleCheckBox->setCheckState(Qt::Checked);
-    layout->addRow(new QLabel(tr("Time overlay:")), timeScaleCheckBox);
+    scalesCheckBox = new QCheckBox(widget);
+    scalesCheckBox->setCheckState(Qt::Checked);
+    layout->addRow(new QLabel(tr("Scales:")), scalesCheckBox);
 
     // Time selection settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?

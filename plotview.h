@@ -45,7 +45,7 @@ signals:
 public slots:
     void cursorsMoved();
     void enableCursors(bool enabled);
-    void enableTimeScale(bool enabled);
+    void enableScales(bool enabled);
     void invalidateEvent();
     void repaint();
     void setCursorSegments(int segments);
