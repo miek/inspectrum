@@ -24,15 +24,15 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 
 ## Building on OSX - Homebrew
 
-    brew install qt5 fftw cmake pkg-config
+    brew install qt5 fftw cmake pkg-config liquid-dsp
     mkdir build
     cd build
-    CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake cmake ..
+    CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake cmake .. -DCMAKE_CXX_FLAGS:STRING=-I/usr/local/opt/qt5/include ..
     make install
 
 ## Building on OSX - Macports
 
-    sudo port install fftw-3-single cmake pkgconfig qt5
+    sudo port install qt5 fftw-3-single cmake pkgconfig liquid-dsp
     mkdir build
     cd build
     cmake ..
