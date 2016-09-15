@@ -474,7 +474,7 @@ void PlotView::updateView(bool reCenter)
         );
     }
 
-    horizontalScrollBar()->setMaximum(std::max(0L, mainSampleSource->count() - ((width() - 1) * samplesPerLine())));
+    horizontalScrollBar()->setMaximum(std::max(off_t(0), mainSampleSource->count() - ((width() - 1) * samplesPerLine())));
 
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
 
