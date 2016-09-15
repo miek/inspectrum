@@ -37,6 +37,8 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     zoomLevel = 1;
     powerMax = 0.0f;
     powerMin = -50.0f;
+    sampleRate = 0;
+    frequencyScaleEnabled = false;
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
@@ -59,6 +61,81 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> 
 {
     if (tunerEnabled())
         tuner.paintFront(painter, rect, sampleRange);
+
+    if (frequencyScaleEnabled)
+        paintFrequencyScale(painter, rect);
+}
+
+void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
+{
+    // At which pixel is F_+sampleRate/2
+    int y = rect.y();
+
+    int plotHeight = rect.height();
+
+    double bwPerPixel = (double)sampleRate / plotHeight;
+    int tickHeight = 50;
+
+    int bwPerTick = 10 * pow(10, floor(log(bwPerPixel * tickHeight) / log(10)));
+
+    if (bwPerTick < 1) {
+        return;
+    }
+
+    painter.save();
+
+    QPen pen(Qt::white, 1, Qt::SolidLine);
+    painter.setPen(pen);
+    QFontMetrics fm(painter.font());
+
+
+    int tick = 0;
+
+    while (tick <= sampleRate / 2) {
+
+        int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
+        int tickny = plotHeight / 2 + tick / bwPerPixel + y;
+
+        painter.drawLine(0, tickny, 30, tickny);
+        painter.drawLine(0, tickpy, 30, tickpy);
+
+        if (tick != 0) {
+            char buf[128];
+
+            if (bwPerTick % 1000000 == 0) {
+                snprintf(buf, sizeof(buf), "-%d MHz", (int)tick / 1000000);
+            } else if(bwPerTick % 1000 == 0) {
+                snprintf(buf, sizeof(buf), "-%d kHz", tick / 1000);
+            } else {
+                snprintf(buf, sizeof(buf), "-%d Hz", tick);
+            }
+
+            painter.drawText(5, tickny - 5, buf);
+
+            buf[0] = ' ';
+            painter.drawText(5, tickpy + 15, buf);
+        }
+
+        tick += bwPerTick;
+    }
+
+    // Draw small ticks
+    bwPerTick /= 10;
+
+    if (bwPerTick >= 1 ) {
+        tick = 0;
+        while (tick <= sampleRate / 2) {
+
+            int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
+            int tickny = plotHeight / 2 + tick / bwPerPixel + y;
+
+            painter.drawLine(0, tickny, 3, tickny);
+            painter.drawLine(0, tickpy, 3, tickpy);
+
+            tick += bwPerTick;
+        }
+    }
+    painter.restore();
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
@@ -224,6 +301,16 @@ void SpectrogramPlot::setPowerMin(int power)
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;
+}
+
+void SpectrogramPlot::setSampleRate(off_t rate)
+{
+    sampleRate = rate;
+}
+
+void SpectrogramPlot::enableScales(bool enabled)
+{
+   frequencyScaleEnabled = enabled;
 }
 
 bool SpectrogramPlot::tunerEnabled()

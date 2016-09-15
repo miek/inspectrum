@@ -68,5 +68,5 @@ public:
     QLabel *periodLabel;
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
-    QCheckBox *timeScaleCheckBox;
+    QCheckBox *scalesCheckBox;
 };
