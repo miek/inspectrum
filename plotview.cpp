@@ -464,7 +464,7 @@ void PlotView::updateView(bool reCenter)
     // Update current view
     viewRange = {
         horizontalScrollBar()->value(),
-        horizontalScrollBar()->value() + width() * samplesPerLine()
+        std::min(horizontalScrollBar()->value() + width() * samplesPerLine(), mainSampleSource->count())
     };
 
     // Adjust time offset to zoom around central sample
@@ -474,7 +474,7 @@ void PlotView::updateView(bool reCenter)
         );
     }
 
-    horizontalScrollBar()->setMaximum(mainSampleSource->count() - ((width() - 1) * samplesPerLine()));
+    horizontalScrollBar()->setMaximum(std::max(0L, mainSampleSource->count() - ((width() - 1) * samplesPerLine())));
 
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
 
