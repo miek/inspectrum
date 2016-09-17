@@ -388,6 +388,9 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sam
     float stopTime = (float)sampleRange.maximum / sampleRate;
     float duration = stopTime - startTime;
 
+    if (duration <= 0)
+        return;
+
     painter.save();
 
     QPen pen(Qt::white, 1, Qt::SolidLine);
