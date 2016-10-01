@@ -79,7 +79,13 @@ private:
     void addPlot(Plot *plot);
     void emitTimeSelection();
     void extractSymbols(std::shared_ptr<AbstractSampleSource> src);
-    void exportSamples(std::shared_ptr<AbstractSampleSource> src);
+    enum SampleType
+    {
+        REAL,
+        COMPLEX
+    };
+    void exportSamples(std::shared_ptr<AbstractSampleSource> src, SampleType exportType);
+    template<typename SOURCETYPE> void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
     off_t samplesPerLine();
     void updateViewRange(bool reCenter);
