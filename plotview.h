@@ -67,7 +67,6 @@ private:
     std::vector<std::unique_ptr<Plot>> plots;
     range_t<off_t> viewRange;
     range_t<off_t> selectedSamples;
-    std::pair<float, float> selectionFreq;
 
     int fftSize = 1024;
     int zoomLevel = 0;

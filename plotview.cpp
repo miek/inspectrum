@@ -482,7 +482,6 @@ void PlotView::updateView(bool reCenter)
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
 
     // Update cursors
-    QRect rect = viewport()->rect();
     range_t<int> newSelection = {
         (int)((selectedSamples.minimum - horizontalScrollBar()->value()) / samplesPerLine()),
         (int)((selectedSamples.maximum - horizontalScrollBar()->value()) / samplesPerLine())

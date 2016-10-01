@@ -28,7 +28,6 @@ TunerTransform::TunerTransform(SampleSource<std::complex<float>> *src) : SampleB
 
 void TunerTransform::work(void *input, void *output, int count, off_t sampleid)
 {
-    auto in = static_cast<std::complex<float>*>(input);
     auto out = static_cast<std::complex<float>*>(output);
     std::unique_ptr<std::complex<float>[]> temp(new std::complex<float>[count]);
 

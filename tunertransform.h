@@ -26,8 +26,8 @@ class TunerTransform : public SampleBuffer<std::complex<float>, std::complex<flo
 {
 private:
     float frequency;
-    std::vector<float> taps;
     float bandwidth;
+    std::vector<float> taps;
 
 public:
     TunerTransform(SampleSource<std::complex<float>> *src);
