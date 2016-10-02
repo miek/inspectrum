@@ -78,6 +78,10 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
 
     int bwPerTick = 10 * pow(10, floor(log(bwPerPixel * tickHeight) / log(10)));
 
+    if (bwPerTick >= sampleRate / 2) {
+        bwPerTick /= 10;
+    }
+
     if (bwPerTick < 1) {
         return;
     }
