@@ -113,8 +113,8 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     save->setEnabled(src->sampleType() == typeid(std::complex<float>));
     menu.addAction(save);
 
-    if (menu.exec(event->globalPos()))
-        updateView(false);
+    updateView(false);
+    menu.exec(event->globalPos());
 }
 
 void PlotView::cursorsMoved()
