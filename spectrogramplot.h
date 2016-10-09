@@ -55,13 +55,13 @@ public slots:
 
 private:
     const int linesPerGraduation = 50;
-    const int tileSize = 65536; // This must be a multiple of the maximum FFT size
+    static const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
     std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
     std::unique_ptr<FFT> fft;
     std::unique_ptr<float[]> window;
     QCache<TileCacheKey, QPixmap> pixmapCache;
-    QCache<TileCacheKey, float> fftCache;
+    QCache<TileCacheKey, std::array<float, tileSize>> fftCache;
     uint colormap[256];
 
     int fftSize;

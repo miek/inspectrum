@@ -187,20 +187,20 @@ QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
 
 float* SpectrogramPlot::getFFTTile(off_t tile)
 {
-    float *obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
-    if (obj != 0)
-        return obj;
+    std::array<float, tileSize>* obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
+    if (obj != nullptr)
+        return obj->data();
 
-    float *dest = new float[tileSize];
-    float *ptr = dest;
+    std::array<float, tileSize>* destStorage = new std::array<float, tileSize>;
+    float *ptr = destStorage->data();
     off_t sample = tile;
-    while ((ptr - dest) < tileSize) {
+    while ((ptr - destStorage->data()) < tileSize) {
         getLine(ptr, sample);
         sample += getStride();
         ptr += fftSize;
     }
-    fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), dest);
-    return dest;
+    fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), destStorage);
+    return destStorage->data();
 }
 
 void SpectrogramPlot::getLine(float *dest, off_t sample)
