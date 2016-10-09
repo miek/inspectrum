@@ -19,7 +19,7 @@
 
 #include "threshold.h"
 
-Threshold::Threshold(SampleSource<float> *src) : SampleBuffer(src)
+Threshold::Threshold(std::shared_ptr<SampleSource<float>> src) : SampleBuffer(src)
 {
 
 }

@@ -24,6 +24,6 @@
 class FrequencyDemod : public SampleBuffer<std::complex<float>, float>
 {
 public:
-    FrequencyDemod(SampleSource<std::complex<float>> *src);
+    FrequencyDemod(std::shared_ptr<SampleSource<std::complex<float>>> src);
     void work(void *input, void *output, int count, off_t sampleid) override;
 };

@@ -21,7 +21,7 @@
 #include <liquid/liquid.h>
 #include "util.h"
 
-TunerTransform::TunerTransform(SampleSource<std::complex<float>> *src) : SampleBuffer(src), frequency(0), bandwidth(1.), taps{1.0f}
+TunerTransform::TunerTransform(std::shared_ptr<SampleSource<std::complex<float>>> src) : SampleBuffer(src), frequency(0), bandwidth(1.), taps{1.0f}
 {
 
 }

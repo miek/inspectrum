@@ -24,6 +24,6 @@
 class AmplitudeDemod : public SampleBuffer<std::complex<float>, float>
 {
 public:
-    AmplitudeDemod(SampleSource<std::complex<float>> *src);
+    AmplitudeDemod(std::shared_ptr<SampleSource<std::complex<float>>> src);
     void work(void *input, void *output, int count, off_t sampleid) override;
 };

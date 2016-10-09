@@ -30,7 +30,7 @@ private:
     std::vector<float> taps;
 
 public:
-    TunerTransform(SampleSource<std::complex<float>> *src);
+    TunerTransform(std::shared_ptr<SampleSource<std::complex<float>>> src);
     void work(void *input, void *output, int count, off_t sampleid) override;
     void setFrequency(float frequency);
     void setTaps(std::vector<float> taps);

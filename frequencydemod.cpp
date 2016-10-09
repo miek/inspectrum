@@ -21,7 +21,7 @@
 #include <liquid/liquid.h>
 #include "util.h"
 
-FrequencyDemod::FrequencyDemod(SampleSource<std::complex<float>> *src) : SampleBuffer(src)
+FrequencyDemod::FrequencyDemod(std::shared_ptr<SampleSource<std::complex<float>>> src) : SampleBuffer(src)
 {
 
 }

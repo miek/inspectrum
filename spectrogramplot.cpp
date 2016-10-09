@@ -45,7 +45,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
         colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
     }
 
-    tunerTransform = std::make_shared<TunerTransform>(src.get());
+    tunerTransform = std::make_shared<TunerTransform>(src);
     connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
     src->subscribe(this);
 }
