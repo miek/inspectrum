@@ -44,10 +44,14 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     fftSizeSlider = new QSlider(Qt::Horizontal, widget);
     fftSizeSlider->setRange(7, 13);
+    fftSizeSlider->setPageStep(1);
+
     layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
     zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
     zoomLevelSlider->setRange(0, 10);
+    zoomLevelSlider->setPageStep(1);
+
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
