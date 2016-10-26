@@ -28,75 +28,100 @@
 SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent)
     : QDockWidget::QDockWidget(title, parent)
 {
-    widget = new QWidget(this);
-    layout = new QFormLayout(widget);
+    // dockable control panel holding groups of controls
+    controlDockWidget = new QWidget(this);                    // dockable container for the controls
+    QVBoxLayout *controlDockLayout = new QVBoxLayout();       // a vertical layout 
+    controlDockWidget->setLayout(controlDockLayout);          // add the vertical layout to the dock
 
-    fileOpenButton = new QPushButton("Open file...", widget);
-    layout->addRow(fileOpenButton);
+    // file control group
+    QGroupBox *fileGroup = new QGroupBox(tr("File"));         // group with a title
+    QVBoxLayout *fileGroupLayout = new QVBoxLayout();         // and a vertical layout 
+    fileGroup->setLayout(fileGroupLayout);
 
-    sampleRate = new QLineEdit();
+    fileOpenButton = new QPushButton(tr("&Open..."), controlDockWidget);              // button to open a file
+    fileGroupLayout->addWidget(fileOpenButton);
+
+    sampleRate = new QLineEdit();                                                     // sample rate entry
     sampleRate->setValidator(new QIntValidator(this));
-    layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
+    sampleRate->setToolTip(tr("The frequency scale, time scale and timing analysis depend on this being correct."));
+    QFormLayout *sampleRateLayout = new QFormLayout;                                  // lay it out as a qform
+    sampleRateLayout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
+    fileGroupLayout->addLayout(sampleRateLayout);                                     // and add it to the file group
 
-    // Spectrogram settings
-    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
-    layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
+    // plot settings group
+    QGroupBox *plotSettingsGroup = new QGroupBox(tr("Spectrogram"));                  // group with a title
+    QFormLayout *plotSettingsLayout = new QFormLayout();                              // and a form layout
+    plotSettingsGroup->setLayout(plotSettingsLayout);                                 // add the layout to the group
 
-    fftSizeSlider = new QSlider(Qt::Horizontal, widget);
+    fftSizeSlider = new QSlider(Qt::Horizontal, controlDockWidget);                   // slider for the height of the FFT plot
     fftSizeSlider->setRange(7, 13);
     fftSizeSlider->setPageStep(1);
+    fftSizeSlider->setToolTip(tr("Adjust the height of the spectrogram."));
+    plotSettingsLayout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
-    layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
-
-    zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
+    zoomLevelSlider = new QSlider(Qt::Horizontal, controlDockWidget);                 // slider for the plot zoom
     zoomLevelSlider->setRange(0, 10);
     zoomLevelSlider->setPageStep(1);
+    zoomLevelSlider->setToolTip(tr("Adjust the width of the spectrogram."));
+    plotSettingsLayout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
-    layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
-
-    powerMaxSlider = new QSlider(Qt::Horizontal, widget);
+    powerMaxSlider = new QSlider(Qt::Horizontal, controlDockWidget);                  // max power slider
     powerMaxSlider->setRange(-140, 10);
-    layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
+    powerMaxSlider->setToolTip(tr("Adjust this to help visualise the signal."));
+    plotSettingsLayout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
 
-    powerMinSlider = new QSlider(Qt::Horizontal, widget);
+    powerMinSlider = new QSlider(Qt::Horizontal, controlDockWidget);                  // min power slider
     powerMinSlider->setRange(-140, 10);
-    layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
+    powerMinSlider->setToolTip(tr("Adjust this to help visualise the signal."));
+    plotSettingsLayout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
-    scalesCheckBox = new QCheckBox(widget);
+    scalesCheckBox = new QCheckBox(controlDockWidget);                                // time scales checkbox
+    scalesCheckBox->setToolTip(tr("Display time and frequency scales on the spectrogram."));
     scalesCheckBox->setCheckState(Qt::Checked);
-    layout->addRow(new QLabel(tr("Scales:")), scalesCheckBox);
+    plotSettingsLayout->addRow(new QLabel(tr("Scales:")), scalesCheckBox);
 
-    // Time selection settings
-    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
-    layout->addRow(new QLabel(tr("<b>Time selection</b>")));
+    // time selection group, a vertical form for timing details inside a checkable group box
+    cursorsGroup = new QGroupBox(tr("Timing analysis"));                              // group with a title
+    cursorsGroup->setCheckable(true);                                                 // that's checkable
+    //TODO: the tooltip should be on the actual checkbox, not the whole group
+    cursorsGroup->setToolTip(tr("Position cursors on the plot to discover timing information about the signal."));
+    QFormLayout *cursorsLayout = new QFormLayout;                                     // with a form layout
+    cursorsGroup->setLayout(cursorsLayout);
 
-    cursorsCheckBox = new QCheckBox(widget);
-    layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
-
-    cursorSymbolsSpinBox = new QSpinBox();
+    cursorSymbolsSpinBox = new QSpinBox();                                            // symbol count
     cursorSymbolsSpinBox->setMinimum(1);
     cursorSymbolsSpinBox->setMaximum(9999);
-    layout->addRow(new QLabel(tr("Symbols:")), cursorSymbolsSpinBox);
+    cursorSymbolsSpinBox->setToolTip(tr("Between 1 and 9999. This many symbols are contained between the cursors."));
+    cursorsLayout->addRow(new QLabel(tr("Symbols:")), cursorSymbolsSpinBox);
 
-    rateLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Rate:")), rateLabel);
+    rateLabel = new QLabel();                                                         // rate
+    rateLabel->setToolTip(tr("1 / Time between the cursors. (Hz)"));
+    cursorsLayout->addRow(new QLabel(tr("Rate:")), rateLabel);
 
-    periodLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Period:")), periodLabel);
+    periodLabel = new QLabel();                                                       // period
+    periodLabel->setToolTip(tr("Number of seconds between the timing cursors."));
+    cursorsLayout->addRow(new QLabel(tr("Period:")), periodLabel);
 
-    symbolRateLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Symbol rate:")), symbolRateLabel);
+    symbolRateLabel = new QLabel();                                                   // symbol rate
+    symbolRateLabel->setToolTip(tr("Number of symbols / Amount of time selected (Hz)"));
+    cursorsLayout->addRow(new QLabel(tr("Symbol rate:")), symbolRateLabel);
 
-    symbolPeriodLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
+    symbolPeriodLabel = new QLabel();                                                 // symbol period
+    symbolPeriodLabel->setToolTip(tr("Symbol period tooltip"));
+    cursorsLayout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
+    symbolPeriodLabel->setToolTip(tr("Selected time / Number of symbols"));
 
-    widget->setLayout(layout);
-    setWidget(widget);
+    // add the groups to the dock layout
+    controlDockLayout->addWidget(fileGroup);
+    controlDockLayout->addWidget(plotSettingsGroup);
+    controlDockLayout->addWidget(cursorsGroup);
 
+    setWidget(controlDockWidget);
+
+    connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
     connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
     connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
-    connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
-    connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
+    connect(cursorsGroup, SIGNAL(toggled(bool)), this, SLOT(cursorsStateChanged(bool)));
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -107,9 +132,9 @@ void SpectrogramControls::clearCursorLabels()
     symbolRateLabel->setText("");
 }
 
-void SpectrogramControls::cursorsStateChanged(int state)
+void SpectrogramControls::cursorsStateChanged(bool state)
 {
-    if (state == Qt::Unchecked) {
+    if (state == false) {
         clearCursorLabels();
     }
 }
@@ -121,7 +146,7 @@ void SpectrogramControls::setDefaults()
     zoomLevelSlider->setValue(0);
     powerMaxSlider->setValue(0);
     powerMinSlider->setValue(-100);
-    cursorsCheckBox->setCheckState(Qt::Unchecked);
+    cursorsGroup->setChecked(false);
     cursorSymbolsSpinBox->setValue(1);
 }
 
@@ -148,7 +173,7 @@ void SpectrogramControls::fileOpenButtonClicked()
 
 void SpectrogramControls::timeSelectionChanged(float time)
 {
-    if (cursorsCheckBox->checkState() == Qt::Checked) {
+    if (cursorsGroup->isChecked()){
         periodLabel->setText(QString::fromStdString(formatSIValue(time)) + "s");
         rateLabel->setText(QString::fromStdString(formatSIValue(1 / time)) + "Hz");
 

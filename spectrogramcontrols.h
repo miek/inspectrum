@@ -27,6 +27,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QLabel>
+#include <QGroupBox>
 
 class SpectrogramControls : public QDockWidget
 {
@@ -48,12 +49,12 @@ public slots:
 private slots:
     void fftOrZoomChanged(int value);
     void fileOpenButtonClicked();
-    void cursorsStateChanged(int state);
+    void cursorsStateChanged(bool state);
 
 private:
-    QWidget *widget;
-    QFormLayout *layout;
+    QWidget *controlDockWidget;
     void clearCursorLabels();
+
 
 public:
     QPushButton *fileOpenButton;
@@ -62,7 +63,7 @@ public:
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
-    QCheckBox *cursorsCheckBox;
+    QGroupBox *cursorsGroup;
     QSpinBox *cursorSymbolsSpinBox;
     QLabel *rateLabel;
     QLabel *periodLabel;
