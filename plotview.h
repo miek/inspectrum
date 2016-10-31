@@ -82,6 +82,7 @@ private:
     void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
     off_t samplesPerLine();
+    void updateViewRange(bool reCenter);
     void updateView(bool reCenter = false);
     void paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 };
