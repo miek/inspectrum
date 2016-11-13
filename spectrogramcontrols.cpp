@@ -56,7 +56,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
 
     decimLevelSlider = new QSlider(Qt::Horizontal, widget);
-    decimLevelSlider->setRange(1, 50);
+    decimLevelSlider->setRange(1, 20);
     decimLevelSlider->setPageStep(1);
     layout->addRow(new QLabel(tr("Decimation:")), decimLevelSlider);
 
