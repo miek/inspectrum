@@ -49,7 +49,7 @@ public slots:
     void invalidateEvent();
     void repaint();
     void setCursorSegments(int segments);
-    void setFFTAndZoom(int fftSize, int zoomLevel);
+    void setFFTAndZoom(int fftSize, int zoomLevel, int decimLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
 
@@ -71,6 +71,7 @@ private:
 
     int fftSize = 1024;
     int zoomLevel = 0;
+    int decimLevel = 1;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;

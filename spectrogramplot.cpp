@@ -191,10 +191,12 @@ float* SpectrogramPlot::getFFTTile(off_t tile)
     if (obj != 0)
         return obj;
 
-    float *dest = new float[tileSize];
+    //float *dest = new float[tileSize];
+    float *dest = new float[fftSize];
     float *ptr = dest;
     off_t sample = tile;
-    while ((ptr - dest) < tileSize) {
+    //while ((ptr - dest) < tileSize) {
+    while ((ptr - dest) < fftSize) {
         getLine(ptr, sample);
         sample += getStride();
         ptr += fftSize;
@@ -232,7 +234,7 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
 
 int SpectrogramPlot::getStride()
 {
-    return fftSize / zoomLevel;
+    return fftSize * decimLevel / (zoomLevel);
 }
 
 float SpectrogramPlot::getTunerPhaseInc()
@@ -256,7 +258,8 @@ std::vector<float> SpectrogramPlot::getTunerTaps()
 
 int SpectrogramPlot::linesPerTile()
 {
-    return tileSize / fftSize;
+    //return tileSize / fftSize;
+    return 1;
 }
 
 bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
@@ -301,6 +304,11 @@ void SpectrogramPlot::setPowerMin(int power)
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;
+}
+
+void SpectrogramPlot::setDecimLevel(int decim)
+{
+    decimLevel = decim;
 }
 
 void SpectrogramPlot::setSampleRate(off_t rate)

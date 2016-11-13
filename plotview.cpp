@@ -259,7 +259,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 
     if (dialog.exec()) {
         QStringList fileNames = dialog.selectedFiles();
-       
+
         off_t start, end;
         if (cursorSelection.isChecked()) {
             start = selectedSamples.minimum;
@@ -279,7 +279,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
         off_t step = viewRange.length();
 
         for (index = start; index < end; index += step) {
-            off_t length = std::min(step, end - index); 
+            off_t length = std::min(step, end - index);
             auto samples = complexSrc->getSamples(index, length);
             if (samples != nullptr) {
                 for (auto i = 0; i < length; i += decimation.value()) {
@@ -314,7 +314,7 @@ void PlotView::setCursorSegments(int segments)
     emitTimeSelection();
 }
 
-void PlotView::setFFTAndZoom(int size, int zoom)
+void PlotView::setFFTAndZoom(int size, int zoom, int decim)
 {
     // Set new FFT size
     fftSize = size;
@@ -326,9 +326,14 @@ void PlotView::setFFTAndZoom(int size, int zoom)
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setZoomLevel(zoom);
 
+    // Set new zoom level
+    decimLevel = decim;
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setDecimLevel(decim);
+
     // Update horizontal (time) scrollbar
-    horizontalScrollBar()->setSingleStep(size * 10 / zoomLevel);
-    horizontalScrollBar()->setPageStep(size * 100 / zoomLevel);
+    horizontalScrollBar()->setSingleStep(size * 10 * decimLevel / zoomLevel);
+    horizontalScrollBar()->setPageStep(size * 100 * decimLevel / zoomLevel);
 
     updateView(true);
 }
@@ -512,4 +517,3 @@ void PlotView::enableScales(bool enabled)
 
     viewport()->update();
 }
-

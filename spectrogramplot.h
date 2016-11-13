@@ -51,6 +51,7 @@ public slots:
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
+    void setDecimLevel(int decim);
     void tunerMoved();
 
 private:
@@ -66,6 +67,7 @@ private:
 
     int fftSize;
     int zoomLevel;
+    int decimLevel;
     float powerMax;
     float powerMin;
     off_t sampleRate;

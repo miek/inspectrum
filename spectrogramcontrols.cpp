@@ -54,6 +54,13 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
+
+    decimLevelSlider = new QSlider(Qt::Horizontal, widget);
+    decimLevelSlider->setRange(1, 50);
+    decimLevelSlider->setPageStep(1);
+    layout->addRow(new QLabel(tr("Decimation:")), decimLevelSlider);
+
+
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
     powerMaxSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
@@ -95,6 +102,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
     connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
+    connect(decimLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
     connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
     connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
 }
@@ -119,6 +127,7 @@ void SpectrogramControls::setDefaults()
     sampleRate->setText("8000000");
     fftSizeSlider->setValue(9);
     zoomLevelSlider->setValue(0);
+    decimLevelSlider->setValue(1);
     powerMaxSlider->setValue(0);
     powerMinSlider->setValue(-100);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
@@ -129,7 +138,8 @@ void SpectrogramControls::fftOrZoomChanged(int value)
 {
     int fftSize = pow(2, fftSizeSlider->value());
     int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
-    emit fftOrZoomChanged(fftSize, zoomLevel);
+    int decimLevel = std::min(fftSize, (int)pow(2, decimLevelSlider->value()));
+    emit fftOrZoomChanged(fftSize, zoomLevel, decimLevel);
 }
 
 void SpectrogramControls::fileOpenButtonClicked()
