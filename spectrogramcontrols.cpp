@@ -136,11 +136,11 @@ void SpectrogramControls::fileOpenButtonClicked()
 {
     QString fileName = QFileDialog::getOpenFileName(
                            this, tr("Open File"), "",
-                           tr("complex<float> file (*.cfile *.cf32 *.fc32);;"
+                           tr("All files (*);;"
+                              "complex<float> file (*.cfile *.cf32 *.fc32);;"
                               "complex<int8> HackRF file (*.cs8 *.sc8 *.c8);;"
                               "complex<int16> Fancy file (*.cs16 *.sc16 *.c16);;"
-                              "complex<uint8> RTL-SDR file (*.cu8 *.uc8);;"
-                              "All files (*)")
+                              "complex<uint8> RTL-SDR file (*.cu8 *.uc8)")
                        );
     if (!fileName.isEmpty())
         emit openFile(fileName);
