@@ -54,6 +54,7 @@ MainWindow::MainWindow()
 
     // Set defaults after making connections so everything is in sync
     dock->setDefaults();
+
 }
 
 void MainWindow::openFile(QString fileName)
@@ -85,8 +86,13 @@ void MainWindow::openFile(QString fileName)
 
 void MainWindow::setSampleRate(QString rate)
 {
-    input->setSampleRate(rate.toInt());
-    plots->setSampleRate(rate.toInt());
+    int sampleRate = rate.toInt();
+    input->setSampleRate(sampleRate);
+    plots->setSampleRate(sampleRate);
+
+    // Save the sample rate in settings as we're likely to be opening the same file across multiple runs
+    QSettings settings;
+    settings.setValue("SampleRate", sampleRate);
 }
 
 void MainWindow::setSampleRate(int rate)

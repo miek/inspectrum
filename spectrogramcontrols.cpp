@@ -21,6 +21,7 @@
 #include "spectrogramcontrols.h"
 #include <QIntValidator>
 #include <QFileDialog>
+#include <QSettings>
 #include <QLabel>
 #include <cmath>
 #include "util.h"
@@ -116,13 +117,17 @@ void SpectrogramControls::cursorsStateChanged(int state)
 
 void SpectrogramControls::setDefaults()
 {
-    sampleRate->setText("8000000");
     fftSizeSlider->setValue(9);
     zoomLevelSlider->setValue(0);
     powerMaxSlider->setValue(0);
     powerMinSlider->setValue(-100);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
+
+    // Try to set the sample rate from the last-used value
+    QSettings settings;
+    int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
+    sampleRate->setText(QString::number(savedSampleRate));
 }
 
 void SpectrogramControls::fftOrZoomChanged(int value)
