@@ -47,6 +47,7 @@ public slots:
 
 private slots:
     void fftOrZoomChanged(int value);
+    void powerLevelsChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
 
