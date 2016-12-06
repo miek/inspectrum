@@ -28,6 +28,7 @@
 #include "tunertransform.h"
 
 #include <memory>
+#include <array>
 #include <math.h>
 
 class TileCacheKey;
