@@ -113,7 +113,8 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     save->setEnabled(src->sampleType() == typeid(std::complex<float>));
     menu.addAction(save);
 
-    if (menu.exec(event->globalPos()))
+    updateViewRange(false);
+    if(menu.exec(event->globalPos()))
         updateView(false);
 }
 
@@ -459,7 +460,7 @@ void PlotView::scrollContentsBy(int dx, int dy)
     updateView();
 }
 
-void PlotView::updateView(bool reCenter)
+void PlotView::updateViewRange(bool reCenter)
 {
     // Store old view for recentering
     auto oldViewRange = viewRange;
@@ -476,13 +477,16 @@ void PlotView::updateView(bool reCenter)
             horizontalScrollBar()->value() + (oldViewRange.length() - viewRange.length()) / 2
         );
     }
+}
 
+void PlotView::updateView(bool reCenter)
+{
+    updateViewRange(reCenter);
     horizontalScrollBar()->setMaximum(std::max(off_t(0), mainSampleSource->count() - ((width() - 1) * samplesPerLine())));
 
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
 
     // Update cursors
-    QRect rect = viewport()->rect();
     range_t<int> newSelection = {
         (int)((selectedSamples.minimum - horizontalScrollBar()->value()) / samplesPerLine()),
         (int)((selectedSamples.maximum - horizontalScrollBar()->value()) / samplesPerLine())

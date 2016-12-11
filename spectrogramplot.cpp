@@ -31,7 +31,7 @@
 #include "util.h"
 
 
-SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), tuner(this)
+SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), fftSize(512), tuner(this)
 {
     setFFTSize(512);
     zoomLevel = 1;
@@ -45,7 +45,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
         colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
     }
 
-    tunerTransform = std::make_shared<TunerTransform>(src.get());
+    tunerTransform = std::make_shared<TunerTransform>(src);
     connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
     src->subscribe(this);
 }
@@ -187,20 +187,20 @@ QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
 
 float* SpectrogramPlot::getFFTTile(off_t tile)
 {
-    float *obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
-    if (obj != 0)
-        return obj;
+    std::array<float, tileSize>* obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
+    if (obj != nullptr)
+        return obj->data();
 
-    float *dest = new float[tileSize];
-    float *ptr = dest;
+    std::array<float, tileSize>* destStorage = new std::array<float, tileSize>;
+    float *ptr = destStorage->data();
     off_t sample = tile;
-    while ((ptr - dest) < tileSize) {
+    while ((ptr - destStorage->data()) < tileSize) {
         getLine(ptr, sample);
         sample += getStride();
         ptr += fftSize;
     }
-    fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), dest);
-    return dest;
+    fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), destStorage);
+    return destStorage->data();
 }
 
 void SpectrogramPlot::getLine(float *dest, off_t sample)

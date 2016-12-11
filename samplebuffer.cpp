@@ -22,7 +22,7 @@
 #include "samplebuffer.h"
 
 template <typename Tin, typename Tout>
-SampleBuffer<Tin, Tout>::SampleBuffer(SampleSource<Tin> *src) : src(src)
+SampleBuffer<Tin, Tout>::SampleBuffer(std::shared_ptr<SampleSource<Tin>> src) : src(src)
 {
 	src->subscribe(this);
 }
