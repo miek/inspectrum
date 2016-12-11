@@ -132,15 +132,21 @@ void SpectrogramControls::setDefaults()
     zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
 }
 
-void SpectrogramControls::fftOrZoomChanged(int)
+void SpectrogramControls::fftOrZoomChanged(int newVal)
 {
     int fftSize = pow(2, fftSizeSlider->value());
     int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
     emit fftOrZoomChanged(fftSize, zoomLevel);
 
     QSettings settings;
-    settings.setValue("FFTSize", fftSize);
-    settings.setValue("ZoomLevel", zoomLevel);
+    if(sender() == fftSizeSlider)
+    {
+        settings.setValue("FFTSize", newVal);
+    }
+    else
+    {
+        settings.setValue("ZoomLevel", newVal);
+    }
 }
 
 void SpectrogramControls::powerLevelsChanged(int)
