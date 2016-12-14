@@ -63,8 +63,9 @@ bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
     // Update current cursor positon if we're dragging
     } else if (type == QEvent::MouseMove) {
         if (dragging) {
-            cursorPosition = fromPoint(event.pos());
-            emit posChanged();
+            int cursorPositionNew = fromPoint(event.pos());
+            emit posChanged(cursorPositionNew - cursorPosition);
+            cursorPosition = cursorPositionNew;
         }
 
     // Stop dragging on left mouse button release

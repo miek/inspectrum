@@ -37,19 +37,22 @@ public:
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     range_t<int> selection();
     void setSegments(int segments);
+    void setCursorsLinked(bool linked);
     void setSelection(range_t<int> selection);
 
 public slots:
-	void cursorMoved();
+    void minCursorMoved(int delta);
+    void maxCursorMoved(int delta);
 
 signals:
-	void cursorsMoved();
-
+    void cursorsMoved();
 
 private:
-	bool pointOverCursor(QPoint point, int &cursor);
+    bool pointOverCursor(QPoint point, int &cursor);
+    void swapIfNegative();
 
-	Cursor *minCursor;
-	Cursor *maxCursor;
-	int segmentCount = 1;
+    Cursor *minCursor;
+    Cursor *maxCursor;
+    int segmentCount = 1;
+    bool cursorsLinked = false;
 };
