@@ -139,14 +139,36 @@ void SpectrogramControls::fftOrZoomChanged(int value)
 
 void SpectrogramControls::fileOpenButtonClicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(
-                           this, tr("Open File"), "",
-                           tr("All files (*);;"
-                              "complex<float> file (*.cfile *.cf32 *.fc32);;"
-                              "complex<int8> HackRF file (*.cs8 *.sc8 *.c8);;"
-                              "complex<int16> Fancy file (*.cs16 *.sc16 *.c16);;"
-                              "complex<uint8> RTL-SDR file (*.cu8 *.uc8)")
-                       );
+    QSettings settings;
+    QString fileName;
+    QFileDialog fileSelect(this);
+    fileSelect.setNameFilter(tr("All files (*)",
+                "complex<float> file (*.cfile *.cf32 *.fc32);;"
+                "complex<int8> HackRF file (*.cs8 *.sc8 *.c8);;"
+                "complex<int16> Fancy file (*.cs16 *.sc16 *.c16);;"
+                "complex<uint8> RTL-SDR file (*.cu8 *.uc8);;"));
+
+    // Try and load a saved state
+    {
+        QByteArray savedState = settings.value("OpenFileState").toByteArray();
+        fileSelect.restoreState(savedState);
+
+        // Filter doesn't seem to be considered part of the saved state
+        QString lastUsedFilter = settings.value("OpenFileFilter").toString();
+        if(lastUsedFilter.size())
+            fileSelect.selectNameFilter(lastUsedFilter);
+    }
+
+    if(fileSelect.exec())
+    {
+        fileName = fileSelect.selectedFiles()[0];
+
+        // Remember the state of the dialog for the next time
+        QByteArray dialogState = fileSelect.saveState();
+        settings.setValue("OpenFileState", dialogState);
+        settings.setValue("OpenFileFilter", fileSelect.selectedNameFilter());
+    }
+
     if (!fileName.isEmpty())
         emit openFile(fileName);
 }
