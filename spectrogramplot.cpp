@@ -33,7 +33,7 @@
 
 SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), fftSize(512), tuner(this)
 {
-    setFFTSize(512);
+    setFFTSize(fftSize);
     zoomLevel = 1;
     powerMax = 0.0f;
     powerMin = -50.0f;
@@ -274,6 +274,7 @@ std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
 
 void SpectrogramPlot::setFFTSize(int size)
 {
+    float sizeScale = float(size) / float(fftSize);
     fftSize = size;
     fft.reset(new FFT(fftSize));
 
@@ -283,6 +284,8 @@ void SpectrogramPlot::setFFTSize(int size)
     }
 
     setHeight(fftSize);
+    tuner.setDeviation( tuner.deviation() * sizeScale );
+    tuner.setCentre( tuner.centre() * sizeScale );
 }
 
 void SpectrogramPlot::setPowerMax(int power)
