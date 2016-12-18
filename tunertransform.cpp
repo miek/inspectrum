@@ -21,14 +21,13 @@
 #include <liquid/liquid.h>
 #include "util.h"
 
-TunerTransform::TunerTransform(SampleSource<std::complex<float>> *src) : SampleBuffer(src), frequency(0), bandwidth(1.), taps{1.0f}
+TunerTransform::TunerTransform(std::shared_ptr<SampleSource<std::complex<float>>> src) : SampleBuffer(src), frequency(0), bandwidth(1.), taps{1.0f}
 {
 
 }
 
 void TunerTransform::work(void *input, void *output, int count, off_t sampleid)
 {
-    auto in = static_cast<std::complex<float>*>(input);
     auto out = static_cast<std::complex<float>*>(output);
     std::unique_ptr<std::complex<float>[]> temp(new std::complex<float>[count]);
 

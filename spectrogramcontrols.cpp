@@ -21,6 +21,7 @@
 #include "spectrogramcontrols.h"
 #include <QIntValidator>
 #include <QFileDialog>
+#include <QSettings>
 #include <QLabel>
 #include <cmath>
 #include "util.h"
@@ -97,6 +98,8 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
     connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
     connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
+    connect(powerMaxSlider, SIGNAL(valueChanged(int)), this, SLOT(powerLevelsChanged(int)));
+    connect(powerMinSlider, SIGNAL(valueChanged(int)), this, SLOT(powerLevelsChanged(int)));
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -116,32 +119,81 @@ void SpectrogramControls::cursorsStateChanged(int state)
 
 void SpectrogramControls::setDefaults()
 {
-    sampleRate->setText("8000000");
-    fftSizeSlider->setValue(9);
-    zoomLevelSlider->setValue(0);
-    powerMaxSlider->setValue(0);
-    powerMinSlider->setValue(-100);
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
+
+    // Try to set the sample rate from the last-used value
+    QSettings settings;
+    int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
+    sampleRate->setText(QString::number(savedSampleRate));
+    fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
+    powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
+    powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());
+    zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
 }
 
-void SpectrogramControls::fftOrZoomChanged(int value)
+void SpectrogramControls::fftOrZoomChanged(int newVal)
 {
     int fftSize = pow(2, fftSizeSlider->value());
     int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
     emit fftOrZoomChanged(fftSize, zoomLevel);
+
+    QSettings settings;
+    if(sender() == fftSizeSlider)
+    {
+        settings.setValue("FFTSize", newVal);
+    }
+    else
+    {
+        settings.setValue("ZoomLevel", newVal);
+    }
+}
+
+void SpectrogramControls::powerLevelsChanged(int)
+{
+    QSettings settings;
+    if(sender() == powerMinSlider)
+    {
+        settings.setValue("PowerMin", powerMinSlider->value());
+    }
+    else
+    {
+        settings.setValue("PowerMax", powerMaxSlider->value());
+    }
 }
 
 void SpectrogramControls::fileOpenButtonClicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(
-                           this, tr("Open File"), "",
-                           tr("All files (*);;"
-                              "complex<float> file (*.cfile *.cf32 *.fc32);;"
-                              "complex<int8> HackRF file (*.cs8 *.sc8 *.c8);;"
-                              "complex<int16> Fancy file (*.cs16 *.sc16 *.c16);;"
-                              "complex<uint8> RTL-SDR file (*.cu8 *.uc8)")
-                       );
+    QSettings settings;
+    QString fileName;
+    QFileDialog fileSelect(this);
+    fileSelect.setNameFilter(tr("All files (*)",
+                "complex<float> file (*.cfile *.cf32 *.fc32);;"
+                "complex<int8> HackRF file (*.cs8 *.sc8 *.c8);;"
+                "complex<int16> Fancy file (*.cs16 *.sc16 *.c16);;"
+                "complex<uint8> RTL-SDR file (*.cu8 *.uc8);;"));
+
+    // Try and load a saved state
+    {
+        QByteArray savedState = settings.value("OpenFileState").toByteArray();
+        fileSelect.restoreState(savedState);
+
+        // Filter doesn't seem to be considered part of the saved state
+        QString lastUsedFilter = settings.value("OpenFileFilter").toString();
+        if(lastUsedFilter.size())
+            fileSelect.selectNameFilter(lastUsedFilter);
+    }
+
+    if(fileSelect.exec())
+    {
+        fileName = fileSelect.selectedFiles()[0];
+
+        // Remember the state of the dialog for the next time
+        QByteArray dialogState = fileSelect.saveState();
+        settings.setValue("OpenFileState", dialogState);
+        settings.setValue("OpenFileFilter", fileSelect.selectedNameFilter());
+    }
+
     if (!fileName.isEmpty())
         emit openFile(fileName);
 }

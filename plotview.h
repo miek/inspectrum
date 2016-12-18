@@ -67,7 +67,6 @@ private:
     std::vector<std::unique_ptr<Plot>> plots;
     range_t<off_t> viewRange;
     range_t<off_t> selectedSamples;
-    std::pair<float, float> selectionFreq;
 
     int fftSize = 1024;
     int zoomLevel = 0;
@@ -83,6 +82,7 @@ private:
     void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
     off_t samplesPerLine();
+    void updateViewRange(bool reCenter);
     void updateView(bool reCenter = false);
     void paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
 };

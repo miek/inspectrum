@@ -28,11 +28,11 @@ template <typename Tin, typename Tout>
 class SampleBuffer : public SampleSource<Tout>, public Subscriber
 {
 private:
-    SampleSource<Tin> *src;
+    std::shared_ptr<SampleSource<Tin>> src;
     QMutex mutex;
 
 public:
-    SampleBuffer(SampleSource<Tin> *src);
+    SampleBuffer(std::shared_ptr<SampleSource<Tin>> src);
     ~SampleBuffer();
     void invalidateEvent();
     virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);

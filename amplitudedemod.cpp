@@ -19,7 +19,7 @@
 
 #include "amplitudedemod.h"
 
-AmplitudeDemod::AmplitudeDemod(SampleSource<std::complex<float>> *src) : SampleBuffer(src)
+AmplitudeDemod::AmplitudeDemod(std::shared_ptr<SampleSource<std::complex<float>>> src) : SampleBuffer(src)
 {
 
 }

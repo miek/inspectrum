@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("inspectrum");
+    a.setOrganizationName("inspectrum");
+
     MainWindow mainWin;
 
     QCommandLineParser parser;

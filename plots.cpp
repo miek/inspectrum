@@ -34,27 +34,21 @@ Plot* Plots::samplePlot(std::shared_ptr<AbstractSampleSource> source)
 
 Plot* Plots::amplitudePlot(std::shared_ptr<AbstractSampleSource> source)
 {
-    return new TracePlot(
-        std::make_shared<AmplitudeDemod>(
-            std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(source).get()
-        )
-    );
+    typedef SampleSource<std::complex<float>> Source;
+    std::shared_ptr<Source> concrete = std::dynamic_pointer_cast<Source>(source);
+    return new TracePlot( std::make_shared<AmplitudeDemod>(concrete) );
 }
 
 Plot* Plots::frequencyPlot(std::shared_ptr<AbstractSampleSource> source)
 {
-    return new TracePlot(
-        std::make_shared<FrequencyDemod>(
-            std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(source).get()
-        )
-    );
+    typedef SampleSource<std::complex<float>> Source;
+    std::shared_ptr<Source> concrete = std::dynamic_pointer_cast<Source>(source);
+    return new TracePlot( std::make_shared<FrequencyDemod>( concrete ) );
 }
 
 Plot* Plots::thresholdPlot(std::shared_ptr<AbstractSampleSource> source)
 {
-    return new TracePlot(
-        std::make_shared<Threshold>(
-            std::dynamic_pointer_cast<SampleSource<float>>(source).get()
-        )
-    );
+    typedef SampleSource<float> Source;
+    std::shared_ptr<Source> concrete= std::dynamic_pointer_cast<Source>(source);
+    return new TracePlot( std::make_shared<Threshold>( concrete ) );
 }
