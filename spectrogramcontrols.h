@@ -46,8 +46,10 @@ public slots:
     void zoomOut();
 
 private slots:
-    void fftOrZoomChanged(int value);
-    void powerLevelsChanged(int value);
+    void fftSizeChanged(int value);
+    void zoomLevelChanged(int value);
+    void powerMinChanged(int value);
+    void powerMaxChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
 
@@ -55,6 +57,7 @@ private:
     QWidget *widget;
     QFormLayout *layout;
     void clearCursorLabels();
+    void fftOrZoomChanged(void);
 
 public:
     QPushButton *fileOpenButton;

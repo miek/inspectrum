@@ -94,12 +94,12 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     widget->setLayout(layout);
     setWidget(widget);
 
-    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
-    connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(fftOrZoomChanged(int)));
+    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeChanged(int)));
+    connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(zoomLevelChanged(int)));
     connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
     connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
-    connect(powerMaxSlider, SIGNAL(valueChanged(int)), this, SLOT(powerLevelsChanged(int)));
-    connect(powerMinSlider, SIGNAL(valueChanged(int)), this, SLOT(powerLevelsChanged(int)));
+    connect(powerMinSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMinChanged(int)));
+    connect(powerMaxSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMaxChanged(int)));
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -132,34 +132,37 @@ void SpectrogramControls::setDefaults()
     zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
 }
 
-void SpectrogramControls::fftOrZoomChanged(int newVal)
+void SpectrogramControls::fftOrZoomChanged(void)
 {
     int fftSize = pow(2, fftSizeSlider->value());
     int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
     emit fftOrZoomChanged(fftSize, zoomLevel);
-
-    QSettings settings;
-    if(sender() == fftSizeSlider)
-    {
-        settings.setValue("FFTSize", newVal);
-    }
-    else
-    {
-        settings.setValue("ZoomLevel", newVal);
-    }
 }
 
-void SpectrogramControls::powerLevelsChanged(int)
+void SpectrogramControls::fftSizeChanged(int value)
 {
     QSettings settings;
-    if(sender() == powerMinSlider)
-    {
-        settings.setValue("PowerMin", powerMinSlider->value());
-    }
-    else
-    {
-        settings.setValue("PowerMax", powerMaxSlider->value());
-    }
+    settings.setValue("FFTSize", value);
+    fftOrZoomChanged();
+}
+
+void SpectrogramControls::zoomLevelChanged(int value)
+{
+    QSettings settings;
+    settings.setValue("ZoomLevel", value);
+    fftOrZoomChanged();
+}
+
+void SpectrogramControls::powerMinChanged(int value)
+{
+    QSettings settings;
+    settings.setValue("PowerMin", value);
+}
+
+void SpectrogramControls::powerMaxChanged(int value)
+{
+    QSettings settings;
+    settings.setValue("PowerMax", value);
 }
 
 void SpectrogramControls::fileOpenButtonClicked()
