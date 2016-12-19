@@ -119,6 +119,8 @@ void SpectrogramControls::cursorsStateChanged(int state)
 
 void SpectrogramControls::setDefaults()
 {
+    fftOrZoomChanged();
+
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
 
