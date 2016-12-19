@@ -45,6 +45,7 @@ signals:
 public slots:
     void cursorsMoved();
     void enableCursors(bool enabled);
+    void enableCursorsLinked(bool enabled);
     void enableScales(bool enabled);
     void invalidateEvent();
     void repaint();

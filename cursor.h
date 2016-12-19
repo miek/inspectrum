@@ -35,7 +35,7 @@ public:
     bool mouseEvent(QEvent::Type type, QMouseEvent event);
 
 signals:
-    void posChanged();
+    void posChanged(int delta);
 
 private:
     int fromPoint(QPoint point);

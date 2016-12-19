@@ -147,6 +147,11 @@ void PlotView::enableCursors(bool enabled)
     viewport()->update();
 }
 
+void PlotView::enableCursorsLinked(bool enabled)
+{
+    cursors.setCursorsLinked(enabled);
+}
+
 bool PlotView::eventFilter(QObject * obj, QEvent *event)
 {
     // Pass mouse events to individual plot objects

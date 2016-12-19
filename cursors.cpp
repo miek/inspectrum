@@ -24,26 +24,45 @@ Cursors::Cursors(QObject * parent) : QObject::QObject(parent)
 {
     minCursor = new Cursor(Qt::Vertical, Qt::SizeHorCursor, this);
     maxCursor = new Cursor(Qt::Vertical, Qt::SizeHorCursor, this);
-    connect(minCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
-    connect(maxCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
+    connect(minCursor, &Cursor::posChanged, this, &Cursors::minCursorMoved);
+    connect(maxCursor, &Cursor::posChanged, this, &Cursors::maxCursorMoved);
 }
 
-void Cursors::cursorMoved()
-{
+void Cursors::swapIfNegative() {
     // Swap cursors if one has been dragged past the other
     if (minCursor->pos() > maxCursor->pos()) {
         std::swap(minCursor, maxCursor);
     }
+}
+
+void Cursors::minCursorMoved(int delta)
+{
+    // Move other cursor, if they are linked
+    if (cursorsLinked) {
+	maxCursor->setPos(maxCursor->pos() + delta);
+    }
+    swapIfNegative();
+    emit cursorsMoved();
+}
+
+void Cursors::maxCursorMoved(int delta)
+{
+    // Move other cursor, if they are linked
+    if (cursorsLinked) {
+	minCursor->setPos(minCursor->pos() + delta);
+    }
+    swapIfNegative();
     emit cursorsMoved();
 }
 
 bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
-    if (minCursor->mouseEvent(type, event))
+    if (minCursor->mouseEvent(type, event)) {
         return true;
-    if (maxCursor->mouseEvent(type, event))
+    }
+    if (maxCursor->mouseEvent(type, event)) {
         return true;
-
+    }
     return false;
 }
 
@@ -87,6 +106,11 @@ range_t<int> Cursors::selection()
 void Cursors::setSegments(int segments)
 {
     segmentCount = std::max(segments, 1);
+}
+
+void Cursors::setCursorsLinked(bool linked)
+{
+    cursorsLinked = linked;
 }
 
 void Cursors::setSelection(range_t<int> selection)

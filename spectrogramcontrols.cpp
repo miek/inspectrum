@@ -74,6 +74,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     cursorsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
 
+    cursorsLinkedCheckBox = new QCheckBox(widget);
+    cursorsLinkedCheckBox->setEnabled(false);
+    layout->addRow(new QLabel(tr("Link cursors:")), cursorsLinkedCheckBox);
+
     cursorSymbolsSpinBox = new QSpinBox();
     cursorSymbolsSpinBox->setMinimum(1);
     cursorSymbolsSpinBox->setMaximum(9999);
@@ -112,6 +116,7 @@ void SpectrogramControls::clearCursorLabels()
 
 void SpectrogramControls::cursorsStateChanged(int state)
 {
+    cursorsLinkedCheckBox->setEnabled(cursorsCheckBox->isChecked());
     if (state == Qt::Unchecked) {
         clearCursorLabels();
     }
