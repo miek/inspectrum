@@ -40,16 +40,19 @@ public:
     void setSelection(range_t<int> selection);
 
 public slots:
-	void cursorMoved();
+    void cursorMoved();
 
 signals:
-	void cursorsMoved();
-
+    void cursorsMoved();
 
 private:
-	bool pointOverCursor(QPoint point, int &cursor);
-
-	Cursor *minCursor;
-	Cursor *maxCursor;
-	int segmentCount = 1;
+    bool pointWithinDragRegion(QPoint point);
+    
+    Cursor *minCursor;
+    Cursor *maxCursor;
+    int segmentCount = 1;
+    
+    QPoint dragPos;                // keep track of dragging distance
+    bool cursorOverride = false;   // used to record if cursor is overridden
+    bool dragging = false;         // record if mouse is dragging
 };
