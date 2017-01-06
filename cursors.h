@@ -45,11 +45,14 @@ public slots:
 signals:
 	void cursorsMoved();
 
-
 private:
-	bool pointOverCursor(QPoint point, int &cursor);
-
+	bool pointWithinDragRegion(QPoint point);
+	
 	Cursor *minCursor;
 	Cursor *maxCursor;
 	int segmentCount = 1;
+	
+	QPoint dragPos;                // keep track of dragging distance
+        bool cursorOverride = false;   // used to record if cursor is overridden
+	bool dragging = false;         // record if mouse is dragging
 };
