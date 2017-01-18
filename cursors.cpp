@@ -89,7 +89,7 @@ bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent event)
             return true;
         }
     }
-    return true;
+    return false;
 }
 
 void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
