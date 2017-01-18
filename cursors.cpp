@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QApplication>
 #include <QDebug>
 #include "cursors.h"
 
@@ -37,13 +38,57 @@ void Cursors::cursorMoved()
     emit cursorsMoved();
 }
 
+bool Cursors::pointWithinDragRegion(QPoint point) {
+    int margin = 10;
+    range_t<int> range = {minCursor->pos()+margin, maxCursor->pos()-margin};
+    return range.contains(point.x());
+}
+
 bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
     if (minCursor->mouseEvent(type, event))
         return true;
     if (maxCursor->mouseEvent(type, event))
-        return true;
+    return true;
 
+    // If the mouse pointer is between the cursors, display a resize pointer
+    if (pointWithinDragRegion(event.pos()) && type != QEvent::Leave) {
+        if (!cursorOverride) {
+                cursorOverride = true;
+                QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
+        }
+    // Restore pointer otherwise
+    } else {
+        if (cursorOverride) {
+            cursorOverride = false;
+            QApplication::restoreOverrideCursor();
+        }
+    }
+    // Start dragging on left mouse button press, if between the cursors
+    if (type == QEvent::MouseButtonPress) {
+        if (event.button() == Qt::LeftButton) {
+            if (pointWithinDragRegion(event.pos())) {
+                dragging = true;
+                dragPos = event.pos();
+                return true;
+            }
+        }
+    // Update both cursor positons if we're dragging
+    } else if (type == QEvent::MouseMove) {
+        if (dragging) {
+            int dx = event.pos().x() - dragPos.x();
+            minCursor->setPos(minCursor->pos() + dx);
+            maxCursor->setPos(maxCursor->pos() + dx);
+            dragPos = event.pos();
+            emit cursorsMoved();
+        }
+    // Stop dragging on left mouse button release
+    } else if (type == QEvent::MouseButtonRelease) {
+        if (event.button() == Qt::LeftButton && dragging) {
+            dragging = false;
+            return true;
+        }
+    }
     return false;
 }
 
