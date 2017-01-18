@@ -107,10 +107,13 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     connect(
         save, &QAction::triggered,
         this, [=]() {
-            exportSamples(src);
+            if(src->sampleType() == typeid(std::complex<float>)) {
+                exportSamples(src, COMPLEX);
+            } else {
+                exportSamples(src, REAL);
+            }
         }
     );
-    save->setEnabled(src->sampleType() == typeid(std::complex<float>));
     menu.addAction(save);
 
     updateViewRange(false);
@@ -213,10 +216,20 @@ void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
     std::cout << std::endl << std::flush;
 }
 
+void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src, SampleType type)
+{
+    if(type == REAL) {
+        exportSamples<float>(src);
+    } else if(type == COMPLEX) {
+        exportSamples<std::complex<float>>(src);
+    }
+}
+
+template<typename SOURCETYPE>
 void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 {
-    auto complexSrc = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(src);
-    if (!complexSrc) {
+    auto sampleSrc = std::dynamic_pointer_cast<SampleSource<SOURCETYPE>>(src);
+    if (!sampleSrc) {
         return;
     }
 
@@ -250,7 +263,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 
     QGroupBox groupBox2("Decimation");
     QSpinBox decimation(&groupBox2);
-    decimation.setValue(1 / complexSrc->relativeBandwidth());
+    decimation.setValue(1 / sampleSrc->relativeBandwidth());
 
     QVBoxLayout vbox2;
     vbox2.addWidget(&decimation);
@@ -270,7 +283,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
             end = start + viewRange.length();
         } else {
             start = 0;
-            end = complexSrc->count();
+            end = sampleSrc->count();
         }
 
         std::ofstream os (fileNames[0].toStdString(), std::ios::binary);
@@ -281,10 +294,10 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 
         for (index = start; index < end; index += step) {
             off_t length = std::min(step, end - index); 
-            auto samples = complexSrc->getSamples(index, length);
+            auto samples = sampleSrc->getSamples(index, length);
             if (samples != nullptr) {
                 for (auto i = 0; i < length; i += decimation.value()) {
-                    os.write((const char*)&samples[i], 8);
+                    os.write((const char*)&samples[i], sizeof(SOURCETYPE));
                 }
             }
         }
