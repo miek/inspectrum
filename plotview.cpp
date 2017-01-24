@@ -230,6 +230,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
     }
 
     QFileDialog dialog(this);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setOption(QFileDialog::DontUseNativeDialog, true);
 
