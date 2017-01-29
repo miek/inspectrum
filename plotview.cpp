@@ -156,10 +156,6 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
-        if (cursorsEnabled)
-            if (cursors.mouseEvent(event->type(), *mouseEvent))
-                return true;
-
         int plotY = -verticalScrollBar()->value();
         for (auto&& plot : plots) {
             bool result = plot->mouseEvent(
@@ -176,6 +172,10 @@ bool PlotView::eventFilter(QObject * obj, QEvent *event)
                 return true;
             plotY += plot->height();
         }
+
+        if (cursorsEnabled)
+            if (cursors.mouseEvent(event->type(), *mouseEvent))
+                return true;
     }
 
     // Handle wheel events for zooming
