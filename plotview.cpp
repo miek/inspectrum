@@ -64,10 +64,14 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
 
     // Get selected plot
     Plot *selectedPlot = nullptr;
+    auto it = plots.begin();
     int y = -verticalScrollBar()->value();
-    for (auto&& plot : plots) {
-        if (range_t<int>{y, y + plot->height()}.contains(event->pos().y()))
+    for (; it != plots.end(); it++) {
+        auto&& plot = *it;
+        if (range_t<int>{y, y + plot->height()}.contains(event->pos().y())) {
             selectedPlot = plot.get();
+            break;
+        }
         y += plot->height();
     }
     if (selectedPlot == nullptr)
@@ -111,6 +115,18 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
         }
     );
     menu.addAction(save);
+
+    // Add action to remove the selected plot
+    auto rem = new QAction("Remove plot", &menu);
+    connect(
+        rem, &QAction::triggered,
+        this, [=]() {
+            plots.erase(it);
+        }
+    );
+    // Don't allow remove the first plot (the spectrogram)
+    rem->setEnabled(it != plots.begin());
+    menu.addAction(rem);
 
     updateViewRange(false);
     if(menu.exec(event->globalPos()))
