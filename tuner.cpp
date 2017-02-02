@@ -50,6 +50,9 @@ void Tuner::cursorMoved()
         // Limit deviation range to half of total BW (either side of centre)
         auto deviationRange = range_t<int>{2, height / 2};
         _deviation = deviationRange.clip(std::abs(sender->pos() - cfCursor->pos()));
+    } else {
+        auto cfRange = range_t<int>{_deviation, height - _deviation};
+        sender->setPos(cfRange.clip(sender->pos()));
     }
 
     updateCursors();
