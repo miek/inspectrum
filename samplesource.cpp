@@ -20,35 +20,9 @@
 #include "samplesource.h"
 
 template<typename T>
-void SampleSource<T>::subscribe(Subscriber *subscriber)
-{
-	subscribers.insert(subscriber);
-}
-
-template<typename T>
 std::type_index SampleSource<T>::sampleType()
 {
-	return typeid(T);
-}
-
-template<typename T>
-void SampleSource<T>::invalidate()
-{
-	for (auto subscriber : subscribers) {
-		subscriber->invalidateEvent();
-	}
-}
-
-template<typename T>
-int SampleSource<T>::subscriberCount()
-{
-	return subscribers.size();
-}
-
-template<typename T>
-void SampleSource<T>::unsubscribe(Subscriber *subscriber)
-{
-	subscribers.erase(subscriber);
+    return typeid(T);
 }
 
 template class SampleSource<std::complex<float>>;

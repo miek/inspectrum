@@ -21,9 +21,7 @@
 
 #include <complex>
 #include <memory>
-#include <set>
 #include "abstractsamplesource.h"
-#include "subscriber.h"
 
 template<typename T>
 class SampleSource : public AbstractSampleSource
@@ -38,13 +36,4 @@ public:
     virtual off_t rate() = 0;
     virtual float relativeBandwidth() = 0;
     std::type_index sampleType() override;
-    void subscribe(Subscriber *subscriber);
-    int subscriberCount();
-    void unsubscribe(Subscriber *subscriber);
-
-protected:
-	virtual void invalidate();
-
-private:
-	std::set<Subscriber*> subscribers;
 };

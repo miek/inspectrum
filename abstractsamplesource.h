@@ -21,7 +21,9 @@
 
 #include <complex>
 #include <memory>
+#include <set>
 #include <typeindex>
+#include "subscriber.h"
 
 class AbstractSampleSource
 {
@@ -29,4 +31,13 @@ class AbstractSampleSource
 public:
     virtual ~AbstractSampleSource() {};
     virtual std::type_index sampleType() = 0;
+    void subscribe(Subscriber *subscriber);
+    int subscriberCount();
+    void unsubscribe(Subscriber *subscriber);
+
+protected:
+    virtual void invalidate();
+
+private:
+    std::set<Subscriber*> subscribers;
 };

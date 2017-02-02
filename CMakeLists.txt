@@ -27,6 +27,7 @@ endif (NOT CMAKE_CXX_FLAGS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 list(APPEND inspectrum_sources 
+    abstractsamplesource.cpp
     amplitudedemod.cpp
     cursor.cpp
     cursors.cpp
