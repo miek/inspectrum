@@ -21,6 +21,16 @@
 
 Plot::Plot(std::shared_ptr<AbstractSampleSource> src) : sampleSource(src)
 {
+	sampleSource->subscribe(this);
+}
+
+Plot::~Plot()
+{
+	sampleSource->unsubscribe(this);
+}
+
+void Plot::invalidateEvent()
+{
 
 }
 

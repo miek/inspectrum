@@ -25,12 +25,14 @@
 #include "abstractsamplesource.h"
 #include "util.h"
 
-class Plot : public QObject
+class Plot : public QObject, public Subscriber
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     Plot(std::shared_ptr<AbstractSampleSource> src);
+    ~Plot();
+    void invalidateEvent() override;
     virtual bool mouseEvent(QEvent::Type type, QMouseEvent event);
     virtual std::shared_ptr<AbstractSampleSource> output();
     virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);

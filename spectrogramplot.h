@@ -33,7 +33,7 @@
 
 class TileCacheKey;
 
-class SpectrogramPlot : public Plot, public Subscriber
+class SpectrogramPlot : public Plot
 {
     Q_OBJECT
 
