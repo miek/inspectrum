@@ -43,6 +43,10 @@ void Tuner::cursorMoved()
 {
     Cursor *sender = static_cast<Cursor*>(QObject::sender());
     if (sender != cfCursor) {
+        // Limit cursor positions to within plot
+        auto posRange = range_t<int>{0, height};
+        sender->setPos(posRange.clip(sender->pos()));
+
         // Limit deviation range to half of total BW (either side of centre)
         auto deviationRange = range_t<int>{2, height / 2};
         _deviation = deviationRange.clip(std::abs(sender->pos() - cfCursor->pos()));
