@@ -31,25 +31,27 @@ class Tuner : public QObject
     Q_OBJECT
 
 public:
-    Tuner(QObject * parent);
+    Tuner(int height, QObject * parent);
     int centre();
     int deviation();
     bool mouseEvent(QEvent::Type, QMouseEvent event);
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
     void setCentre(int centre);
     void setDeviation(int dev);
+    void setHeight(int height);
 
 public slots:
-	void cursorMoved();
+    void cursorMoved();
 
 signals:
-	void tunerMoved();
+    void tunerMoved();
 
 private:
-	void updateCursors();
+    void updateCursors();
 
-	Cursor *minCursor;
-	Cursor *cfCursor;
-	Cursor *maxCursor;
-	int _deviation;
+    Cursor *minCursor;
+    Cursor *cfCursor;
+    Cursor *maxCursor;
+    int _deviation;
+    int height;
 };

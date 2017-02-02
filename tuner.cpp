@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include "tuner.h"
 
-Tuner::Tuner(QObject * parent) : QObject::QObject(parent)
+Tuner::Tuner(int height, QObject * parent) : height(height), QObject::QObject(parent)
 {
     minCursor = new Cursor(Qt::Horizontal, Qt::SizeVerCursor, this);
     cfCursor = new Cursor(Qt::Horizontal, Qt::SizeAllCursor, this);
@@ -100,6 +100,11 @@ void Tuner::setDeviation(int dev)
 {
     _deviation = dev;
     updateCursors();
+}
+
+void Tuner::setHeight(int height)
+{
+    this->height = height;
 }
 
 void Tuner::updateCursors()
