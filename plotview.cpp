@@ -110,7 +110,11 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     connect(
         save, &QAction::triggered,
         this, [=]() {
-            exportSamples(src);
+            if (selectedPlot == spectrogramPlot) {
+                exportSamples(spectrogramPlot->tunerEnabled() ? spectrogramPlot->output() : spectrogramPlot->input());
+            } else {
+                exportSamples(src);
+            }
         }
     );
     menu.addAction(save);

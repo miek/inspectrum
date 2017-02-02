@@ -44,7 +44,9 @@ public:
     void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
     void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
     bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
+    std::shared_ptr<SampleSource<std::complex<float>>> input() { return inputSource; };
     void setSampleRate(off_t sampleRate);
+    bool tunerEnabled();
     void enableScales(bool enabled);
 
 public slots:
@@ -82,7 +84,6 @@ private:
     float getTunerPhaseInc();
     std::vector<float> getTunerTaps();
     int linesPerTile();
-    bool tunerEnabled();
     void paintFrequencyScale(QPainter &painter, QRect &rect);
 };
 
