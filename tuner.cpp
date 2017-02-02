@@ -43,7 +43,9 @@ void Tuner::cursorMoved()
 {
     Cursor *sender = static_cast<Cursor*>(QObject::sender());
     if (sender != cfCursor) {
-        _deviation = std::max(2, std::abs(sender->pos() - cfCursor->pos()));
+        // Limit deviation range to half of total BW (either side of centre)
+        auto deviationRange = range_t<int>{2, height / 2};
+        _deviation = deviationRange.clip(std::abs(sender->pos() - cfCursor->pos()));
     }
 
     updateCursors();
