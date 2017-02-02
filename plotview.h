@@ -55,10 +55,10 @@ public slots:
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event) override;
-    bool eventFilter(QObject * obj, QEvent *event) override;
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent * event);
     void scrollContentsBy(int dx, int dy);
+    bool viewportEvent(QEvent *event) override;
 
 private:
     Cursors cursors;

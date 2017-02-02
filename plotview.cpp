@@ -48,7 +48,6 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 
     addPlot(spectrogramPlot);
 
-    viewport()->installEventFilter(this);
     mainSampleSource->subscribe(this);
 }
 
@@ -162,8 +161,8 @@ void PlotView::enableCursors(bool enabled)
     viewport()->update();
 }
 
-bool PlotView::eventFilter(QObject * obj, QEvent *event)
-{
+bool PlotView::viewportEvent(QEvent *event) {
+    QAbstractScrollArea::viewportEvent(event);
     // Pass mouse events to individual plot objects
     if (event->type() == QEvent::MouseButtonPress ||
         event->type() == QEvent::MouseMove ||
