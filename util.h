@@ -20,6 +20,7 @@
 
 #pragma once
 #include <algorithm>
+#include <complex>
 #include <map>
 #include <math.h>
 #include <sstream>
@@ -97,3 +98,5 @@ struct range_t {
 };
 
 std::string formatSIValue(float value);
+
+template<typename T> const char* getFileNameFilter();

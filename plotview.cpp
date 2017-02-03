@@ -251,6 +251,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
     QFileDialog dialog(this);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(getFileNameFilter<SOURCETYPE>());
     dialog.setOption(QFileDialog::DontUseNativeDialog, true);
 
     QGroupBox groupBox("Selection To Export", &dialog);

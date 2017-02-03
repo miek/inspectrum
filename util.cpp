@@ -44,3 +44,6 @@ std::string formatSIValue(float value)
     ss << value << prefixes[power];
     return ss.str();
 }
+
+template<> const char* getFileNameFilter<std::complex<float>>() { return "complex<float> file (*.fc32)"; };
+template<> const char* getFileNameFilter<float>() { return "float file (*.f32)"; };
