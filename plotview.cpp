@@ -166,7 +166,22 @@ void PlotView::enableCursors(bool enabled)
 }
 
 bool PlotView::viewportEvent(QEvent *event) {
+    // Handle wheel events for zooming (before the parent's handler to stop normal scrolling)
+    if (event->type() == QEvent::Wheel) {
+        QWheelEvent *wheelEvent = (QWheelEvent*)event;
+        if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+            if (wheelEvent->angleDelta().y() > 0) {
+                emit zoomIn();
+            } else if (wheelEvent->angleDelta().y() < 0) {
+                emit zoomOut();
+            }
+            return true;
+        }
+    }
+
+    // Handle parent eveents
     QAbstractScrollArea::viewportEvent(event);
+
     // Pass mouse events to individual plot objects
     if (event->type() == QEvent::MouseButtonPress ||
         event->type() == QEvent::MouseMove ||
@@ -195,19 +210,6 @@ bool PlotView::viewportEvent(QEvent *event) {
         if (cursorsEnabled)
             if (cursors.mouseEvent(event->type(), *mouseEvent))
                 return true;
-    }
-
-    // Handle wheel events for zooming
-    if (event->type() == QEvent::Wheel) {
-        QWheelEvent *wheelEvent = (QWheelEvent*)event;
-        if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-            if (wheelEvent->angleDelta().y() > 0) {
-                emit zoomIn();
-            } else if (wheelEvent->angleDelta().y() < 0) {
-                emit zoomOut();
-            }
-            return true;
-        }
     }
     return false;
 }
