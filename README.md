@@ -14,7 +14,7 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 
 ### Build instructions
 
-    Build instructions can be found here: https://github.com/miek/inspectrum/wiki/Build
+Build instructions can be found here: https://github.com/miek/inspectrum/wiki/Build
 
 ### Run
 
