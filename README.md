@@ -12,37 +12,13 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
  * pkg-config
  * qt5
 
-### Building on Debian-based distros
+### Build instructions
 
-    sudo apt-get install qt5-default libfftw3-dev cmake pkg-config
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-
-
-## Building on OSX - Homebrew
-
-    brew install qt5 fftw cmake pkg-config liquid-dsp
-    mkdir build
-    cd build
-    CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake cmake .. -DCMAKE_CXX_FLAGS:STRING=-I/usr/local/opt/qt5/include ..
-    make install
-
-## Building on OSX - Macports
-
-    sudo port install qt5 fftw-3-single cmake pkgconfig liquid-dsp
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-
+    Build instructions can be found here: https://github.com/miek/inspectrum/wiki/Build
 
 ### Run
 
-    ./inspectrum
+    ./inspectrum [filename]
 
 ## Input
 inspectrum supports the following file types:
@@ -54,9 +30,11 @@ inspectrum supports the following file types:
 If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
 
 ## Features
- * Large (multi-gigabyte) file support
+ * Large (100GB+) file support
  * Spectrogram with zoom/pan
- * Plots of amplitude, frequency and IQ samples
+ * Plots of amplitude, frequency, phase and IQ samples
+ * Cursors for measuring period, symbol rate and extracting symbols
+ * Export of selected time period, filtered samples and demodulated data
  
 ## Contact
  * #inspectrum on freenode IRC
