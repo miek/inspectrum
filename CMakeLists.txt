@@ -36,6 +36,7 @@ list(APPEND inspectrum_sources
     frequencydemod.cpp
     mainwindow.cpp
     inputsource.cpp
+    phasedemod.cpp
     plot.cpp
     plots.cpp
     plotview.cpp

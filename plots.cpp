@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016, Mike Walters <mike@flomp.net>
+ *  Copyright (C) 2016-2017, Mike Walters <mike@flomp.net>
  *
  *  This file is part of inspectrum.
  *
@@ -17,8 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <amplitudedemod.h>
-#include <frequencydemod.h>
+#include "amplitudedemod.h"
+#include "frequencydemod.h"
+#include "phasedemod.h"
 #include "threshold.h"
 #include "traceplot.h"
 
@@ -44,6 +45,13 @@ Plot* Plots::frequencyPlot(std::shared_ptr<AbstractSampleSource> source)
     typedef SampleSource<std::complex<float>> Source;
     std::shared_ptr<Source> concrete = std::dynamic_pointer_cast<Source>(source);
     return new TracePlot( std::make_shared<FrequencyDemod>( concrete ) );
+}
+
+Plot* Plots::phasePlot(std::shared_ptr<AbstractSampleSource> source)
+{
+    typedef SampleSource<std::complex<float>> Source;
+    std::shared_ptr<Source> concrete = std::dynamic_pointer_cast<Source>(source);
+    return new TracePlot(std::make_shared<PhaseDemod>(concrete));
 }
 
 Plot* Plots::thresholdPlot(std::shared_ptr<AbstractSampleSource> source)
