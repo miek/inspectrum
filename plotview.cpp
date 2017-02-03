@@ -95,7 +95,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     }
 
     // Add action to extract symbols from selected plot
-    auto extract = new QAction("Extract symbols...", &menu);
+    auto extract = new QAction("Extract symbols (to stdout)...", &menu);
     connect(
         extract, &QAction::triggered,
         this, [=]() {
