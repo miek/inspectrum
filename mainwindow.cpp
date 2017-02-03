@@ -18,6 +18,7 @@
  */
 
 #include <QtWidgets>
+#include <QPixmapCache>
 #include <QRubberBand>
 #include <sstream>
 
@@ -27,6 +28,8 @@
 MainWindow::MainWindow()
 {
     setWindowTitle(tr("inspectrum"));
+
+    QPixmapCache::setCacheLimit(40960);
 
     dock = new SpectrogramControls(tr("Controls"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
