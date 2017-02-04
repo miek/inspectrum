@@ -170,9 +170,14 @@ bool PlotView::viewportEvent(QEvent *event) {
     if (event->type() == QEvent::Wheel) {
         QWheelEvent *wheelEvent = (QWheelEvent*)event;
         if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-            if (wheelEvent->angleDelta().y() > 0) {
+            // `updateViewRange()` keeps the center sample in the same place after zoom. Apply
+            // a scroll adjustment to keep the sample under the mouse cursor in the same place instead.
+            int fromCenter = wheelEvent->pos().x() - width()/2;
+            if (wheelEvent->angleDelta().y() > 0 && zoomLevel < fftSize) {
                 emit zoomIn();
-            } else if (wheelEvent->angleDelta().y() < 0) {
+                horizontalScrollBar()->setValue(horizontalScrollBar()->value() + fromCenter * samplesPerLine());
+            } else if (wheelEvent->angleDelta().y() < 0 && zoomLevel > 1) {
+                horizontalScrollBar()->setValue(horizontalScrollBar()->value() - fromCenter * samplesPerLine());
                 emit zoomOut();
             }
             return true;
