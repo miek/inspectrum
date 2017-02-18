@@ -75,6 +75,7 @@ private:
     bool cursorsEnabled;
     off_t sampleRate = 0;
     bool timeScaleEnabled;
+    int scrollZoomStepsAccumulated = 0;
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
