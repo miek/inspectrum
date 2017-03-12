@@ -44,7 +44,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
 
     fftSizeSlider = new QSlider(Qt::Horizontal, widget);
-    fftSizeSlider->setRange(7, 13);
+    fftSizeSlider->setRange(4, 16);
     fftSizeSlider->setPageStep(1);
 
     layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
