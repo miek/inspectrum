@@ -274,19 +274,18 @@ std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
 
 static float bessel(float x, int kmax = 5)
 {
-	int k;
-	float kfactorial = 1.0;
-	float half_x_to_k_pow = 1.0;
-	float term;
-	float result = 1.0;
-	for(k = 1; k < kmax; k++)
-	{
-		half_x_to_k_pow *= x/2.0;
-		kfactorial *= k;
-		term = half_x_to_k_pow / kfactorial;
-		result += term * term;
-	}
-	return result;
+    int k;
+    float kfactorial = 1.0;
+    float half_x_to_k_pow = 1.0;
+    float term;
+    float result = 1.0;
+    for(k = 1; k < kmax; k++) {
+        half_x_to_k_pow *= x/2.0;
+        kfactorial *= k;
+        term = half_x_to_k_pow / kfactorial;
+        result += term * term;
+    }
+    return result;
 }
 
 void SpectrogramPlot::setFFTSize(int size)
@@ -300,22 +299,12 @@ void SpectrogramPlot::setFFTSize(int size)
 
     window.reset(new float[fftSize]);
     int zeroCount = (fftSize * timeResolution) / 100;
-    if ((zeroCount >= 0) && (zeroCount <= fftSize))
-    {
+    if ((zeroCount >= 0) && (zeroCount <= fftSize)) {
         int windowSize = fftSize - zeroCount;
         for (int i = 0; i < windowSize; i++) {
             float term = float(2*i - windowSize + 1) / windowSize;
-//            window[i + zeroCount/2] = bessel(beta * sqrt(1.0 - term * term)) / denominator;
             window[i] = bessel(beta * sqrt(1.0 - term * term)) / denominator;
-//            window[i] = 0.5f * (1.0f - cos(Tau * i / (fftSize - 1)));
         }
-/*	for(int i = 0; i < (zeroCount / 2); i++) {
-            window[i] = 0;
-        }
-        for(int i = zeroCount / 2 + windowSize; i < fftSize; i++) {
-            window[i] = 0;
-        }
-*/
         for (int i = windowSize; i < fftSize; i++) {
             window[i] = 0;
         }
