@@ -58,7 +58,7 @@ pkg_check_modules(FFTW REQUIRED fftw3f)
 find_package(Liquid REQUIRED)
 
 include_directories(
-    ${QT_INCLUDES}
+    ${Qt5Widgets_INCLUDE_DIRS}
     ${FFTW_INCLUDEDIR}
     ${FFTW_INCLUDE_DIRS}
     ${LIQUID_INCLUDES}
@@ -90,3 +90,10 @@ configure_file(
 add_custom_target(uninstall
     ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
+
+get_property(inc_dirs DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
+message("inc_dirs = ${inc_dirs}")
+message("include directories: ${INCLUDE_DIRECTORIES}")
+
+# Including custom cmake rules
+include(cmake/clang-cxx-dev-tools.cmake)
