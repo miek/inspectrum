@@ -162,7 +162,7 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sa
 QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
 {
     QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));
-    if (obj != 0)
+    if (obj != nullptr)
         return obj;
 
     float *fftTile = getFFTTile(tile);
@@ -180,8 +180,10 @@ QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
         }
     }
     obj->convertFromImage(image);
-    pixmapCache.insert(TileCacheKey(fftSize, zoomLevel, tile), obj);
-    return obj;
+    if (pixmapCache.insert(TileCacheKey(fftSize, zoomLevel, tile), obj))
+        return obj;
+
+    return nullptr;
 }
 
 float* SpectrogramPlot::getFFTTile(off_t tile)
@@ -198,8 +200,10 @@ float* SpectrogramPlot::getFFTTile(off_t tile)
         sample += getStride();
         ptr += fftSize;
     }
-    fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), destStorage);
-    return destStorage->data();
+    if (fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), destStorage))
+        return destStorage->data();
+
+    return nullptr;
 }
 
 void SpectrogramPlot::getLine(float *dest, off_t sample)
