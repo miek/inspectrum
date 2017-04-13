@@ -46,6 +46,7 @@ MainWindow::MainWindow()
     connect(dock, SIGNAL(fftOrZoomChanged(int, int)), plots, SLOT(setFFTAndZoom(int, int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMin(int)));
+    connect(dock->timeResolutionSlider, SIGNAL(valueChanged(int)), plots, SLOT(setTimeResolution(int)));
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);

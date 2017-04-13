@@ -66,6 +66,7 @@ public:
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
+    QSlider *timeResolutionSlider;
     QCheckBox *cursorsCheckBox;
     QSpinBox *cursorSymbolsSpinBox;
     QLabel *rateLabel;

@@ -54,6 +54,7 @@ public slots:
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
+    void setTimeResolution(int res);
     void tunerMoved();
 
 private:
@@ -71,6 +72,7 @@ private:
     int zoomLevel;
     float powerMax;
     float powerMin;
+    int timeResolution;
     off_t sampleRate;
     bool frequencyScaleEnabled;
 

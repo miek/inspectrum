@@ -52,6 +52,7 @@ public slots:
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
+    void setTimeResolution(int resolution);
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event) override;
@@ -70,8 +71,8 @@ private:
 
     int fftSize = 1024;
     int zoomLevel = 0;
-    int powerMin;
-    int powerMax;
+//    int powerMin;
+//    int powerMax;
     bool cursorsEnabled;
     off_t sampleRate = 0;
     bool timeScaleEnabled;
