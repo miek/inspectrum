@@ -22,7 +22,7 @@
 
 #include <errno.h>
 #include <math.h>
-#include <stdio.h>
+#include <cstdio>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
