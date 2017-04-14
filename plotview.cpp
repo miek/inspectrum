@@ -139,8 +139,8 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
 void PlotView::cursorsMoved()
 {
     selectedSamples = {
-        horizontalScrollBar()->value() + cursors.selection().minimum * samplesPerLine(),
-        horizontalScrollBar()->value() + cursors.selection().maximum * samplesPerLine()
+        (horizontalScrollBar()->value() + cursors.selection().minimum) * samplesPerLine(),
+        (horizontalScrollBar()->value() + cursors.selection().maximum) * samplesPerLine()
     };
 
     emitTimeSelection();
@@ -178,14 +178,13 @@ bool PlotView::viewportEvent(QEvent *event) {
 
                 // `updateViewRange()` keeps the center sample in the same place after zoom. Apply
                 // a scroll adjustment to keep the sample under the mouse cursor in the same place instead.
-                int fromCenter = wheelEvent->pos().x() - width()/2;
+                zoomPos = wheelEvent->pos().x();
+                zoomSample = (horizontalScrollBar()->value() + zoomPos) * samplesPerLine();
                 if (scrollZoomStepsAccumulated >= 120) {
                     scrollZoomStepsAccumulated -= 120;
                     emit zoomIn();
-                    horizontalScrollBar()->setValue(horizontalScrollBar()->value() + fromCenter * samplesPerLine());
                 } else if (scrollZoomStepsAccumulated <= -120) {
                     scrollZoomStepsAccumulated += 120;
-                    horizontalScrollBar()->setValue(horizontalScrollBar()->value() - fromCenter * samplesPerLine());
                     emit zoomOut();
                 }
             }
@@ -340,7 +339,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 void PlotView::invalidateEvent()
 {
     horizontalScrollBar()->setMinimum(0);
-    horizontalScrollBar()->setMaximum(mainSampleSource->count());
+    horizontalScrollBar()->setMaximum(mainSampleSource->count() / samplesPerLine());
 }
 
 void PlotView::repaint()
@@ -374,8 +373,8 @@ void PlotView::setFFTAndZoom(int size, int zoom)
         spectrogramPlot->setZoomLevel(zoom);
 
     // Update horizontal (time) scrollbar
-    horizontalScrollBar()->setSingleStep(size * 10 / zoomLevel);
-    horizontalScrollBar()->setPageStep(size * 100 / zoomLevel);
+    horizontalScrollBar()->setSingleStep(10);
+    horizontalScrollBar()->setPageStep(100);
 
     updateView(true);
 }
@@ -508,34 +507,30 @@ void PlotView::scrollContentsBy(int dx, int dy)
 
 void PlotView::updateViewRange(bool reCenter)
 {
-    // Store old view for recentering
-    auto oldViewRange = viewRange;
-
     // Update current view
-    viewRange = {
-        horizontalScrollBar()->value(),
-        std::min(horizontalScrollBar()->value() + width() * samplesPerLine(), mainSampleSource->count())
-    };
+    auto start = horizontalScrollBar()->value() * samplesPerLine();
+    viewRange = {start, std::min(start + width() * samplesPerLine(), mainSampleSource->count())};
 
     // Adjust time offset to zoom around central sample
     if (reCenter) {
         horizontalScrollBar()->setValue(
-            horizontalScrollBar()->value() + (oldViewRange.length() - viewRange.length()) / 2
+            zoomSample / samplesPerLine() - zoomPos
         );
     }
+    zoomSample = viewRange.minimum + viewRange.length() / 2;
+    zoomPos = width() / 2;
 }
 
 void PlotView::updateView(bool reCenter)
 {
     updateViewRange(reCenter);
-    horizontalScrollBar()->setMaximum(std::max(off_t(0), mainSampleSource->count() - ((width() - 1) * samplesPerLine())));
-
+    horizontalScrollBar()->setMaximum(std::max(off_t(0), mainSampleSource->count() / samplesPerLine() - width()));
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
 
     // Update cursors
     range_t<int> newSelection = {
-        (int)((selectedSamples.minimum - horizontalScrollBar()->value()) / samplesPerLine()),
-        (int)((selectedSamples.maximum - horizontalScrollBar()->value()) / samplesPerLine())
+        (int)(selectedSamples.minimum / samplesPerLine() - horizontalScrollBar()->value()),
+        (int)(selectedSamples.maximum / samplesPerLine() - horizontalScrollBar()->value())
     };
     cursors.setSelection(newSelection);
 
