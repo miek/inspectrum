@@ -495,7 +495,7 @@ void PlotView::resizeEvent(QResizeEvent * event)
     updateView();
 }
 
-off_t PlotView::samplesPerLine()
+off_t PlotView::samplesPerColumn()
 {
     return fftSize / zoomLevel;
 }
@@ -560,10 +560,10 @@ void PlotView::enableScales(bool enabled)
 
 int PlotView::sampleToColumn(off_t sample)
 {
-    return sample / samplesPerLine();
+    return sample / samplesPerColumn();
 }
 
 off_t PlotView::columnToSample(int col)
 {
-    return col * samplesPerLine();
+    return col * samplesPerColumn();
 }
