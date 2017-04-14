@@ -139,8 +139,8 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
 void PlotView::cursorsMoved()
 {
     selectedSamples = {
-        (horizontalScrollBar()->value() + cursors.selection().minimum) * samplesPerLine(),
-        (horizontalScrollBar()->value() + cursors.selection().maximum) * samplesPerLine()
+        columnToSample(horizontalScrollBar()->value() + cursors.selection().minimum),
+        columnToSample(horizontalScrollBar()->value() + cursors.selection().maximum)
     };
 
     emitTimeSelection();
@@ -179,7 +179,7 @@ bool PlotView::viewportEvent(QEvent *event) {
                 // `updateViewRange()` keeps the center sample in the same place after zoom. Apply
                 // a scroll adjustment to keep the sample under the mouse cursor in the same place instead.
                 zoomPos = wheelEvent->pos().x();
-                zoomSample = (horizontalScrollBar()->value() + zoomPos) * samplesPerLine();
+                zoomSample = columnToSample(horizontalScrollBar()->value() + zoomPos);
                 if (scrollZoomStepsAccumulated >= 120) {
                     scrollZoomStepsAccumulated -= 120;
                     emit zoomIn();
@@ -339,7 +339,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 void PlotView::invalidateEvent()
 {
     horizontalScrollBar()->setMinimum(0);
-    horizontalScrollBar()->setMaximum(mainSampleSource->count() / samplesPerLine());
+    horizontalScrollBar()->setMaximum(sampleToColumn(mainSampleSource->count()));
 }
 
 void PlotView::repaint()
@@ -455,7 +455,7 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sam
     while (tick <= stopTime) {
 
         off_t tickSample = tick * sampleRate;
-        int tickLine = (tickSample - sampleRange.minimum) / samplesPerLine();
+        int tickLine = sampleToColumn(tickSample - sampleRange.minimum);
 
         char buf[128];
         snprintf(buf, sizeof(buf), "%.06f", tick);
@@ -472,7 +472,7 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sam
     while (tick <= stopTime) {
 
         off_t tickSample = tick * sampleRate;
-        int tickLine = (tickSample - sampleRange.minimum) / samplesPerLine();
+        int tickLine = sampleToColumn(tickSample - sampleRange.minimum);
 
         painter.drawLine(tickLine, 0, tickLine, 10);
         tick += durationPerTick;
@@ -508,13 +508,13 @@ void PlotView::scrollContentsBy(int dx, int dy)
 void PlotView::updateViewRange(bool reCenter)
 {
     // Update current view
-    auto start = horizontalScrollBar()->value() * samplesPerLine();
-    viewRange = {start, std::min(start + width() * samplesPerLine(), mainSampleSource->count())};
+    auto start = columnToSample(horizontalScrollBar()->value());
+    viewRange = {start, std::min(start + columnToSample(width()), mainSampleSource->count())};
 
     // Adjust time offset to zoom around central sample
     if (reCenter) {
         horizontalScrollBar()->setValue(
-            zoomSample / samplesPerLine() - zoomPos
+            sampleToColumn(zoomSample) - zoomPos
         );
     }
     zoomSample = viewRange.minimum + viewRange.length() / 2;
@@ -524,13 +524,13 @@ void PlotView::updateViewRange(bool reCenter)
 void PlotView::updateView(bool reCenter)
 {
     updateViewRange(reCenter);
-    horizontalScrollBar()->setMaximum(std::max(off_t(0), mainSampleSource->count() / samplesPerLine() - width()));
+    horizontalScrollBar()->setMaximum(std::max(0, sampleToColumn(mainSampleSource->count()) - width()));
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
 
     // Update cursors
     range_t<int> newSelection = {
-        (int)(selectedSamples.minimum / samplesPerLine() - horizontalScrollBar()->value()),
-        (int)(selectedSamples.maximum / samplesPerLine() - horizontalScrollBar()->value())
+        sampleToColumn(selectedSamples.minimum) - horizontalScrollBar()->value(),
+        sampleToColumn(selectedSamples.maximum) - horizontalScrollBar()->value()
     };
     cursors.setSelection(newSelection);
 
@@ -558,3 +558,12 @@ void PlotView::enableScales(bool enabled)
     viewport()->update();
 }
 
+int PlotView::sampleToColumn(off_t sample)
+{
+    return sample / samplesPerLine();
+}
+
+off_t PlotView::columnToSample(int col)
+{
+    return col * samplesPerLine();
+}
