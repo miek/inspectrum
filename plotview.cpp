@@ -36,6 +36,7 @@
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 {
     mainSampleSource = input;
+    setDragMode(QGraphicsView::ScrollHandDrag);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setMouseTracking(true);
     enableCursors(false);
@@ -193,7 +194,7 @@ bool PlotView::viewportEvent(QEvent *event) {
     }
 
     // Handle parent eveents
-    QAbstractScrollArea::viewportEvent(event);
+    QGraphicsView::viewportEvent(event);
 
     // Pass mouse events to individual plot objects
     if (event->type() == QEvent::MouseButtonPress ||

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <QAbstractScrollArea>
+#include <QGraphicsView>
 #include <QPaintEvent>
 
 #include "cursors.h"
@@ -29,7 +29,7 @@
 #include "spectrogramplot.h"
 #include "traceplot.h"
 
-class PlotView : public QAbstractScrollArea, Subscriber
+class PlotView : public QGraphicsView, Subscriber
 {
     Q_OBJECT
 
