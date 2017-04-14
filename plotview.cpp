@@ -193,9 +193,6 @@ bool PlotView::viewportEvent(QEvent *event) {
         }
     }
 
-    // Handle parent eveents
-    QGraphicsView::viewportEvent(event);
-
     // Pass mouse events to individual plot objects
     if (event->type() == QEvent::MouseButtonPress ||
         event->type() == QEvent::MouseMove ||
@@ -225,7 +222,9 @@ bool PlotView::viewportEvent(QEvent *event) {
             if (cursors.mouseEvent(event->type(), *mouseEvent))
                 return true;
     }
-    return false;
+
+    // Handle parent eveents
+    return QGraphicsView::viewportEvent(event);
 }
 
 void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
