@@ -107,7 +107,7 @@ void Tuner::setCentre(int centre)
 
 void Tuner::setDeviation(int dev)
 {
-    _deviation = dev;
+    _deviation = std::max(1, dev);
     updateCursors();
 }
 
