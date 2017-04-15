@@ -55,14 +55,6 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
-    powerMaxSlider = new QSlider(Qt::Horizontal, widget);
-    powerMaxSlider->setRange(-140, 10);
-    layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
-
-    powerMinSlider = new QSlider(Qt::Horizontal, widget);
-    powerMinSlider->setRange(-140, 10);
-    layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
-
     timeResolutionSlider = new QSlider(Qt::Horizontal, widget);
     timeResolutionSlider->setRange(0, 99);
     layout->addRow(new QLabel(tr("Time resolution:")), timeResolutionSlider);
@@ -70,6 +62,14 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     betaSlider = new QSlider(Qt::Horizontal, widget);
     betaSlider->setRange(0, 15);
     layout->addRow(new QLabel(tr("Beta:")), betaSlider);
+
+    powerMaxSlider = new QSlider(Qt::Horizontal, widget);
+    powerMaxSlider->setRange(-140, 10);
+    layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
+
+    powerMinSlider = new QSlider(Qt::Horizontal, widget);
+    powerMinSlider->setRange(-140, 10);
+    layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
     scalesCheckBox = new QCheckBox(widget);
     scalesCheckBox->setCheckState(Qt::Checked);

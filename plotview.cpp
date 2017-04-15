@@ -382,7 +382,7 @@ void PlotView::setFFTAndZoom(int size, int zoom)
 
 void PlotView::setPowerMin(int power)
 {
-//  HVI_REVIEW: Not needed?   powerMin = power;
+   powerMin = power;
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setPowerMin(power);
     updateView();
@@ -390,7 +390,7 @@ void PlotView::setPowerMin(int power)
 
 void PlotView::setPowerMax(int power)
 {
-//  HVI_REVIEW: Not needed?  powerMax = power;
+    powerMax = power;
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setPowerMax(power);
     updateView();

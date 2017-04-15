@@ -273,26 +273,9 @@ std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
     return tunerTransform;
 }
 
-static float bessel(float x, int kmax = 5)
-{
-    int k;
-    float kfactorial = 1.0;
-    float half_x_to_k_pow = 1.0;
-    float term;
-    float result = 1.0;
-    for(k = 1; k < kmax; k++) {
-        half_x_to_k_pow *= x/2.0;
-        kfactorial *= k;
-        term = half_x_to_k_pow / kfactorial;
-        result += term * term;
-    }
-    return result;
-}
-
 void SpectrogramPlot::setFFTSize(int size)
 {
     float sizeScale = float(size) / float(fftSize);
-    float denominator = bessel(beta);
     
     fftSize = size;
     fft.reset(new FFT(fftSize));
@@ -301,11 +284,15 @@ void SpectrogramPlot::setFFTSize(int size)
     int zeroCount = (fftSize * timeResolution) / 100;
     if ((zeroCount >= 0) && (zeroCount <= fftSize)) {
         int windowSize = fftSize - zeroCount;
-        for (int i = 0; i < windowSize; i++) {
-            float term = float(2*i - windowSize + 1) / windowSize;
-            window[i] = bessel(beta * sqrt(1.0 - term * term)) / denominator;
+        int leadingZeroCount = zeroCount/2;
+        
+        for (int i = 0; i < leadingZeroCount; i++) {
+            window[i] = 0;
         }
-        for (int i = windowSize; i < fftSize; i++) {
+        for (int i = 0; i < windowSize; i++) {
+            window[i + leadingZeroCount] = kaiser(i, windowSize, beta, 0.0);
+        }
+        for (int i = windowSize + leadingZeroCount; i < fftSize; i++) {
             window[i] = 0;
         }
     } else {
@@ -333,7 +320,6 @@ void SpectrogramPlot::setPowerMin(int power)
 {
     powerMin = power;
     pixmapCache.clear();
-    // HVI_REVIEW: Why no tunerMoved like in setPowerMax()?
 }
 
 void SpectrogramPlot::setTimeResolution(int resolution)
