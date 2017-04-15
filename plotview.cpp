@@ -400,7 +400,12 @@ void PlotView::setTimeResolution(int resolution)
 {
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setTimeResolution(resolution);
-//    updateView(true);
+}
+
+void PlotView::setBeta(int beta)
+{
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setBeta(beta);
 }
 
 void PlotView::paintEvent(QPaintEvent *event)

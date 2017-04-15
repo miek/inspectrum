@@ -53,6 +53,7 @@ public slots:
     void setPowerMin(int power);
     void setPowerMax(int power);
     void setTimeResolution(int resolution);
+    void setBeta(int beta);
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event) override;

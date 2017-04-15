@@ -38,6 +38,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     powerMin = -50.0f;
     timeResolution = 0.0;
     sampleRate = 0;
+    beta = 4.0;
     frequencyScaleEnabled = false;
     setFFTSize(fftSize);
 
@@ -291,7 +292,6 @@ static float bessel(float x, int kmax = 5)
 void SpectrogramPlot::setFFTSize(int size)
 {
     float sizeScale = float(size) / float(fftSize);
-    float beta = 20;
     float denominator = bessel(beta);
     
     fftSize = size;
@@ -343,6 +343,12 @@ void SpectrogramPlot::setTimeResolution(int resolution)
     invalidateEvent();
 }
 
+void SpectrogramPlot::setBeta(float beta)
+{
+    this->beta = beta;
+    setFFTSize(fftSize);
+    invalidateEvent();
+}
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;

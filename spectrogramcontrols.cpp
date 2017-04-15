@@ -67,6 +67,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     timeResolutionSlider->setRange(0, 99);
     layout->addRow(new QLabel(tr("Time resolution:")), timeResolutionSlider);
 
+    betaSlider = new QSlider(Qt::Horizontal, widget);
+    betaSlider->setRange(0, 15);
+    layout->addRow(new QLabel(tr("Beta:")), betaSlider);
+
     scalesCheckBox = new QCheckBox(widget);
     scalesCheckBox->setCheckState(Qt::Checked);
     layout->addRow(new QLabel(tr("Scales:")), scalesCheckBox);
