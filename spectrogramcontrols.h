@@ -46,7 +46,6 @@ private slots:
     void fftSliderChanged(int value);
     void powerMinChanged(int value);
     void powerMaxChanged(int value);
-    void cursorsStateChanged(int state);
 
 private:
     QWidget *widget;
@@ -59,7 +58,6 @@ public:
     QSlider *fftSizeSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
-    QCheckBox *cursorsCheckBox;
     QSpinBox *cursorSymbolsSpinBox;
     QLabel *rateLabel;
     QLabel *periodLabel;

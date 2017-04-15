@@ -48,7 +48,6 @@ MainWindow::MainWindow()
     connect(dock, &SpectrogramControls::fftSizeChanged, plots, &PlotView::setFFTSize);
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMin(int)));
-    connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
 
@@ -79,6 +78,13 @@ void MainWindow::createActions()
     QAction *zoomOutAct = new QAction(zoomOutIcon, tr("Zoom out"), this);
     connect(zoomOutAct, &QAction::triggered, plots, &PlotView::zoomOut);
     zoomToolBar->addAction(zoomOutAct);
+
+    QToolBar *cursorsToolBar = addToolBar(tr("Cursors"));
+    const QIcon toggleCursorsIcon = QIcon(":/icons/show-cursors.svg");
+    QAction *toggleCursorsAct = new QAction(toggleCursorsIcon, tr("Toggle cursors"), this);
+    toggleCursorsAct->setCheckable(true);
+    connect(toggleCursorsAct, &QAction::toggled, plots, &PlotView::enableCursors);
+    cursorsToolBar->addAction(toggleCursorsAct);
 }
 
 void MainWindow::fileOpenButtonClicked()

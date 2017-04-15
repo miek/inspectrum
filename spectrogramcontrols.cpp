@@ -62,9 +62,6 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
     layout->addRow(new QLabel(tr("<b>Time selection</b>")));
 
-    cursorsCheckBox = new QCheckBox(widget);
-    layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
-
     cursorSymbolsSpinBox = new QSpinBox();
     cursorSymbolsSpinBox->setMinimum(1);
     cursorSymbolsSpinBox->setMaximum(9999);
@@ -86,7 +83,6 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     setWidget(widget);
 
     connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSliderChanged(int)));
-    connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
     connect(powerMinSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMinChanged(int)));
     connect(powerMaxSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMaxChanged(int)));
 }
@@ -99,19 +95,11 @@ void SpectrogramControls::clearCursorLabels()
     symbolRateLabel->setText("");
 }
 
-void SpectrogramControls::cursorsStateChanged(int state)
-{
-    if (state == Qt::Unchecked) {
-        clearCursorLabels();
-    }
-}
-
 void SpectrogramControls::setDefaults()
 {
     QSettings settings;
     fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
 
-    cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
 
     int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
@@ -142,12 +130,12 @@ void SpectrogramControls::powerMaxChanged(int value)
 
 void SpectrogramControls::timeSelectionChanged(float time)
 {
-    if (cursorsCheckBox->checkState() == Qt::Checked) {
+    //if (cursorsCheckBox->checkState() == Qt::Checked) {
         periodLabel->setText(QString::fromStdString(formatSIValue(time)) + "s");
         rateLabel->setText(QString::fromStdString(formatSIValue(1 / time)) + "Hz");
 
         int symbols = cursorSymbolsSpinBox->value();
         symbolPeriodLabel->setText(QString::fromStdString(formatSIValue(time / symbols)) + "s");
         symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Hz");
-    }
+    //}
 }
