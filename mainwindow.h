@@ -31,9 +31,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow();
     void changeSampleRate(int rate);
+    void openFile(QString fileName);
 
 public slots:
-    void openFile(QString fileName);
+    void createActions();
+    void fileOpenButtonClicked();
     void setSampleRate(QString rate);
     void setSampleRate(int rate);
 

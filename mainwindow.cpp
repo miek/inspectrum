@@ -30,6 +30,8 @@ MainWindow::MainWindow()
 {
     setWindowTitle(tr("inspectrum"));
 
+    createActions();
+
     QPixmapCache::setCacheLimit(40960);
 
     dock = new SpectrogramControls(tr("Controls"), this);
@@ -42,7 +44,6 @@ MainWindow::MainWindow()
     setCentralWidget(plots);
 
     // Connect dock inputs
-    connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
     connect(dock, SIGNAL(fftOrZoomChanged(int, int)), plots, SLOT(setFFTAndZoom(int, int)));
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
@@ -59,6 +60,52 @@ MainWindow::MainWindow()
     // Set defaults after making connections so everything is in sync
     dock->setDefaults();
 
+}
+
+void MainWindow::createActions()
+{
+    QToolBar *fileToolBar = addToolBar(tr("File"));
+    const QIcon openIcon = QIcon::fromTheme("document-open");
+    QAction *openAct = new QAction(openIcon, tr("&Open..."), this);
+    openAct->setShortcuts(QKeySequence::Open);
+    connect(openAct, &QAction::triggered, this, &MainWindow::fileOpenButtonClicked);
+    fileToolBar->addAction(openAct);
+}
+
+void MainWindow::fileOpenButtonClicked()
+{
+    QSettings settings;
+    QString fileName;
+    QFileDialog fileSelect(this);
+    fileSelect.setNameFilter(tr("All files (*);;"
+                "complex<float> file (*.cfile *.cf32 *.fc32);;"
+                "complex<int8> HackRF file (*.cs8 *.sc8 *.c8);;"
+                "complex<int16> Fancy file (*.cs16 *.sc16 *.c16);;"
+                "complex<uint8> RTL-SDR file (*.cu8 *.uc8)"));
+
+    // Try and load a saved state
+    {
+        QByteArray savedState = settings.value("OpenFileState").toByteArray();
+        fileSelect.restoreState(savedState);
+
+        // Filter doesn't seem to be considered part of the saved state
+        QString lastUsedFilter = settings.value("OpenFileFilter").toString();
+        if(lastUsedFilter.size())
+            fileSelect.selectNameFilter(lastUsedFilter);
+    }
+
+    if(fileSelect.exec())
+    {
+        fileName = fileSelect.selectedFiles()[0];
+
+        // Remember the state of the dialog for the next time
+        QByteArray dialogState = fileSelect.saveState();
+        settings.setValue("OpenFileState", dialogState);
+        settings.setValue("OpenFileFilter", fileSelect.selectedNameFilter());
+    }
+
+    if (!fileName.isEmpty())
+        openFile(fileName);
 }
 
 void MainWindow::openFile(QString fileName)

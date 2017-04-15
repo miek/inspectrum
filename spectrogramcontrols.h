@@ -38,7 +38,6 @@ public:
 
 signals:
     void fftOrZoomChanged(int fftSize, int zoomLevel);
-    void openFile(QString fileName);
 
 public slots:
     void timeSelectionChanged(float time);
@@ -50,7 +49,6 @@ private slots:
     void zoomLevelChanged(int value);
     void powerMinChanged(int value);
     void powerMaxChanged(int value);
-    void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
 
 private:
