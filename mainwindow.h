@@ -43,4 +43,5 @@ private:
     SpectrogramControls *dock;
     PlotView *plots;
     InputSource *input;
+    QLineEdit *sampleRate;
 };

@@ -32,10 +32,6 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     widget = new QWidget(this);
     layout = new QFormLayout(widget);
 
-    sampleRate = new QLineEdit();
-    sampleRate->setValidator(new QIntValidator(this));
-    layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
-
     // Spectrogram settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
     layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
@@ -102,8 +98,6 @@ void SpectrogramControls::setDefaults()
 
     cursorSymbolsSpinBox->setValue(1);
 
-    int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
-    sampleRate->setText(QString::number(savedSampleRate));
     powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
     powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());
 }

@@ -44,7 +44,6 @@ MainWindow::MainWindow()
     createActions();
 
     // Connect dock inputs
-    connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
     connect(dock, &SpectrogramControls::fftSizeChanged, plots, &PlotView::setFFTSize);
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMin(int)));
@@ -61,12 +60,22 @@ MainWindow::MainWindow()
 
 void MainWindow::createActions()
 {
+    QSettings settings;
+
     QToolBar *fileToolBar = addToolBar(tr("File"));
     const QIcon openIcon = QIcon::fromTheme("document-open");
     QAction *openAct = new QAction(openIcon, tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
     connect(openAct, &QAction::triggered, this, &MainWindow::fileOpenButtonClicked);
     fileToolBar->addAction(openAct);
+
+    sampleRate = new QLineEdit();
+    connect(sampleRate, &QLineEdit::textChanged, this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setSampleRate));
+    int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
+    sampleRate->setText(QString::number(savedSampleRate));
+    sampleRate->setValidator(new QIntValidator(this));
+    fileToolBar->addWidget(new QLabel(tr("Sample rate: ")));
+    fileToolBar->addWidget(sampleRate);
 
     QToolBar *zoomToolBar = addToolBar(tr("Zoom"));
     const QIcon zoomInIcon = QIcon::fromTheme("zoom-in");
@@ -171,5 +180,5 @@ void MainWindow::setSampleRate(QString rate)
 
 void MainWindow::setSampleRate(int rate)
 {
-    dock->sampleRate->setText(QString::number(rate));
+    sampleRate->setText(QString::number(rate));
 }
