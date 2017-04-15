@@ -39,8 +39,6 @@ public:
 
 signals:
     void timeSelectionChanged(float time);
-    void zoomIn();
-    void zoomOut();
 
 public slots:
     void cursorsMoved();
@@ -49,9 +47,11 @@ public slots:
     void invalidateEvent();
     void repaint();
     void setCursorSegments(int segments);
-    void setFFTAndZoom(int fftSize, int zoomLevel);
+    void setFFTSize(int fftSize);
     void setPowerMin(int power);
     void setPowerMax(int power);
+    void zoomIn();
+    void zoomOut();
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event) override;
@@ -71,7 +71,7 @@ private:
     size_t zoomSample;
 
     int fftSize = 1024;
-    int zoomLevel = 0;
+    int zoomLevel = 1;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
@@ -86,6 +86,7 @@ private:
     template<typename SOURCETYPE> void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
     size_t samplesPerColumn();
+    void setFFTAndZoom(int fftSize, int zoomLevel);
     void updateViewRange(bool reCenter);
     void updateView(bool reCenter = false);
     void paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);

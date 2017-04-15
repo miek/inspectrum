@@ -37,16 +37,13 @@ public:
     void setDefaults();
 
 signals:
-    void fftOrZoomChanged(int fftSize, int zoomLevel);
+    void fftSizeChanged(int fftSize);
 
 public slots:
     void timeSelectionChanged(float time);
-    void zoomIn();
-    void zoomOut();
 
 private slots:
-    void fftSizeChanged(int value);
-    void zoomLevelChanged(int value);
+    void fftSliderChanged(int value);
     void powerMinChanged(int value);
     void powerMaxChanged(int value);
     void cursorsStateChanged(int state);
@@ -55,13 +52,11 @@ private:
     QWidget *widget;
     QFormLayout *layout;
     void clearCursorLabels();
-    void fftOrZoomChanged(void);
 
 public:
     QPushButton *fileOpenButton;
     QLineEdit *sampleRate;
     QSlider *fftSizeSlider;
-    QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
     QCheckBox *cursorsCheckBox;

@@ -183,10 +183,10 @@ bool PlotView::viewportEvent(QEvent *event) {
                 zoomSample = columnToSample(horizontalScrollBar()->value() + zoomPos);
                 if (scrollZoomStepsAccumulated >= 120) {
                     scrollZoomStepsAccumulated -= 120;
-                    emit zoomIn();
+                    zoomIn();
                 } else if (scrollZoomStepsAccumulated <= -120) {
                     scrollZoomStepsAccumulated += 120;
-                    emit zoomOut();
+                    zoomOut();
                 }
             }
             return true;
@@ -360,6 +360,11 @@ void PlotView::setCursorSegments(int segments)
     emitTimeSelection();
 }
 
+void PlotView::setFFTSize(int fftSize)
+{
+    setFFTAndZoom(fftSize, zoomLevel);
+}
+
 void PlotView::setFFTAndZoom(int size, int zoom)
 {
     // Set new FFT size
@@ -368,7 +373,7 @@ void PlotView::setFFTAndZoom(int size, int zoom)
         spectrogramPlot->setFFTSize(size);
 
     // Set new zoom level
-    zoomLevel = zoom;
+    zoomLevel = std::min(fftSize, zoom);
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setZoomLevel(zoom);
 
@@ -566,4 +571,16 @@ int PlotView::sampleToColumn(size_t sample)
 size_t PlotView::columnToSample(int col)
 {
     return col * samplesPerColumn();
+}
+
+void PlotView::zoomIn()
+{
+    if (zoomLevel < fftSize)
+        setFFTAndZoom(fftSize, zoomLevel * 2);
+}
+
+void PlotView::zoomOut()
+{
+    if (zoomLevel > 1)
+        setFFTAndZoom(fftSize, zoomLevel / 2);
 }

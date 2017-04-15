@@ -46,12 +46,6 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
-    zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
-    zoomLevelSlider->setRange(0, 10);
-    zoomLevelSlider->setPageStep(1);
-
-    layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
-
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
     powerMaxSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
@@ -91,8 +85,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     widget->setLayout(layout);
     setWidget(widget);
 
-    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeChanged(int)));
-    connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(zoomLevelChanged(int)));
+    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSliderChanged(int)));
     connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
     connect(powerMinSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMinChanged(int)));
     connect(powerMaxSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMaxChanged(int)));
@@ -115,40 +108,24 @@ void SpectrogramControls::cursorsStateChanged(int state)
 
 void SpectrogramControls::setDefaults()
 {
-    fftOrZoomChanged();
+    QSettings settings;
+    fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
 
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
 
-    // Try to set the sample rate from the last-used value
-    QSettings settings;
     int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
     sampleRate->setText(QString::number(savedSampleRate));
-    fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
     powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
     powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());
-    zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
 }
 
-void SpectrogramControls::fftOrZoomChanged(void)
-{
-    int fftSize = pow(2, fftSizeSlider->value());
-    int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
-    emit fftOrZoomChanged(fftSize, zoomLevel);
-}
-
-void SpectrogramControls::fftSizeChanged(int value)
+void SpectrogramControls::fftSliderChanged(int value)
 {
     QSettings settings;
     settings.setValue("FFTSize", value);
-    fftOrZoomChanged();
-}
-
-void SpectrogramControls::zoomLevelChanged(int value)
-{
-    QSettings settings;
-    settings.setValue("ZoomLevel", value);
-    fftOrZoomChanged();
+    int fftSize = pow(2, value);
+    emit fftSizeChanged(fftSize);
 }
 
 void SpectrogramControls::powerMinChanged(int value)
@@ -173,14 +150,4 @@ void SpectrogramControls::timeSelectionChanged(float time)
         symbolPeriodLabel->setText(QString::fromStdString(formatSIValue(time / symbols)) + "s");
         symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Hz");
     }
-}
-
-void SpectrogramControls::zoomIn()
-{
-    zoomLevelSlider->setValue(zoomLevelSlider->value() + 1);
-}
-
-void SpectrogramControls::zoomOut()
-{
-    zoomLevelSlider->setValue(zoomLevelSlider->value() - 1);
 }

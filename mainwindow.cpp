@@ -30,8 +30,6 @@ MainWindow::MainWindow()
 {
     setWindowTitle(tr("inspectrum"));
 
-    createActions();
-
     QPixmapCache::setCacheLimit(40960);
 
     dock = new SpectrogramControls(tr("Controls"), this);
@@ -43,9 +41,11 @@ MainWindow::MainWindow()
     plots = new PlotView(input);
     setCentralWidget(plots);
 
+    createActions();
+
     // Connect dock inputs
     connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
-    connect(dock, SIGNAL(fftOrZoomChanged(int, int)), plots, SLOT(setFFTAndZoom(int, int)));
+    connect(dock, &SpectrogramControls::fftSizeChanged, plots, &PlotView::setFFTSize);
     connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
     connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMin(int)));
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
@@ -54,8 +54,6 @@ MainWindow::MainWindow()
 
     // Connect dock outputs
     connect(plots, SIGNAL(timeSelectionChanged(float)), dock, SLOT(timeSelectionChanged(float)));
-    connect(plots, SIGNAL(zoomIn()), dock, SLOT(zoomIn()));
-    connect(plots, SIGNAL(zoomOut()), dock, SLOT(zoomOut()));
 
     // Set defaults after making connections so everything is in sync
     dock->setDefaults();
@@ -70,6 +68,17 @@ void MainWindow::createActions()
     openAct->setShortcuts(QKeySequence::Open);
     connect(openAct, &QAction::triggered, this, &MainWindow::fileOpenButtonClicked);
     fileToolBar->addAction(openAct);
+
+    QToolBar *zoomToolBar = addToolBar(tr("Zoom"));
+    const QIcon zoomInIcon = QIcon::fromTheme("zoom-in");
+    QAction *zoomInAct = new QAction(zoomInIcon, tr("Zoom in"), this);
+    connect(zoomInAct, &QAction::triggered, plots, &PlotView::zoomIn);
+    zoomToolBar->addAction(zoomInAct);
+
+    const QIcon zoomOutIcon = QIcon::fromTheme("zoom-out");
+    QAction *zoomOutAct = new QAction(zoomOutIcon, tr("Zoom out"), this);
+    connect(zoomOutAct, &QAction::triggered, plots, &PlotView::zoomOut);
+    zoomToolBar->addAction(zoomOutAct);
 }
 
 void MainWindow::fileOpenButtonClicked()
