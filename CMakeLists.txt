@@ -54,6 +54,7 @@ list(APPEND inspectrum_sources
 INCLUDE(FindPkgConfig)
 
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Concurrent REQUIRED)
 pkg_check_modules(FFTW REQUIRED fftw3f)
 find_package(Liquid REQUIRED)
 
