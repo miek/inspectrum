@@ -517,15 +517,15 @@ void PlotView::updateViewRange(bool reCenter)
             sampleToColumn(zoomSample) - zoomPos
         );
     }
-    zoomSample = viewRange.minimum + viewRange.length() / 2;
-    zoomPos = width() / 2;
+    // zoomSample = viewRange.minimum + viewRange.length() / 2;
+    // zoomPos = width() / 2;
 }
 
 void PlotView::updateView(bool reCenter)
 {
-    updateViewRange(reCenter);
     horizontalScrollBar()->setMaximum(std::max(0, sampleToColumn(mainSampleSource->count()) - width()));
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
+    updateViewRange(reCenter);
 
     // Update cursors
     range_t<int> newSelection = {
