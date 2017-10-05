@@ -206,8 +206,12 @@ void SpectrogramPlot::getLine(float *dest, off_t sample)
 {
     if (inputSource && fft) {
         auto buffer = inputSource->getSamples(sample, fftSize);
-        if (buffer == nullptr)
+        if (buffer == nullptr) {
+            auto neg_infinity = -1 * std::numeric_limits<float>::infinity();
+            for (int i = 0; i < fftSize; i++, dest++)
+                *dest = neg_infinity;
             return;
+        }
 
         for (int i = 0; i < fftSize; i++) {
             buffer[i] *= window[i];
