@@ -60,7 +60,7 @@ bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
             }
         }
 
-    // Update current cursor positon if we're dragging
+    // Update current cursor position if we're dragging
     } else if (type == QEvent::MouseMove) {
         if (dragging) {
             cursorPosition = fromPoint(event.pos());
