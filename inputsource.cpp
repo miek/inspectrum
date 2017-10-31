@@ -89,7 +89,7 @@ public:
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<uint8_t>& v) -> std::complex<float> {
                 const float k = 1.0f / 128.0f;
-                return { v.real() * k - 1.0f, v.imag() * k - 1.0f };
+                return { (v.real() - 127.4f) * k, (v.imag() - 127.4f) * k };
             }
         );
     }
