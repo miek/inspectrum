@@ -381,7 +381,7 @@ void PlotView::setFFTAndZoom(int size, int zoom)
 
 void PlotView::setPowerMin(int power)
 {
-    powerMin = power;
+   powerMin = power;
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setPowerMin(power);
     updateView();
@@ -393,6 +393,18 @@ void PlotView::setPowerMax(int power)
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setPowerMax(power);
     updateView();
+}
+
+void PlotView::setTimeResolution(int resolution)
+{
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setTimeResolution(resolution);
+}
+
+void PlotView::setBeta(int beta)
+{
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setBeta(beta);
 }
 
 void PlotView::paintEvent(QPaintEvent *event)

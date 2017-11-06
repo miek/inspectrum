@@ -33,12 +33,14 @@
 
 SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), fftSize(512), tuner(fftSize, this)
 {
-    setFFTSize(fftSize);
     zoomLevel = 1;
     powerMax = 0.0f;
     powerMin = -50.0f;
+    timeResolution = 0.0;
     sampleRate = 0;
+    beta = 4.0;
     frequencyScaleEnabled = false;
+    setFFTSize(fftSize);
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
@@ -278,12 +280,29 @@ std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
 void SpectrogramPlot::setFFTSize(int size)
 {
     float sizeScale = float(size) / float(fftSize);
+    
     fftSize = size;
     fft.reset(new FFT(fftSize));
 
     window.reset(new float[fftSize]);
-    for (int i = 0; i < fftSize; i++) {
-        window[i] = 0.5f * (1.0f - cos(Tau * i / (fftSize - 1)));
+    int zeroCount = (fftSize * timeResolution) / 100;
+    if ((zeroCount >= 0) && (zeroCount <= fftSize)) {
+        int windowSize = fftSize - zeroCount;
+        int leadingZeroCount = zeroCount/2;
+        
+        for (int i = 0; i < leadingZeroCount; i++) {
+            window[i] = 0;
+        }
+        for (int i = 0; i < windowSize; i++) {
+            window[i + leadingZeroCount] = kaiser(i, windowSize, beta, 0.0);
+        }
+        for (int i = windowSize + leadingZeroCount; i < fftSize; i++) {
+            window[i] = 0;
+        }
+    } else {
+        for(int i = 0; i < fftSize; i++) {
+            window[i] = 0;
+        }
     }
 
     setHeight(fftSize);
@@ -307,6 +326,19 @@ void SpectrogramPlot::setPowerMin(int power)
     pixmapCache.clear();
 }
 
+void SpectrogramPlot::setTimeResolution(int resolution)
+{
+    timeResolution = resolution;
+    setFFTSize(fftSize);
+    invalidateEvent();
+}
+
+void SpectrogramPlot::setBeta(float beta)
+{
+    this->beta = beta;
+    setFFTSize(fftSize);
+    invalidateEvent();
+}
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;

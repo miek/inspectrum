@@ -55,6 +55,14 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
 
+    timeResolutionSlider = new QSlider(Qt::Horizontal, widget);
+    timeResolutionSlider->setRange(0, 99);
+    layout->addRow(new QLabel(tr("Time resolution:")), timeResolutionSlider);
+
+    betaSlider = new QSlider(Qt::Horizontal, widget);
+    betaSlider->setRange(0, 15);
+    layout->addRow(new QLabel(tr("Beta:")), betaSlider);
+
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
     powerMaxSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
