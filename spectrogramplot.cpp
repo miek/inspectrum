@@ -26,7 +26,7 @@
 #include <QPixmapCache>
 #include <QRect>
 #include <liquid/liquid.h>
-
+#include <functional>
 #include <cstdlib>
 #include "util.h"
 
