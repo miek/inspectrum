@@ -10,9 +10,14 @@ if (FFTW_INCLUDES)
   set (FFTW_FIND_QUIETLY TRUE)
 endif (FFTW_INCLUDES)
 
-find_path (FFTW_INCLUDES fftw3.h)
+find_package(PkgConfig)
+pkg_check_modules(PC_FFTW QUIET fftw3f)
 
-find_library (FFTW_LIBRARIES NAMES fftw3)
+find_path (FFTW_INCLUDES fftw3.h
+    HINTS ${PC_FFTW_INCLUDEDIR}  ${PC_FFTW_INCLUDE_DIRS})
+
+find_library (FFTW_LIBRARIES NAMES fftw3f
+    HINTS ${PC_FFTW_LIBDIR} ${PC_FFTW_LIBRARY_DIRS})
 
 # handle the QUIETLY and REQUIRED arguments and set FFTW_FOUND to TRUE if
 # all listed variables are TRUE

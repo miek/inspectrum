@@ -9,6 +9,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 # For OSX - don't clear RPATH on install
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+#locate mman.h include directory
+find_path(MMAN_INCLUDE_DIR sys/mman.h)
+
 if (WIN32)
     find_library (MMAN mman)
     if(NOT(MMAN))
@@ -17,6 +20,12 @@ if (WIN32)
     set (extraLibs  ${extraLibs} ${MMAN})
     endif(NOT(MMAN))
 ENDIF (WIN32)
+
+#force std::complex<> typedefs in liquiddsp
+add_definitions(-D_LIBCPP_COMPLEX)
+
+#enable math definitions in math.h
+add_definitions(-D_USE_MATH_DEFINES)
 
 if (NOT CMAKE_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "-O2")
@@ -51,22 +60,16 @@ list(APPEND inspectrum_sources
     util.cpp
 )
 
-INCLUDE(FindPkgConfig)
-
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Concurrent REQUIRED)
-pkg_check_modules(FFTW REQUIRED fftw3f)
+find_package(FFTW REQUIRED)
 find_package(Liquid REQUIRED)
 
 include_directories(
+    ${MMAN_INCLUDE_DIR}
     ${QT_INCLUDES}
-    ${FFTW_INCLUDEDIR}
-    ${FFTW_INCLUDE_DIRS}
+    ${FFTW_INCLUDES}
     ${LIQUID_INCLUDES}
-)
-
-link_directories(
-    ${FFTW_LIBRARY_DIRS}
 )
 
 add_executable(inspectrum ${inspectrum_sources})
