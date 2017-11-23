@@ -9,9 +9,6 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 # For OSX - don't clear RPATH on install
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-#locate mman.h include directory
-find_path(MMAN_INCLUDE_DIR sys/mman.h)
-
 if (WIN32)
     find_library (MMAN mman)
     if(NOT(MMAN))
@@ -21,11 +18,16 @@ if (WIN32)
     endif(NOT(MMAN))
 ENDIF (WIN32)
 
-#force std::complex<> typedefs in liquiddsp
-add_definitions(-D_LIBCPP_COMPLEX)
+if (MSVC)
+    find_path(MMAN_INCLUDE_DIR sys/mman.h)
 
-#enable math definitions in math.h
-add_definitions(-D_USE_MATH_DEFINES)
+    #force std::complex<> typedefs in liquiddsp
+    add_definitions(-D_LIBCPP_COMPLEX)
+
+    #enable math definitions in math.h
+    add_definitions(-D_USE_MATH_DEFINES)
+
+endif (MSVC)
 
 if (NOT CMAKE_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "-O2")
