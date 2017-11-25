@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QMessageBox>
 #include <QtWidgets>
 #include <QPixmapCache>
 #include <QRubberBand>
@@ -84,7 +85,15 @@ void MainWindow::openFile(QString fileName)
         }
     }
 
-    input->openFile(fileName.toUtf8().constData());
+    try
+    {
+        input->openFile(fileName.toUtf8().constData());
+    }
+    catch (const std::exception &ex)
+    {
+        QMessageBox msgBox(QMessageBox::Critical, "Inspectrum openFile error", QString("%1: %2").arg(fileName).arg(ex.what()));
+        msgBox.exec();
+    }
 }
 
 void MainWindow::setSampleRate(QString rate)
