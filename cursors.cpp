@@ -92,7 +92,7 @@ bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent event)
     return false;
 }
 
-void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     painter.save();
 

@@ -25,5 +25,5 @@ class PhaseDemod : public SampleBuffer<std::complex<float>, float>
 {
 public:
     PhaseDemod(std::shared_ptr<SampleSource<std::complex<float>>> src);
-    void work(void *input, void *output, int count, off_t sampleid) override;
+    void work(void *input, void *output, int count, size_t sampleid) override;
 };

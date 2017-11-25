@@ -35,12 +35,12 @@ public:
     SampleBuffer(std::shared_ptr<SampleSource<Tin>> src);
     ~SampleBuffer();
     void invalidateEvent();
-    virtual std::unique_ptr<Tout[]> getSamples(off_t start, off_t length);
-    virtual void work(void *input, void *output, int count, off_t sampleid) = 0;
-    virtual off_t count() {
+    virtual std::unique_ptr<Tout[]> getSamples(size_t start, size_t length);
+    virtual void work(void *input, void *output, int count, size_t sampleid) = 0;
+    virtual size_t count() {
         return src->count();
     };
-    off_t rate() {
+    size_t rate() {
         return src->rate();
     };
 

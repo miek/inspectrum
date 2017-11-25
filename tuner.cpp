@@ -75,7 +75,7 @@ bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent event)
     return false;
 }
 
-void Tuner::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void Tuner::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     painter.save();
 

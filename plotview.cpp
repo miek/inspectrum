@@ -150,7 +150,7 @@ void PlotView::cursorsMoved()
 
 void PlotView::emitTimeSelection()
 {
-    off_t sampleCount = selectedSamples.length();
+    size_t sampleCount = selectedSamples.length();
     float selectionTime = sampleCount / (float)mainSampleSource->rate();
     emit timeSelectionChanged(selectionTime);
 }
@@ -306,7 +306,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
     if (dialog.exec()) {
         QStringList fileNames = dialog.selectedFiles();
        
-        off_t start, end;
+        size_t start, end;
         if (cursorSelection.isChecked()) {
             start = selectedSamples.minimum;
             end = start + selectedSamples.length();
@@ -320,12 +320,12 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 
         std::ofstream os (fileNames[0].toStdString(), std::ios::binary);
 
-        off_t index;
+        size_t index;
         // viewRange.length() is used as some less arbitrary step value
-        off_t step = viewRange.length();
+        size_t step = viewRange.length();
 
         for (index = start; index < end; index += step) {
-            off_t length = std::min(step, end - index); 
+            size_t length = std::min(step, end - index); 
             auto samples = sampleSrc->getSamples(index, length);
             if (samples != nullptr) {
                 for (auto i = 0; i < length; i += decimation.value()) {
@@ -428,7 +428,7 @@ void PlotView::paintEvent(QPaintEvent *event)
 #undef PLOT_LAYER
 }
 
-void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     float startTime = (float)sampleRange.minimum / sampleRate;
     float stopTime = (float)sampleRange.maximum / sampleRate;
@@ -454,7 +454,7 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sam
 
     while (tick <= stopTime) {
 
-        off_t tickSample = tick * sampleRate;
+        size_t tickSample = tick * sampleRate;
         int tickLine = sampleToColumn(tickSample - sampleRange.minimum);
 
         char buf[128];
@@ -471,7 +471,7 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sam
     tick = firstTick;
     while (tick <= stopTime) {
 
-        off_t tickSample = tick * sampleRate;
+        size_t tickSample = tick * sampleRate;
         int tickLine = sampleToColumn(tickSample - sampleRange.minimum);
 
         painter.drawLine(tickLine, 0, tickLine, 10);
@@ -495,7 +495,7 @@ void PlotView::resizeEvent(QResizeEvent * event)
     updateView();
 }
 
-off_t PlotView::samplesPerColumn()
+size_t PlotView::samplesPerColumn()
 {
     return fftSize / zoomLevel;
 }
@@ -538,7 +538,7 @@ void PlotView::updateView(bool reCenter)
     viewport()->update();
 }
 
-void PlotView::setSampleRate(off_t rate)
+void PlotView::setSampleRate(size_t rate)
 {
     sampleRate = rate;
 
@@ -558,12 +558,12 @@ void PlotView::enableScales(bool enabled)
     viewport()->update();
 }
 
-int PlotView::sampleToColumn(off_t sample)
+int PlotView::sampleToColumn(size_t sample)
 {
     return sample / samplesPerColumn();
 }
 
-off_t PlotView::columnToSample(int col)
+size_t PlotView::columnToSample(int col)
 {
     return col * samplesPerColumn();
 }

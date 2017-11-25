@@ -35,9 +35,9 @@ public:
     void invalidateEvent() override;
     virtual bool mouseEvent(QEvent::Type type, QMouseEvent event);
     virtual std::shared_ptr<AbstractSampleSource> output();
-    virtual void paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
-    virtual void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
-    virtual void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    virtual void paintBack(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
+    virtual void paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
+    virtual void paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
     int height() const { return _height; };
 
 signals:

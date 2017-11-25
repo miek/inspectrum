@@ -35,7 +35,7 @@ class PlotView : public QGraphicsView, Subscriber
 
 public:
     PlotView(InputSource *input);
-    void setSampleRate(off_t rate);
+    void setSampleRate(size_t rate);
 
 signals:
     void timeSelectionChanged(float time);
@@ -65,17 +65,17 @@ private:
     SampleSource<std::complex<float>> *mainSampleSource = nullptr;
     SpectrogramPlot *spectrogramPlot = nullptr;
     std::vector<std::unique_ptr<Plot>> plots;
-    range_t<off_t> viewRange;
-    range_t<off_t> selectedSamples;
+    range_t<size_t> viewRange;
+    range_t<size_t> selectedSamples;
     int zoomPos;
-    off_t zoomSample;
+    size_t zoomSample;
 
     int fftSize = 1024;
     int zoomLevel = 0;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
-    off_t sampleRate = 0;
+    size_t sampleRate = 0;
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;
 
@@ -85,11 +85,11 @@ private:
     void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     template<typename SOURCETYPE> void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
-    off_t samplesPerColumn();
+    size_t samplesPerColumn();
     void updateViewRange(bool reCenter);
     void updateView(bool reCenter = false);
-    void paintTimeScale(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    void paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
 
-    int sampleToColumn(off_t sample);
-    off_t columnToSample(int col);
+    int sampleToColumn(size_t sample);
+    size_t columnToSample(int col);
 };

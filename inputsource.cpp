@@ -35,7 +35,7 @@ public:
         return sizeof(std::complex<float>);
     }
 
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<float>*>(src);
         std::copy(&s[start], &s[start + length], dest);
     }
@@ -47,7 +47,7 @@ public:
         return sizeof(std::complex<int16_t>);
     }
 
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<int16_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<int16_t>& v) -> std::complex<float> {
@@ -64,7 +64,7 @@ public:
         return sizeof(std::complex<int8_t>);
     }
     
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<int8_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<int8_t>& v) -> std::complex<float> {
@@ -81,7 +81,7 @@ public:
         return sizeof(std::complex<uint8_t>);
     }
     
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<uint8_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<uint8_t>& v) -> std::complex<float> {
@@ -154,18 +154,18 @@ void InputSource::openFile(const char *filename)
     invalidate();
 }
 
-void InputSource::setSampleRate(off_t rate)
+void InputSource::setSampleRate(size_t rate)
 {
     sampleRate = rate;
     invalidate();
 }
 
-off_t InputSource::rate()
+size_t InputSource::rate()
 {
     return sampleRate;
 }
 
-std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_t length)
+std::unique_ptr<std::complex<float>[]> InputSource::getSamples(size_t start, size_t length)
 {
     if (inputFile == nullptr)
         return nullptr;

@@ -27,12 +27,12 @@ TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : Plot(source
     connect(this, &TracePlot::imageReady, this, &TracePlot::handleImage);
 }
 
-void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     int samplesPerColumn = sampleRange.length() / rect.width();
     int samplesPerTile = tileWidth * samplesPerColumn;
-    off_t tileID = sampleRange.minimum / samplesPerTile;
-    off_t tileOffset = sampleRange.minimum % samplesPerTile; // Number of samples to skip from first image tile
+    size_t tileID = sampleRange.minimum / samplesPerTile;
+    size_t tileOffset = sampleRange.minimum % samplesPerTile; // Number of samples to skip from first image tile
     int xOffset = tileOffset / samplesPerColumn; // Number of columns to skip from first image tile
 
     // Paint first (possibly partial) tile
@@ -51,7 +51,7 @@ void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRa
     }
 }
 
-QPixmap TracePlot::getTile(off_t tileID, off_t sampleCount)
+QPixmap TracePlot::getTile(size_t tileID, size_t sampleCount)
 {
     QPixmap pixmap(tileWidth, height());
     QString key;
@@ -60,7 +60,7 @@ QPixmap TracePlot::getTile(off_t tileID, off_t sampleCount)
         return pixmap;
 
     if (!tasks.contains(key)) {
-        range_t<off_t> sampleRange{tileID * sampleCount, (tileID + 1) * sampleCount};
+        range_t<size_t> sampleRange{tileID * sampleCount, (tileID + 1) * sampleCount};
         QtConcurrent::run(this, &TracePlot::drawTile, key, QRect(0, 0, tileWidth, height()), sampleRange);
         tasks.insert(key);
     }
@@ -68,7 +68,7 @@ QPixmap TracePlot::getTile(off_t tileID, off_t sampleCount)
     return pixmap;
 }
 
-void TracePlot::drawTile(QString key, const QRect &rect, range_t<off_t> sampleRange)
+void TracePlot::drawTile(QString key, const QRect &rect, range_t<size_t> sampleRange)
 {
     QImage image(rect.size(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
@@ -113,13 +113,13 @@ void TracePlot::handleImage(QString key, QImage image)
     emit repaint();
 }
 
-void TracePlot::plotTrace(QPainter &painter, const QRect &rect, float *samples, off_t count, int step = 1)
+void TracePlot::plotTrace(QPainter &painter, const QRect &rect, float *samples, size_t count, int step = 1)
 {
     QPainterPath path;
     range_t<float> xRange{0, rect.width() - 2.f};
     range_t<float> yRange{0, rect.height() - 2.f};
     const float xStep = 1.0 / count * rect.width();
-    for (off_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         float sample = samples[i*step];
         float x = i * xStep;
         float y = (1 - sample) * (rect.height() / 2);

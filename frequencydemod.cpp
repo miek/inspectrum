@@ -26,7 +26,7 @@ FrequencyDemod::FrequencyDemod(std::shared_ptr<SampleSource<std::complex<float>>
 
 }
 
-void FrequencyDemod::work(void *input, void *output, int count, off_t sampleid)
+void FrequencyDemod::work(void *input, void *output, int count, size_t sampleid)
 {
     auto in = static_cast<std::complex<float>*>(input);
     auto out = static_cast<float*>(output);
