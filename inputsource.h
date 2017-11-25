@@ -21,6 +21,7 @@
 #pragma once
 
 #include <complex>
+#include <QFile>
 #include "samplesource.h"
 
 class SampleAdapter {
@@ -32,11 +33,10 @@ public:
 class InputSource : public SampleSource<std::complex<float>>
 {
 private:
-    FILE *inputFile = nullptr;
-    off_t fileSize = 0;
+    QFile *inputFile = nullptr;
     off_t sampleCount = 0;
     off_t sampleRate = 0;
-    void *mmapData = nullptr;
+    uchar *mmapData = nullptr;
     std::unique_ptr<SampleAdapter> sampleAdapter;
 
 public:
