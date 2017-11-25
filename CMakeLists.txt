@@ -15,6 +15,13 @@ if (MSVC)
 
     #enable math definitions in math.h
     add_definitions(-D_USE_MATH_DEFINES)
+
+    #build a graphical application without the console
+    option(BUILD_WIN32 "Build win32 app, false for console" TRUE)
+    if (BUILD_WIN32)
+        set(EXE_ARGS WIN32)
+        set(CMAKE_EXE_LINKER_FLAGS "/entry:mainCRTStartup ${CMAKE_EXE_LINKER_FLAGS}")
+    endif (BUILD_WIN32)
 endif (MSVC)
 
 if (NOT CMAKE_CXX_FLAGS)
@@ -61,7 +68,7 @@ include_directories(
     ${LIQUID_INCLUDES}
 )
 
-add_executable(inspectrum ${inspectrum_sources})
+add_executable(inspectrum ${EXE_ARGS} ${inspectrum_sources})
 qt5_use_modules(inspectrum Widgets Concurrent)
 
 target_link_libraries(inspectrum
