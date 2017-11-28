@@ -35,7 +35,7 @@ public:
     int centre();
     int deviation();
     bool mouseEvent(QEvent::Type, QMouseEvent event);
-    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange);
+    void paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
     void setCentre(int centre);
     void setDeviation(int dev);
     void setHeight(int height);

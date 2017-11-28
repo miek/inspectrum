@@ -34,10 +34,10 @@ SampleBuffer<Tin, Tout>::~SampleBuffer()
 }
 
 template <typename Tin, typename Tout>
-std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(off_t start, off_t length)
+std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(size_t start, size_t length)
 {
     // TODO: base this on the actual history required
-    auto history = std::min(start, (off_t)256);
+    auto history = std::min(start, (size_t)256);
     auto samples = src->getSamples(start - history, length + history);
     if (samples == nullptr)
     	return nullptr;

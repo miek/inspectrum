@@ -20,12 +20,9 @@
 
 #include "inputsource.h"
 
-#include <errno.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 
 #include <stdexcept>
 #include <algorithm>
@@ -38,7 +35,7 @@ public:
         return sizeof(std::complex<float>);
     }
 
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<float>*>(src);
         std::copy(&s[start], &s[start + length], dest);
     }
@@ -50,7 +47,7 @@ public:
         return sizeof(std::complex<int16_t>);
     }
 
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<int16_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<int16_t>& v) -> std::complex<float> {
@@ -67,7 +64,7 @@ public:
         return sizeof(std::complex<int8_t>);
     }
     
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<int8_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<int8_t>& v) -> std::complex<float> {
@@ -84,7 +81,7 @@ public:
         return sizeof(std::complex<uint8_t>);
     }
     
-    void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) override {
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<uint8_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<uint8_t>& v) -> std::complex<float> {
@@ -107,13 +104,12 @@ InputSource::~InputSource()
 void InputSource::cleanup()
 {
     if (mmapData != nullptr) {
-        munmap(mmapData, fileSize);
+        inputFile->unmap(mmapData);
         mmapData = nullptr;
-        fileSize = 0;
     }
 
     if (inputFile != nullptr) {
-        fclose(inputFile);
+        delete inputFile;
         inputFile = nullptr;
     }
 }
@@ -138,45 +134,38 @@ void InputSource::openFile(const char *filename)
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
 
-    errno = 0;
-    FILE *file = fopen(filename, "rb");
-    if (file == nullptr) {
-        std::stringstream ss;
-        ss << "Error opening file: " << strerror(errno) << " (" << errno << ")";
-        throw std::runtime_error(ss.str());
+    std::unique_ptr<QFile> file(new QFile(filename));
+    if (!file->open(QFile::ReadOnly)) {
+        throw std::runtime_error(file->errorString().toStdString());
     }
 
-    struct stat sb;
-    if (fstat(fileno(file), &sb) != 0)
-        throw std::runtime_error("Error fstating file");
-    off_t size = sb.st_size;
+    auto size = file->size();
     sampleCount = size / sampleAdapter->sampleSize();
 
-    auto data = mmap(NULL, size, PROT_READ, MAP_SHARED, fileno(file), 0);
+    auto data = file->map(0, size);
     if (data == nullptr)
         throw std::runtime_error("Error mmapping file");
 
     cleanup();
 
-    inputFile = file;
-    fileSize = size;
+    inputFile = file.release();
     mmapData = data;
 
     invalidate();
 }
 
-void InputSource::setSampleRate(off_t rate)
+void InputSource::setSampleRate(size_t rate)
 {
     sampleRate = rate;
     invalidate();
 }
 
-off_t InputSource::rate()
+size_t InputSource::rate()
 {
     return sampleRate;
 }
 
-std::unique_ptr<std::complex<float>[]> InputSource::getSamples(off_t start, off_t length)
+std::unique_ptr<std::complex<float>[]> InputSource::getSamples(size_t start, size_t length)
 {
     if (inputFile == nullptr)
         return nullptr;

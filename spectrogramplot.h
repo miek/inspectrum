@@ -41,11 +41,11 @@ public:
     SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src);
     void invalidateEvent() override;
     std::shared_ptr<AbstractSampleSource> output() override;
-    void paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
-    void paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange) override;
+    void paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange) override;
+    void paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange) override;
     bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
     std::shared_ptr<SampleSource<std::complex<float>>> input() { return inputSource; };
-    void setSampleRate(off_t sampleRate);
+    void setSampleRate(size_t sampleRate);
     bool tunerEnabled();
     void enableScales(bool enabled);
 
@@ -71,15 +71,15 @@ private:
     int zoomLevel;
     float powerMax;
     float powerMin;
-    off_t sampleRate;
+    size_t sampleRate;
     bool frequencyScaleEnabled;
 
     Tuner tuner;
     std::shared_ptr<TunerTransform> tunerTransform;
 
-    QPixmap* getPixmapTile(off_t tile);
-    float* getFFTTile(off_t tile);
-    void getLine(float *dest, off_t sample);
+    QPixmap* getPixmapTile(size_t tile);
+    float* getFFTTile(size_t tile);
+    void getLine(float *dest, size_t sample);
     int getStride();
     float getTunerPhaseInc();
     std::vector<float> getTunerTaps();
@@ -91,7 +91,7 @@ class TileCacheKey
 {
 
 public:
-    TileCacheKey(int fftSize, int zoomLevel, off_t sample) {
+    TileCacheKey(int fftSize, int zoomLevel, size_t sample) {
         this->fftSize = fftSize;
         this->zoomLevel = zoomLevel;
         this->sample = sample;
@@ -105,5 +105,5 @@ public:
 
     int fftSize;
     int zoomLevel;
-    off_t sample;
+    size_t sample;
 };

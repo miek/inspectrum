@@ -21,22 +21,22 @@
 #pragma once
 
 #include <complex>
+#include <QFile>
 #include "samplesource.h"
 
 class SampleAdapter {
 public:
     virtual size_t sampleSize() = 0;
-    virtual void copyRange(const void* const src, off_t start, off_t length, std::complex<float>* const dest) = 0;
+    virtual void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) = 0;
 };
 
 class InputSource : public SampleSource<std::complex<float>>
 {
 private:
-    FILE *inputFile = nullptr;
-    off_t fileSize = 0;
-    off_t sampleCount = 0;
-    off_t sampleRate = 0;
-    void *mmapData = nullptr;
+    QFile *inputFile = nullptr;
+    size_t sampleCount = 0;
+    size_t sampleRate = 0;
+    uchar *mmapData = nullptr;
     std::unique_ptr<SampleAdapter> sampleAdapter;
 
 public:
@@ -44,12 +44,12 @@ public:
     ~InputSource();
     void cleanup();
     void openFile(const char *filename);
-    std::unique_ptr<std::complex<float>[]> getSamples(off_t start, off_t length);
-    off_t count() {
+    std::unique_ptr<std::complex<float>[]> getSamples(size_t start, size_t length);
+    size_t count() {
         return sampleCount;
     };
-    void setSampleRate(off_t rate);
-    off_t rate();
+    void setSampleRate(size_t rate);
+    size_t rate();
     float relativeBandwidth() {
         return 1;
     }

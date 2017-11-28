@@ -25,5 +25,5 @@ class Threshold : public SampleBuffer<float, float>
 {
 public:
     Threshold(std::shared_ptr<SampleSource<float>> src);
-    void work(void *input, void *output, int count, off_t sampleid) override;
+    void work(void *input, void *output, int count, size_t sampleid) override;
 };

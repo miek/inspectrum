@@ -30,10 +30,10 @@ class SampleSource : public AbstractSampleSource
 public:
     virtual ~SampleSource() {};
 
-    virtual std::unique_ptr<T[]> getSamples(off_t start, off_t length) = 0;
+    virtual std::unique_ptr<T[]> getSamples(size_t start, size_t length) = 0;
     virtual void invalidateEvent() { };
-    virtual off_t count() = 0;
-    virtual off_t rate() = 0;
+    virtual size_t count() = 0;
+    virtual size_t rate() = 0;
     virtual float relativeBandwidth() = 0;
     std::type_index sampleType() override;
 };

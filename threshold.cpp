@@ -24,7 +24,7 @@ Threshold::Threshold(std::shared_ptr<SampleSource<float>> src) : SampleBuffer(sr
 
 }
 
-void Threshold::work(void *input, void *output, int count, off_t sampleid)
+void Threshold::work(void *input, void *output, int count, size_t sampleid)
 {
     auto in = static_cast<float*>(input);
     auto out = static_cast<float*>(output);

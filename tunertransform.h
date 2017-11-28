@@ -31,7 +31,7 @@ private:
 
 public:
     TunerTransform(std::shared_ptr<SampleSource<std::complex<float>>> src);
-    void work(void *input, void *output, int count, off_t sampleid) override;
+    void work(void *input, void *output, int count, size_t sampleid) override;
     void setFrequency(float frequency);
     void setTaps(std::vector<float> taps);
     void setRelativeBandwith(float bandwidth);

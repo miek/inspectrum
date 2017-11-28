@@ -44,7 +44,7 @@ std::shared_ptr<AbstractSampleSource> Plot::output()
 	return sampleSource;
 }
 
-void Plot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void Plot::paintBack(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     painter.save();
     QPen pen(Qt::white, 1, Qt::DashLine);
@@ -53,12 +53,12 @@ void Plot::paintBack(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
     painter.restore();
 }
 
-void Plot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void Plot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
 
 }
 
-void Plot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void Plot::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
 
 }

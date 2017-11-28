@@ -56,7 +56,7 @@ void SpectrogramPlot::invalidateEvent()
     emit repaint();
 }
 
-void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     if (tunerEnabled())
         tuner.paintFront(painter, rect, sampleRange);
@@ -137,13 +137,13 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
     painter.restore();
 }
 
-void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sampleRange)
+void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     if (!inputSource || inputSource->count() == 0)
         return;
 
-    off_t sampleOffset = sampleRange.minimum % (getStride() * linesPerTile());
-    off_t tileID = sampleRange.minimum - sampleOffset;
+    size_t sampleOffset = sampleRange.minimum % (getStride() * linesPerTile());
+    size_t tileID = sampleRange.minimum - sampleOffset;
     int xoffset = sampleOffset / getStride();
 
     // Paint first (possibly partial) tile
@@ -159,7 +159,7 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<off_t> sa
     }
 }
 
-QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
+QPixmap* SpectrogramPlot::getPixmapTile(size_t tile)
 {
     QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));
     if (obj != 0)
@@ -184,7 +184,7 @@ QPixmap* SpectrogramPlot::getPixmapTile(off_t tile)
     return obj;
 }
 
-float* SpectrogramPlot::getFFTTile(off_t tile)
+float* SpectrogramPlot::getFFTTile(size_t tile)
 {
     std::array<float, tileSize>* obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
     if (obj != nullptr)
@@ -192,7 +192,7 @@ float* SpectrogramPlot::getFFTTile(off_t tile)
 
     std::array<float, tileSize>* destStorage = new std::array<float, tileSize>;
     float *ptr = destStorage->data();
-    off_t sample = tile;
+    size_t sample = tile;
     while ((ptr - destStorage->data()) < tileSize) {
         getLine(ptr, sample);
         sample += getStride();
@@ -202,7 +202,7 @@ float* SpectrogramPlot::getFFTTile(off_t tile)
     return destStorage->data();
 }
 
-void SpectrogramPlot::getLine(float *dest, off_t sample)
+void SpectrogramPlot::getLine(float *dest, size_t sample)
 {
     if (inputSource && fft) {
         auto buffer = inputSource->getSamples(sample, fftSize);
@@ -312,7 +312,7 @@ void SpectrogramPlot::setZoomLevel(int zoom)
     zoomLevel = zoom;
 }
 
-void SpectrogramPlot::setSampleRate(off_t rate)
+void SpectrogramPlot::setSampleRate(size_t rate)
 {
     sampleRate = rate;
 }
