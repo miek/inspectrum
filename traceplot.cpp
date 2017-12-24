@@ -29,6 +29,8 @@ TracePlot::TracePlot(std::shared_ptr<AbstractSampleSource> source) : Plot(source
 
 void TracePlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
+    if (sampleRange.length() == 0) return;
+
     int samplesPerColumn = sampleRange.length() / rect.width();
     int samplesPerTile = tileWidth * samplesPerColumn;
     size_t tileID = sampleRange.minimum / samplesPerTile;
