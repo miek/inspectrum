@@ -1,4 +1,4 @@
-language: c
+language: cpp
 
 cache: apt
 
@@ -33,6 +33,12 @@ before_install:
   # cmake and pkg-config are already installed, liquid-dsp is handled by before_script.
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew cask uninstall oclint; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5 fftw; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:beineri/opt-qt594-trusty -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -y install qt59base qt59declarative; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then source /opt/qt*/bin/qt*-env.sh; fi
 
 before_script:
   - pushd /tmp
@@ -40,9 +46,9 @@ before_script:
   - git clone https://github.com/jgaeddert/liquid-dsp.git
   - cd liquid-dsp
   - ./bootstrap.sh
-  - ./configure --prefix=/tmp/liquid-install/
-  - make
-  - make install
+  - ./configure --prefix=/usr
+  - make -j$(nproc)
+  - make install DESTDIR=/tmp/liquid-install
   - popd
 
 script:
@@ -50,5 +56,24 @@ script:
   - cd build
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then DYLIB_SUFFIX=dylib; else DYLIB_SUFFIX=so; fi
-  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-install/lib/libliquid.$DYLIB_SUFFIX -DLIQUID_INCLUDES=/tmp/liquid-install/include/ ..
-  - make
+  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-install/usr/lib/libliquid.$DYLIB_SUFFIX -DLIQUID_INCLUDES=/tmp/liquid-install/usr/include/ .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr
+  - make -j$(nproc)
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then exit 0; fi
+  - make DESTDIR=appdir install ; find appdir/
+  - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+  - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+  - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
+  - export VERSION=$(git rev-parse --short HEAD) # linuxdeployqt uses this for naming the file
+  - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/*.desktop -bundle-non-qt-libs
+  - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/*.desktop -appimage
+
+after_success:
+  - find appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
+  - # curl --upload-file inspectrum*.AppImage https://transfer.sh/inspectrum-git.$(git rev-parse --short HEAD)-x86_64.AppImage
+  - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
+  - bash upload.sh inspectrum*.AppImage*
+  
+branches:
+  except:
+    - # Do not build tags that we create when we upload to GitHub Releases
+    - /^(?i:continuous)/
