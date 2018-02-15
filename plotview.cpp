@@ -295,6 +295,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 
     QGroupBox groupBox2("Decimation");
     QSpinBox decimation(&groupBox2);
+    decimation.setMinimum(1);
     decimation.setValue(1 / sampleSrc->relativeBandwidth());
 
     QVBoxLayout vbox2;
