@@ -211,7 +211,7 @@ void SpectrogramControls::timeSelectionChanged(float time)
 
         int symbols = cursorSymbolsSpinBox->value();
         symbolPeriodLabel->setText(QString::fromStdString(formatSIValue(time / symbols)) + "s");
-        symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Hz");
+        symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Bd");
     }
 }
 
