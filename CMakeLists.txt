@@ -89,3 +89,6 @@ configure_file(
 add_custom_target(uninstall
     ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
+
+install(FILES ${PROJECT_SOURCE_DIR}/resources/inspectrum.png DESTINATION share/icons/hicolor/256x256/apps/)
+install(FILES ${PROJECT_SOURCE_DIR}/resources/inspectrum.desktop DESTINATION share/applications/)

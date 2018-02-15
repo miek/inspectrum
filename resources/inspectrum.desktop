@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=inspectrum
+Type=Application
+Icon=inspectrum
+Exec=inspectrum %f
+TryExec=inspectrum %f
