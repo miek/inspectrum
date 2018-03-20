@@ -81,7 +81,7 @@ private:
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
-    void extractSymbols(std::shared_ptr<AbstractSampleSource> src);
+    void extractSymbols(std::shared_ptr<AbstractSampleSource> src, bool toClipboard);
     void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     template<typename SOURCETYPE> void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
