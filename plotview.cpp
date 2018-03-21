@@ -31,6 +31,7 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QSpinBox>
+#include <QClipboard>
 #include "plots.h"
 
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
@@ -95,16 +96,29 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
         plotsMenu->addAction(action);
     }
 
-    // Add action to extract symbols from selected plot
-    auto extract = new QAction("Extract symbols (to stdout)...", &menu);
+    // Add submenu for extracting symbols
+    QMenu *extractMenu = menu.addMenu("Extract symbols");
+    // Add action to extract symbols from selected plot to stdout
+    auto extract = new QAction("To stdout", extractMenu);
     connect(
         extract, &QAction::triggered,
         this, [=]() {
-            extractSymbols(src);
+            extractSymbols(src, false);
         }
     );
     extract->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
-    menu.addAction(extract);
+    extractMenu->addAction(extract);
+
+    // Add action to extract symbols from selected plot to clipboard
+    auto extractClipboard = new QAction("Copy to clipboard", extractMenu);
+    connect(
+        extractClipboard, &QAction::triggered,
+        this, [=]() {
+            extractSymbols(src, true);
+        }
+    );
+    extractClipboard->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
+    extractMenu->addAction(extractClipboard);
 
     // Add action to export the selected samples into a file
     auto save = new QAction("Export samples to file...", &menu);
@@ -227,7 +241,8 @@ bool PlotView::viewportEvent(QEvent *event) {
     return QGraphicsView::viewportEvent(event);
 }
 
-void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
+void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src,
+                              bool toClipboard)
 {
     if (!cursorsEnabled)
         return;
@@ -241,9 +256,18 @@ void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src)
     {
         symbols.push_back(samples[i]);
     }
-    for (auto f : symbols)
-        std::cout << f << ", ";
-    std::cout << std::endl << std::flush;
+    if (!toClipboard) {
+        for (auto f : symbols)
+            std::cout << f << ", ";
+        std::cout << std::endl << std::flush;
+    } else {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        QString symbolText;
+        QTextStream symbolStream(&symbolText);
+        for (auto f : symbols)
+            symbolStream << f << ", ";
+        clipboard->setText(symbolText);
+    }
 }
 
 void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
