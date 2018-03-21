@@ -256,19 +256,17 @@ void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src,
     {
         symbols.push_back(samples[i]);
     }
-    if(!toClipboard) {
+    if (!toClipboard) {
         for (auto f : symbols)
             std::cout << f << ", ";
         std::cout << std::endl << std::flush;
     } else {
         QClipboard *clipboard = QGuiApplication::clipboard();
         QString symbolText;
-        std::stringstream symbolStream;
+        QTextStream symbolStream(&symbolText);
         for (auto f : symbols)
             symbolStream << f << ", ";
-        symbolText = symbolStream.str().data();
         clipboard->setText(symbolText);
-        symbolStream.str("");
     }
 }
 
