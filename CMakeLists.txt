@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 project(inspectrum CXX)
 enable_testing()
 
@@ -63,16 +63,14 @@ find_package(FFTW REQUIRED)
 find_package(Liquid REQUIRED)
 
 include_directories(
-    ${QT_INCLUDES}
     ${FFTW_INCLUDES}
     ${LIQUID_INCLUDES}
 )
 
 add_executable(inspectrum ${EXE_ARGS} ${inspectrum_sources})
-qt5_use_modules(inspectrum Widgets Concurrent)
 
 target_link_libraries(inspectrum
-    ${QT_LIBRARIES}
+    Qt5::Core Qt5::Widgets Qt5::Concurrent
     ${FFTW_LIBRARIES}
     ${LIQUID_LIBRARIES}
 )
