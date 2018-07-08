@@ -35,5 +35,5 @@ public:
     void setFrequency(float frequency);
     void setTaps(std::vector<float> taps);
     void setRelativeBandwith(float bandwidth);
-    float relativeBandwidth();
+    float relativeBandwidth() override;
 };

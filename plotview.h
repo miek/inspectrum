@@ -46,7 +46,7 @@ public slots:
     void cursorsMoved();
     void enableCursors(bool enabled);
     void enableScales(bool enabled);
-    void invalidateEvent();
+    void invalidateEvent() override;
     void repaint();
     void setCursorSegments(int segments);
     void setFFTAndZoom(int fftSize, int zoomLevel);
@@ -55,9 +55,9 @@ public slots:
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event) override;
-    void paintEvent(QPaintEvent *event);
-    void resizeEvent(QResizeEvent * event);
-    void scrollContentsBy(int dx, int dy);
+    void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent * event) override;
+    void scrollContentsBy(int dx, int dy) override;
     bool viewportEvent(QEvent *event) override;
 
 private:
