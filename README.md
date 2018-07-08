@@ -6,7 +6,7 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 ## Try it
 ### Prerequisites
 
- * cmake
+ * cmake >= 2.8.11
  * fftw 3.x
  * [liquid-dsp](https://github.com/jgaeddert/liquid-dsp) >= v1.3.0
  * pkg-config
