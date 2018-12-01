@@ -42,19 +42,19 @@ MainWindow::MainWindow()
     setCentralWidget(plots);
 
     // Connect dock inputs
-    connect(dock, SIGNAL(openFile(QString)), this, SLOT(openFile(QString)));
-    connect(dock->sampleRate, SIGNAL(textChanged(QString)), this, SLOT(setSampleRate(QString)));
-    connect(dock, SIGNAL(fftOrZoomChanged(int, int)), plots, SLOT(setFFTAndZoom(int, int)));
-    connect(dock->powerMaxSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMax(int)));
-    connect(dock->powerMinSlider, SIGNAL(valueChanged(int)), plots, SLOT(setPowerMin(int)));
+    connect(dock, &SpectrogramControls::openFile, this, &MainWindow::openFile);
+    connect(dock->sampleRate, static_cast<void (QLineEdit::*)(const QString&)>(&QLineEdit::textChanged), this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setSampleRate));
+    connect(dock, static_cast<void (SpectrogramControls::*)(int, int)>(&SpectrogramControls::fftOrZoomChanged), plots, &PlotView::setFFTAndZoom);
+    connect(dock->powerMaxSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMax);
+    connect(dock->powerMinSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMin);
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
 
     // Connect dock outputs
-    connect(plots, SIGNAL(timeSelectionChanged(float)), dock, SLOT(timeSelectionChanged(float)));
-    connect(plots, SIGNAL(zoomIn()), dock, SLOT(zoomIn()));
-    connect(plots, SIGNAL(zoomOut()), dock, SLOT(zoomOut()));
+    connect(plots, &PlotView::timeSelectionChanged, dock, &SpectrogramControls::timeSelectionChanged);
+    connect(plots, &PlotView::zoomIn, dock, &SpectrogramControls::zoomIn);
+    connect(plots, &PlotView::zoomOut, dock, &SpectrogramControls::zoomOut);
 
     // Set defaults after making connections so everything is in sync
     dock->setDefaults();

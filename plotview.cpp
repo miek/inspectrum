@@ -41,7 +41,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setMouseTracking(true);
     enableCursors(false);
-    connect(&cursors, SIGNAL(cursorsMoved()), this, SLOT(cursorsMoved()));
+    connect(&cursors, &Cursors::cursorsMoved, this, &PlotView::cursorsMoved);
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
     auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output());

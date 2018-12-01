@@ -94,12 +94,12 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     widget->setLayout(layout);
     setWidget(widget);
 
-    connect(fftSizeSlider, SIGNAL(valueChanged(int)), this, SLOT(fftSizeChanged(int)));
-    connect(zoomLevelSlider, SIGNAL(valueChanged(int)), this, SLOT(zoomLevelChanged(int)));
-    connect(fileOpenButton, SIGNAL(clicked()), this, SLOT(fileOpenButtonClicked()));
-    connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
-    connect(powerMinSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMinChanged(int)));
-    connect(powerMaxSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMaxChanged(int)));
+    connect(fftSizeSlider, &QSlider::valueChanged, this, &SpectrogramControls::fftSizeChanged);
+    connect(zoomLevelSlider, &QSlider::valueChanged, this, &SpectrogramControls::zoomLevelChanged);
+    connect(fileOpenButton, &QPushButton::clicked, this, &SpectrogramControls::fileOpenButtonClicked);
+    connect(cursorsCheckBox, &QCheckBox::stateChanged, this, &SpectrogramControls::cursorsStateChanged);
+    connect(powerMinSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMinChanged);
+    connect(powerMaxSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMaxChanged);
 }
 
 void SpectrogramControls::clearCursorLabels()
