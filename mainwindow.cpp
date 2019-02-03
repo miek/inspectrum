@@ -111,3 +111,8 @@ void MainWindow::setSampleRate(int rate)
 {
     dock->sampleRate->setText(QString::number(rate));
 }
+
+void MainWindow::setFormat(QString fmt)
+{
+    input->setFormat(fmt.toUtf8().constData());
+}

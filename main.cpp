@@ -40,9 +40,18 @@ int main(int argc, char *argv[])
                                   QCoreApplication::translate("main", "Set sample rate."),
                                   QCoreApplication::translate("main", "Hz"));
     parser.addOption(rateOption);
+    QCommandLineOption formatOption(QStringList() << "f" << "format",
+                                  QCoreApplication::translate("main", "Set file format."),
+                                  QCoreApplication::translate("main", "fmt"));
+    parser.addOption(formatOption);
 
     // Process the actual command line
     parser.process(a);
+ 
+    // Check for file format override   
+    if(parser.isSet(formatOption)){
+        mainWin.setFormat(parser.value(formatOption));
+    }
 
     const QStringList args = parser.positionalArguments();
     if (args.size()>=1)

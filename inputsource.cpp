@@ -117,7 +117,8 @@ void InputSource::cleanup()
 void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
-    const auto suffix = fileInfo.suffix().toLower();
+    std::string suffix = std::string(fileInfo.suffix().toLower().toUtf8().constData());
+    if(_fmt!=""){ suffix = _fmt; } // allow fmt override
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
@@ -183,4 +184,8 @@ std::unique_ptr<std::complex<float>[]> InputSource::getSamples(size_t start, siz
     sampleAdapter->copyRange(mmapData, start, length, dest.get());
 
     return dest;
+}
+
+void InputSource::setFormat(std::string fmt){
+    _fmt = fmt;
 }

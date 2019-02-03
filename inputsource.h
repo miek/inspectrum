@@ -38,6 +38,7 @@ private:
     size_t sampleRate = 0;
     uchar *mmapData = nullptr;
     std::unique_ptr<SampleAdapter> sampleAdapter;
+    std::string _fmt;
 
 public:
     InputSource();
@@ -49,6 +50,7 @@ public:
         return sampleCount;
     };
     void setSampleRate(size_t rate);
+    void setFormat(std::string fmt);
     size_t rate();
     float relativeBandwidth() {
         return 1;
