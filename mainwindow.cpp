@@ -98,7 +98,7 @@ void MainWindow::openFile(QString fileName)
 
 void MainWindow::setSampleRate(QString rate)
 {
-    int sampleRate = rate.toInt();
+    auto sampleRate = rate.toDouble();
     input->setSampleRate(sampleRate);
     plots->setSampleRate(sampleRate);
 
@@ -107,7 +107,7 @@ void MainWindow::setSampleRate(QString rate)
     settings.setValue("SampleRate", sampleRate);
 }
 
-void MainWindow::setSampleRate(int rate)
+void MainWindow::setSampleRate(double rate)
 {
     dock->sampleRate->setText(QString::number(rate));
 }

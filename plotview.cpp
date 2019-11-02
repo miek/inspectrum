@@ -563,7 +563,7 @@ void PlotView::updateView(bool reCenter)
     viewport()->update();
 }
 
-void PlotView::setSampleRate(size_t rate)
+void PlotView::setSampleRate(double rate)
 {
     sampleRate = rate;
 

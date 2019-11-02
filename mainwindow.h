@@ -30,12 +30,12 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
-    void changeSampleRate(int rate);
+    void changeSampleRate(double rate);
 
 public slots:
     void openFile(QString fileName);
     void setSampleRate(QString rate);
-    void setSampleRate(int rate);
+    void setSampleRate(double rate);
     void setFormat(QString fmt);
 
 private:

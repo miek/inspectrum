@@ -155,13 +155,13 @@ void InputSource::openFile(const char *filename)
     invalidate();
 }
 
-void InputSource::setSampleRate(size_t rate)
+void InputSource::setSampleRate(double rate)
 {
     sampleRate = rate;
     invalidate();
 }
 
-size_t InputSource::rate()
+double InputSource::rate()
 {
     return sampleRate;
 }

@@ -36,7 +36,9 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(fileOpenButton);
 
     sampleRate = new QLineEdit();
-    sampleRate->setValidator(new QIntValidator(this));
+    auto double_validator = new QDoubleValidator(this);
+    double_validator->setBottom(0.0);
+    sampleRate->setValidator(double_validator);
     layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
     // Spectrogram settings

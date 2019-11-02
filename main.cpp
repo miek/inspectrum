@@ -59,8 +59,7 @@ int main(int argc, char *argv[])
 
     if (parser.isSet(rateOption)) {
         bool ok;
-        // Use toDouble just for scientific notation support
-        int rate = parser.value(rateOption).toDouble(&ok);
+        auto rate = parser.value(rateOption).toDouble(&ok);
         if(!ok) {
             fputs("ERROR: could not parse rate\n", stderr);
             return 1;

@@ -35,7 +35,7 @@ class InputSource : public SampleSource<std::complex<float>>
 private:
     QFile *inputFile = nullptr;
     size_t sampleCount = 0;
-    size_t sampleRate = 0;
+    double sampleRate = 0.0;
     uchar *mmapData = nullptr;
     std::unique_ptr<SampleAdapter> sampleAdapter;
     std::string _fmt;
@@ -49,9 +49,9 @@ public:
     size_t count() {
         return sampleCount;
     };
-    void setSampleRate(size_t rate);
+    void setSampleRate(double rate);
     void setFormat(std::string fmt);
-    size_t rate();
+    double rate();
     float relativeBandwidth() {
         return 1;
     }

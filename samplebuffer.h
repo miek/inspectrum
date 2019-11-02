@@ -40,7 +40,7 @@ public:
     virtual size_t count() {
         return src->count();
     };
-    size_t rate() {
+    double rate() {
         return src->rate();
     };
 

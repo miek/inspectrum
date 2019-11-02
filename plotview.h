@@ -35,7 +35,7 @@ class PlotView : public QGraphicsView, Subscriber
 
 public:
     PlotView(InputSource *input);
-    void setSampleRate(size_t rate);
+    void setSampleRate(double rate);
 
 signals:
     void timeSelectionChanged(float time);
@@ -75,7 +75,7 @@ private:
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
-    size_t sampleRate = 0;
+    double sampleRate = 0.0;
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;
 
