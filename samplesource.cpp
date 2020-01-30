@@ -25,5 +25,11 @@ std::type_index SampleSource<T>::sampleType()
     return typeid(T);
 }
 
+template<typename T>
+double SampleSource<T>::getFrequency()
+{
+    return frequency;
+}
+
 template class SampleSource<std::complex<float>>;
 template class SampleSource<float>;
