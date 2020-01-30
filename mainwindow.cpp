@@ -37,6 +37,7 @@ MainWindow::MainWindow()
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     input = new InputSource();
+    input->subscribe(this);
 
     QSettings settings;
     tuner = new Tuner(settings.value("FFTSize", 9).toInt(), this);
@@ -98,6 +99,12 @@ void MainWindow::openFile(QString fileName)
         QMessageBox msgBox(QMessageBox::Critical, "Inspectrum openFile error", QString("%1: %2").arg(fileName).arg(ex.what()));
         msgBox.exec();
     }
+}
+
+void MainWindow::invalidateEvent()
+{
+    plots->setSampleRate(input->rate());
+    setSampleRate(input->rate());
 }
 
 void MainWindow::setSampleRate(QString rate)

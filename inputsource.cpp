@@ -29,6 +29,19 @@
 
 #include <QFileInfo>
 
+#include <sigmf/sigmf.h>
+
+#include <QElapsedTimer>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QPixmapCache>
+#include <QRect>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
+
+
 class ComplexF32SampleAdapter : public SampleAdapter {
 public:
     size_t sampleSize() override {
@@ -181,6 +194,63 @@ void InputSource::cleanup()
     }
 }
 
+void InputSource::readMetaData(const QString &filename)
+{
+    QFile datafile(filename);
+    if (!datafile.open(QFile::ReadOnly | QIODevice::Text)) {
+        throw std::runtime_error("Error while opening meta data file: " + datafile.errorString().toStdString());
+    }
+
+    sigmf::SigMF<sigmf::Global<core::DescrT>,
+            sigmf::Capture<core::DescrT>,
+            sigmf::Annotation<core::DescrT> > metaData = json::parse(datafile.readAll());
+
+    auto global_core = metaData.global.access<core::GlobalT>();
+
+    if(global_core.datatype.compare("cf32_le") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
+    } else if(global_core.datatype.compare("ci16_le") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS16SampleAdapter());
+    } else if(global_core.datatype.compare("ci8") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS8SampleAdapter());
+    } else if(global_core.datatype.compare("cu8") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
+    } else if(global_core.datatype.compare("rf32_le") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealF32SampleAdapter());
+        _realSignal = true;
+    } else if(global_core.datatype.compare("ri16_le") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS16SampleAdapter());
+        _realSignal = true;
+    } else if(global_core.datatype.compare("ri8") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS8SampleAdapter());
+        _realSignal = true;
+    } else if(global_core.datatype.compare("ru8") == 0) {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealU8SampleAdapter());
+        _realSignal = true;
+    } else {
+        throw std::runtime_error("SigMF meta data specifies unsupported datatype");
+    }
+
+    setSampleRate(global_core.sample_rate);
+
+    for(auto capture : metaData.captures) {
+        auto core = capture.access<core::CaptureT>();
+        frequency = core.frequency;
+    }
+
+    for(auto annotation : metaData.annotations) {
+        Annotation a;
+        auto core = annotation.access<core::AnnotationT>();
+
+        a.sampleRange = range_t<size_t>{core.sample_start, core.sample_start + core.sample_count - 1};
+        a.frequencyRange = range_t<double>{core.freq_lower_edge, core.freq_upper_edge};
+        a.description = QString::fromStdString(core.description);
+
+        annotationList.append(a);
+    }
+}
+
+
 void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
@@ -218,7 +288,27 @@ void InputSource::openFile(const char *filename)
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
 
-    std::unique_ptr<QFile> file(new QFile(filename));
+    QString dataFilename;
+    QString metaFilename;
+
+    if (suffix == "sigmf-meta") {
+        dataFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-data";
+        metaFilename = filename;
+        readMetaData(metaFilename);
+    }
+    else if (suffix == "sigmf-data") {
+        dataFilename = filename;
+        metaFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-meta";
+        readMetaData(metaFilename);
+    }
+    else if (suffix == "sigmf") {
+        throw std::runtime_error("SigMF archives are not supported. Consider extracting a recording.");
+    }
+    else {
+        dataFilename = filename;
+    }
+
+    std::unique_ptr<QFile> file(new QFile(dataFilename));
     if (!file->open(QFile::ReadOnly)) {
         throw std::runtime_error(file->errorString().toStdString());
     }

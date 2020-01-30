@@ -57,6 +57,7 @@ struct range_t {
     range_t<T>& operator=(const range_t<T> &other) {
         minimum = other.minimum;
         maximum = other.maximum;
+        return *this;
     }
 
     range_t<T>& operator=(const std::initializer_list<T> &other) {

@@ -45,7 +45,7 @@ public:
     void paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange) override;
     bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
     std::shared_ptr<SampleSource<std::complex<float>>> input() { return inputSource; };
-    void setSampleRate(size_t sampleRate);
+    void setSampleRate(double sampleRate);
     bool tunerEnabled();
     void enableScales(bool enabled);
 
@@ -72,7 +72,7 @@ private:
     int zoomLevel;
     float powerMax;
     float powerMin;
-    size_t sampleRate;
+    double sampleRate;
     bool frequencyScaleEnabled;
 
     std::shared_ptr<TunerTransform> tunerTransform;
@@ -85,6 +85,7 @@ private:
     std::vector<float> getTunerTaps();
     int linesPerTile();
     void paintFrequencyScale(QPainter &painter, QRect &rect);
+    void paintAnnotations(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
 };
 
 class TileCacheKey
