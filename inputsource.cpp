@@ -63,7 +63,7 @@ public:
     size_t sampleSize() override {
         return sizeof(std::complex<int8_t>);
     }
-    
+
     void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<int8_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
@@ -80,13 +80,80 @@ public:
     size_t sampleSize() override {
         return sizeof(std::complex<uint8_t>);
     }
-    
+
     void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
         auto s = reinterpret_cast<const std::complex<uint8_t>*>(src);
         std::transform(&s[start], &s[start + length], dest,
             [](const std::complex<uint8_t>& v) -> std::complex<float> {
                 const float k = 1.0f / 128.0f;
                 return { (v.real() - 127.4f) * k, (v.imag() - 127.4f) * k };
+            }
+        );
+    }
+};
+
+class RealF32SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(float);
+    }
+
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const float*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const float& v) -> std::complex<float> {
+                return {v, 0.0f};
+            }
+        );
+    }
+};
+
+class RealS16SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(int16_t);
+    }
+
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const int16_t*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const int16_t& v) -> std::complex<float> {
+                const float k = 1.0f / 32768.0f;
+                return { v * k, 0.0f };
+            }
+        );
+    }
+};
+
+class RealS8SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(int8_t);
+    }
+
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const int8_t*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const int8_t& v) -> std::complex<float> {
+                const float k = 1.0f / 128.0f;
+                return { v * k, 0.0f };
+            }
+        );
+    }
+};
+
+class RealU8SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(uint8_t);
+    }
+
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const uint8_t*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const uint8_t& v) -> std::complex<float> {
+                const float k = 1.0f / 128.0f;
+                return { (v - 127.4f) * k, 0 };
             }
         );
     }
@@ -130,6 +197,22 @@ void InputSource::openFile(const char *filename)
     }
     else if ((suffix == "cu8") || (suffix == "uc8")) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
+    }
+    else if (suffix == "f32") {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealF32SampleAdapter());
+        _realSignal = true;
+    }
+    else if (suffix == "s16") {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS16SampleAdapter());
+        _realSignal = true;
+    }
+    else if (suffix == "s8") {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS8SampleAdapter());
+        _realSignal = true;
+    }
+    else if (suffix == "u8") {
+        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealU8SampleAdapter());
+        _realSignal = true;
     }
     else {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());

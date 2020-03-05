@@ -39,6 +39,7 @@ private:
     uchar *mmapData = nullptr;
     std::unique_ptr<SampleAdapter> sampleAdapter;
     std::string _fmt;
+    bool _realSignal = false;
 
 public:
     InputSource();
@@ -52,6 +53,9 @@ public:
     void setSampleRate(double rate);
     void setFormat(std::string fmt);
     double rate();
+    bool realSignal() {
+        return _realSignal;
+    };
     float relativeBandwidth() {
         return 1;
     }

@@ -36,4 +36,5 @@ public:
     virtual double rate() = 0;
     virtual float relativeBandwidth() = 0;
     std::type_index sampleType() override;
+    virtual bool realSignal() { return false; };
 };
