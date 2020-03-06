@@ -147,14 +147,14 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> s
     int xoffset = sampleOffset / getStride();
 
     // Paint first (possibly partial) tile
-    painter.drawPixmap(QRect(rect.left(), rect.y(), linesPerTile() - xoffset, fftSize), *getPixmapTile(tileID), QRect(xoffset, 0, linesPerTile() - xoffset, fftSize));
+    painter.drawPixmap(QRect(rect.left(), rect.y(), linesPerTile() - xoffset, height()), *getPixmapTile(tileID), QRect(xoffset, 0, linesPerTile() - xoffset, height()));
     tileID += getStride() * linesPerTile();
 
     // Paint remaining tiles
     for (int x = linesPerTile() - xoffset; x < rect.right(); x += linesPerTile()) {
         // TODO: don't draw past rect.right()
         // TODO: handle partial final tile
-        painter.drawPixmap(QRect(x, rect.y(), linesPerTile(), fftSize), *getPixmapTile(tileID));
+        painter.drawPixmap(QRect(x, rect.y(), linesPerTile(), height()), *getPixmapTile(tileID), QRect(0, 0, linesPerTile(), height()));
         tileID += getStride() * linesPerTile();
     }
 }
@@ -289,7 +289,7 @@ void SpectrogramPlot::setFFTSize(int size)
     setHeight(fftSize);
     auto dev = tuner.deviation();
     auto centre = tuner.centre();
-    tuner.setHeight(fftSize);
+    tuner.setHeight(height());
     tuner.setDeviation( dev * sizeScale );
     tuner.setCentre( centre * sizeScale );
 }
