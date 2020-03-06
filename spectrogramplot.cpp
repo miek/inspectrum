@@ -51,6 +51,9 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
 
 void SpectrogramPlot::invalidateEvent()
 {
+    // HACK: this makes sure we update the height for real signals (as InputSource is passed here before the file is opened)
+    setFFTSize(fftSize);
+
     pixmapCache.clear();
     fftCache.clear();
     emit repaint();
@@ -71,6 +74,8 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
     int y = rect.y();
 
     int plotHeight = rect.height();
+    if (inputSource->realSignal())
+        plotHeight *= 2;
 
     double bwPerPixel = (double)sampleRate / plotHeight;
     int tickHeight = 50;
@@ -95,7 +100,8 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
         int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
         int tickny = plotHeight / 2 + tick / bwPerPixel + y;
 
-        painter.drawLine(0, tickny, 30, tickny);
+        if (!inputSource->realSignal())
+            painter.drawLine(0, tickny, 30, tickny);
         painter.drawLine(0, tickpy, 30, tickpy);
 
         if (tick != 0) {
@@ -109,7 +115,8 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
                 snprintf(buf, sizeof(buf), "-%d Hz", tick);
             }
 
-            painter.drawText(5, tickny - 5, buf);
+            if (!inputSource->realSignal())
+                painter.drawText(5, tickny - 5, buf);
 
             buf[0] = ' ';
             painter.drawText(5, tickpy + 15, buf);
@@ -128,7 +135,8 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
             int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
             int tickny = plotHeight / 2 + tick / bwPerPixel + y;
 
-            painter.drawLine(0, tickny, 3, tickny);
+            if (!inputSource->realSignal())
+                painter.drawLine(0, tickny, 3, tickny);
             painter.drawLine(0, tickpy, 3, tickpy);
 
             tick += bwPerTick;
@@ -286,7 +294,11 @@ void SpectrogramPlot::setFFTSize(int size)
         window[i] = 0.5f * (1.0f - cos(Tau * i / (fftSize - 1)));
     }
 
-    setHeight(fftSize);
+    if (inputSource->realSignal()) {
+        setHeight(fftSize/2);
+    } else {
+        setHeight(fftSize);
+    }
     auto dev = tuner.deviation();
     auto centre = tuner.centre();
     tuner.setHeight(height());
