@@ -3,7 +3,7 @@ language: c
 cache: apt
 
 sudo: required
-dist: trusty
+dist: bionic
 
 os:
   - linux
