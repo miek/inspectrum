@@ -27,27 +27,17 @@ addons:
       - qtbase5-dev
       - qtdeclarative5-dev
       - libfftw3-dev
+      - libliquid-dev
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  # cmake and pkg-config are already installed, liquid-dsp is handled by before_script.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5 fftw; fi
-
-before_script:
-  - pushd /tmp
-  - mkdir liquid-install
-  - git clone https://github.com/jgaeddert/liquid-dsp.git
-  - cd liquid-dsp
-  - ./bootstrap.sh
-  - ./configure --prefix=/tmp/liquid-install/
-  - make
-  - make install
-  - popd
+  # cmake and pkg-config are already installed.
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5 fftw liquid-dsp; fi
 
 script:
   - mkdir build
   - cd build
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CMAKE_PREFIX_PATH=$(brew --prefix qt5)/lib/cmake; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then DYLIB_SUFFIX=dylib; else DYLIB_SUFFIX=so; fi
-  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake -DLIQUID_LIBRARIES=/tmp/liquid-install/lib/libliquid.$DYLIB_SUFFIX -DLIQUID_INCLUDES=/tmp/liquid-install/include/ ..
+  - CFLAGS="-g -Wall -Wextra -Werror -Wno-zero-length-array" cmake ..
   - make
