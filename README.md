@@ -26,6 +26,10 @@ inspectrum supports the following file types:
  * `*.cs16` - Complex 16-bit signed integer samples (BladeRF)
  * `*.cs8` - Complex 8-bit signed integer samples (HackRF)
  * `*.cu8` - Complex 8-bit unsigned integer samples (RTL-SDR)
+ * `*.f32` - Real 32-bit floating point samples
+ * `*.s16` - Real 16-bit signed integer samples
+ * `*.s8` - Real 8-bit signed integer samples
+ * `*.u8` - Real 8-bit unsigned integer samples
 
 If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
 
@@ -35,6 +39,6 @@ If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
  * Plots of amplitude, frequency, phase and IQ samples
  * Cursors for measuring period, symbol rate and extracting symbols
  * Export of selected time period, filtered samples and demodulated data
- 
+
 ## Contact
  * #inspectrum on freenode IRC
