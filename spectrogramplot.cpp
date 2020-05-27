@@ -257,7 +257,7 @@ std::vector<float> SpectrogramPlot::getTunerTaps()
     float cutoff = tuner.deviation() / (float)fftSize;
     float gain = pow(10.0f, powerMax / -10.0f);
     auto atten = 60.0f;
-    auto len = estimate_req_filter_len(0.05f, atten);
+    auto len = estimate_req_filter_len(std::min(cutoff, 0.05f), atten);
     auto taps = std::vector<float>(len);
     liquid_firdes_kaiser(len, cutoff, atten, 0.0f, taps.data());
     std::transform(taps.begin(), taps.end(), taps.begin(),
