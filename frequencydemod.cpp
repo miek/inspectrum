@@ -30,7 +30,7 @@ void FrequencyDemod::work(void *input, void *output, int count, size_t sampleid)
 {
     auto in = static_cast<std::complex<float>*>(input);
     auto out = static_cast<float*>(output);
-    freqdem fdem = freqdem_create(0.05f);
+    freqdem fdem = freqdem_create(relativeBandwidth() / 2.0);
     for (int i = 0; i < count; i++) {
         freqdem_demodulate(fdem, in[i], &out[i]);
     }

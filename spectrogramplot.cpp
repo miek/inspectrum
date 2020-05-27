@@ -343,7 +343,7 @@ void SpectrogramPlot::tunerMoved()
 {
     tunerTransform->setFrequency(getTunerPhaseInc());
     tunerTransform->setTaps(getTunerTaps());
-    tunerTransform->setRelativeBandwith(tuner.deviation() * 2.0 / getStride());
+    tunerTransform->setRelativeBandwith(tuner.deviation() * 2.0 / height());
 
     // TODO: for invalidating traceplot cache, this shouldn't really go here
     QPixmapCache::clear();

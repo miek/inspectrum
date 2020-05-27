@@ -45,6 +45,6 @@ public:
     };
 
     float relativeBandwidth() {
-        return 1;
+        return src->relativeBandwidth();
     }
 };
