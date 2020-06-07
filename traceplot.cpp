@@ -20,6 +20,7 @@
 #include <QPixmapCache>
 #include <QTextStream>
 #include <QtConcurrent>
+#include <QPainterPath>
 #include "samplesource.h"
 #include "traceplot.h"
 
