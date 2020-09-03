@@ -104,22 +104,6 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
             painter.drawLine(0, tickny, 30, tickny); // draws neg lines
         painter.drawLine(0, tickpy, 30, tickpy); // draws pos lines
 
-        if (tick == 0) {
-            char buf[128];
-
-            if (bwPerTick % 1000000000 == 0) {
-                snprintf(buf, sizeof(buf), "%d MHz", ((int)frequencyOffset + (int)tick) / 1000000000);
-            } else if (bwPerTick % 1000000 == 0) {
-                snprintf(buf, sizeof(buf), "%d MHz", ((int)frequencyOffset + (int)tick) / 1000000);
-            } else if(bwPerTick % 1000 == 0) {
-                snprintf(buf, sizeof(buf), "%d kHz", ((int)frequencyOffset + (int)tick) / 1000);
-            } else {
-                snprintf(buf, sizeof(buf), "%d Hz", (int)frequencyOffset + tick);
-            }
-
-            painter.drawText(0, tickpy+5, buf);  // draw 0
-        }
-
         if (tick != 0) {
             char buf[128];
 
@@ -152,22 +136,21 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
     }
 
     // Draw small ticks
-//    bwPerTick /= 10;
-//
-//    if (bwPerTick >= 1 ) {
-//        tick = 0;
-//        while (tick <= sampleRate / 2) {
-//
-//            int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
-//            int tickny = plotHeight / 2 + tick / bwPerPixel + y;
-//
-//            if (!inputSource->realSignal())
-//                painter.drawLine(0, tickny, 3, tickny);
-//            painter.drawLine(0, tickpy, 3, tickpy);
-//
-//            tick += bwPerTick;
-//        }
-//    }
+    bwPerTick /= 10;
+    if (bwPerTick >= 1 ) {
+        tick = 0;
+        while (tick <= sampleRate / 2) {
+
+            int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
+            int tickny = plotHeight / 2 + tick / bwPerPixel + y;
+
+            if (!inputSource->realSignal())
+                painter.drawLine(0, tickny, 3, tickny);
+            painter.drawLine(0, tickpy, 3, tickpy);
+
+            tick += bwPerTick;
+        }
+    }
     painter.restore();
 }
 

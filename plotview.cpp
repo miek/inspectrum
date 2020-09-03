@@ -505,6 +505,7 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sa
 
     painter.restore();
 }
+
 int PlotView::plotsHeight()
 {
     int height = 0;
