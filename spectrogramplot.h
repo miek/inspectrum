@@ -46,6 +46,7 @@ public:
     bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
     std::shared_ptr<SampleSource<std::complex<float>>> input() { return inputSource; };
     void setSampleRate(size_t sampleRate);
+    void setFrequencyOffset(size_t frequencyOffset);
     bool tunerEnabled();
     void enableScales(bool enabled);
 
@@ -72,6 +73,7 @@ private:
     float powerMax;
     float powerMin;
     size_t sampleRate;
+    size_t frequencyOffset;
     bool frequencyScaleEnabled;
 
     Tuner tuner;

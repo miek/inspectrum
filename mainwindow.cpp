@@ -44,6 +44,7 @@ MainWindow::MainWindow()
     // Connect dock inputs
     connect(dock, &SpectrogramControls::openFile, this, &MainWindow::openFile);
     connect(dock->sampleRate, static_cast<void (QLineEdit::*)(const QString&)>(&QLineEdit::textChanged), this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setSampleRate));
+    connect(dock->frequencyOffset, static_cast<void (QLineEdit::*)(const QString&)>(&QLineEdit::textChanged), this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setFrequencyOffset));
     connect(dock, static_cast<void (SpectrogramControls::*)(int, int)>(&SpectrogramControls::fftOrZoomChanged), plots, &PlotView::setFFTAndZoom);
     connect(dock->powerMaxSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMax);
     connect(dock->powerMinSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMin);
@@ -107,9 +108,25 @@ void MainWindow::setSampleRate(QString rate)
     settings.setValue("SampleRate", sampleRate);
 }
 
+void MainWindow::setFrequencyOffset(QString rate)
+{
+    auto frequencyOffset = rate.toDouble();
+    input->setFrequencyOffset(frequencyOffset);
+    plots->setFrequencyOffset(frequencyOffset);
+
+    // Save the frequency offset in settings as we're likely to be opening the same file across multiple runs
+    QSettings settings;
+    settings.setValue("FrequencyOffset", frequencyOffset);
+}
+
 void MainWindow::setSampleRate(double rate)
 {
     dock->sampleRate->setText(QString::number(rate));
+}
+
+void MainWindow::setFrequencyOffset(double rate)
+{
+    dock->frequencyOffset->setText(QString::number(rate));
 }
 
 void MainWindow::setFormat(QString fmt)

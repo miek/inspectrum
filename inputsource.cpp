@@ -249,6 +249,17 @@ double InputSource::rate()
     return sampleRate;
 }
 
+void InputSource::setFrequencyOffset(double offset)
+{
+    frequencyOffset = offset;
+    invalidate();
+}
+
+double InputSource::offset()
+{
+    return frequencyOffset;
+}
+
 std::unique_ptr<std::complex<float>[]> InputSource::getSamples(size_t start, size_t length)
 {
     if (inputFile == nullptr)

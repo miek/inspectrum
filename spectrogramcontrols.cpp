@@ -41,6 +41,12 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     sampleRate->setValidator(double_validator);
     layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
+    frequencyOffset = new QLineEdit();
+    auto freq_validator = new QDoubleValidator(this);
+    freq_validator->setBottom(0.0);
+    frequencyOffset->setValidator(freq_validator);
+    layout->addRow(new QLabel(tr("Frequency offset:")), frequencyOffset);
+
     // Spectrogram settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
     layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
@@ -130,6 +136,10 @@ void SpectrogramControls::setDefaults()
     QSettings settings;
     int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
     sampleRate->setText(QString::number(savedSampleRate));
+
+    int savedFrequencyOffset = settings.value("FrequencyOffset", 0).toInt();
+    frequencyOffset->setText(QString::number(savedFrequencyOffset));
+
     fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
     powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
     powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());

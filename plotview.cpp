@@ -505,7 +505,6 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sa
 
     painter.restore();
 }
-
 int PlotView::plotsHeight()
 {
     int height = 0;
@@ -569,6 +568,16 @@ void PlotView::setSampleRate(double rate)
 
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setSampleRate(rate);
+
+    emitTimeSelection();
+}
+
+void PlotView::setFrequencyOffset(double rate)
+{
+    frequencyOffset = rate;
+
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setFrequencyOffset(rate);
 
     emitTimeSelection();
 }
