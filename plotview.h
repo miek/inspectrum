@@ -71,7 +71,7 @@ private:
     size_t zoomSample;
 
     int fftSize = 1024;
-    int zoomLevel = 0;
+    int zoomLevel = 1;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
@@ -87,7 +87,7 @@ private:
     int plotsHeight();
     size_t samplesPerColumn();
     void updateViewRange(bool reCenter);
-    void updateView(bool reCenter = false);
+    void updateView(bool reCenter = false, bool expanding = false);
     void paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
 
     int sampleToColumn(size_t sample);

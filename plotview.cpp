@@ -330,7 +330,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
 
     if (dialog.exec()) {
         QStringList fileNames = dialog.selectedFiles();
-       
+
         size_t start, end;
         if (cursorSelection.isChecked()) {
             start = selectedSamples.minimum;
@@ -350,7 +350,7 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
         size_t step = viewRange.length();
 
         for (index = start; index < end; index += step) {
-            size_t length = std::min(step, end - index); 
+            size_t length = std::min(step, end - index);
             auto samples = sampleSrc->getSamples(index, length);
             if (samples != nullptr) {
                 for (auto i = 0; i < length; i += decimation.value()) {
@@ -387,6 +387,8 @@ void PlotView::setCursorSegments(int segments)
 
 void PlotView::setFFTAndZoom(int size, int zoom)
 {
+    auto oldSamplesPerColumn = samplesPerColumn();
+
     // Set new FFT size
     fftSize = size;
     if (spectrogramPlot != nullptr)
@@ -401,7 +403,7 @@ void PlotView::setFFTAndZoom(int size, int zoom)
     horizontalScrollBar()->setSingleStep(10);
     horizontalScrollBar()->setPageStep(100);
 
-    updateView(true);
+    updateView(true, samplesPerColumn() < oldSamplesPerColumn);
 }
 
 void PlotView::setPowerMin(int power)
@@ -542,15 +544,20 @@ void PlotView::updateViewRange(bool reCenter)
             sampleToColumn(zoomSample) - zoomPos
         );
     }
-    // zoomSample = viewRange.minimum + viewRange.length() / 2;
-    // zoomPos = width() / 2;
+    zoomSample = viewRange.minimum + viewRange.length() / 2;
+    zoomPos = width() / 2;
 }
 
-void PlotView::updateView(bool reCenter)
+void PlotView::updateView(bool reCenter, bool expanding)
 {
+    if (!expanding) {
+        updateViewRange(reCenter);
+    }
     horizontalScrollBar()->setMaximum(std::max(0, sampleToColumn(mainSampleSource->count()) - width()));
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
-    updateViewRange(reCenter);
+    if (expanding) {
+        updateViewRange(reCenter);
+    }
 
     // Update cursors
     range_t<int> newSelection = {
