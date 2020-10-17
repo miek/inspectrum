@@ -93,6 +93,9 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     symbolPeriodLabel = new QLabel();
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
+    bandwidthLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Bandwidth:")), bandwidthLabel);
+
     widget->setLayout(layout);
     setWidget(widget);
 
@@ -110,6 +113,7 @@ void SpectrogramControls::clearCursorLabels()
     rateLabel->setText("");
     symbolPeriodLabel->setText("");
     symbolRateLabel->setText("");
+    bandwidthLabel->setText("");
 }
 
 void SpectrogramControls::cursorsStateChanged(int state)
@@ -225,4 +229,17 @@ void SpectrogramControls::zoomIn()
 void SpectrogramControls::zoomOut()
 {
     zoomLevelSlider->setValue(zoomLevelSlider->value() - 1);
+}
+
+void SpectrogramControls::tunerMoved(int deviation)
+{
+    // int deviation is width in pixels from plot
+    bandwidthLabel->setText(QString::number(getBandwidth(deviation)) + "kHz");
+}
+
+int SpectrogramControls::getBandwidth(int deviation) {
+    double rate = sampleRate->text().toDouble();
+    double fftSize = pow(2, fftSizeSlider->value());
+    double hzPerPx = rate / fftSize;
+    return deviation * hzPerPx / 1000 * 2;
 }

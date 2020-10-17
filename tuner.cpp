@@ -109,6 +109,7 @@ void Tuner::setDeviation(int dev)
 {
     _deviation = std::max(1, dev);
     updateCursors();
+    emit tunerMoved(_deviation);
 }
 
 void Tuner::setHeight(int height)
@@ -120,5 +121,5 @@ void Tuner::updateCursors()
 {
     minCursor->setPos(cfCursor->pos() - _deviation);
     maxCursor->setPos(cfCursor->pos() + _deviation);
-    emit tunerMoved();
+    emit tunerMoved(_deviation);
 }
