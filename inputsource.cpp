@@ -181,11 +181,63 @@ void InputSource::cleanup()
     }
 }
 
+static std::string getWavFormat(const char *filename)
+{
+    FILE *wavfile;
+    char wavheader[44];
+    size_t l;
+
+    wavfile = fopen(filename, "r");
+
+    if (wavfile == NULL) {
+        return "";
+    }
+
+    l = fread(wavheader, sizeof(wavheader), 1, wavfile);
+    fclose(wavfile);
+    if ( l == 1 ) {
+
+       if ((wavheader[22] + wavheader[23] * 8) == 2) {
+           // stereo
+           switch(wavheader[34] + wavheader[35]*8) {
+               case 32: return "cf32"; break;
+               case 16: return "cs16"; break;
+               case 8: return "cs8"; break;
+               default: return "";
+           }
+       }
+       else if ((wavheader[22] + wavheader[23] * 8) == 1) {
+           // mono
+           switch(wavheader[34] + wavheader[35]*8) {
+               case 32: return "f32"; break;
+               case 16: return "s16"; break;
+               case 8: return "s8"; break;
+               default: return "";
+           }
+
+       }
+       else {
+           // unknown format
+           return "";
+       }
+
+    }
+
+    return "";
+}
+
 void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
     std::string suffix = std::string(fileInfo.suffix().toLower().toUtf8().constData());
+
+    if (suffix == "wav" && _fmt == "") {
+        // check wav file format if not given
+        _fmt = getWavFormat(filename);
+    }
+
     if(_fmt!=""){ suffix = _fmt; } // allow fmt override
+
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
     }
