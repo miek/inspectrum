@@ -534,6 +534,11 @@ void PlotView::scrollContentsBy(int dx, int dy)
     updateView();
 }
 
+void PlotView::showEvent(QShowEvent *event)
+{
+    // Intentionally left blank. See #171
+}
+
 void PlotView::updateViewRange(bool reCenter)
 {
     // Update current view
