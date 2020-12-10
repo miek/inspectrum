@@ -585,6 +585,16 @@ void PlotView::setSampleRate(double rate)
     emitTimeSelection();
 }
 
+void PlotView::setFrequencyOffset(double rate)
+{
+    frequencyOffset = rate;
+
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setFrequencyOffset(rate);
+
+    emitTimeSelection();
+}
+
 void PlotView::enableScales(bool enabled)
 {
     timeScaleEnabled = enabled;

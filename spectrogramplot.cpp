@@ -101,25 +101,35 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
         int tickny = plotHeight / 2 + tick / bwPerPixel + y;
 
         if (!inputSource->realSignal())
-            painter.drawLine(0, tickny, 30, tickny);
-        painter.drawLine(0, tickpy, 30, tickpy);
+            painter.drawLine(0, tickny, 30, tickny); // draws neg lines
+        painter.drawLine(0, tickpy, 30, tickpy); // draws pos lines
 
         if (tick != 0) {
             char buf[128];
 
-            if (bwPerTick % 1000000 == 0) {
-                snprintf(buf, sizeof(buf), "-%d MHz", (int)tick / 1000000);
-            } else if(bwPerTick % 1000 == 0) {
-                snprintf(buf, sizeof(buf), "-%d kHz", tick / 1000);
-            } else {
-                snprintf(buf, sizeof(buf), "-%d Hz", tick);
+            if (!inputSource->realSignal()) {
+                if (bwPerTick % 1000000000 == 0) {
+                  snprintf(buf, sizeof(buf), "%d MHz", ((int)frequencyOffset - (int)tick) / 1000000000);
+                } else if (bwPerTick % 1000000 == 0) {
+                  snprintf(buf, sizeof(buf), "%d MHz", ((int)frequencyOffset - (int)tick) / 1000000);
+                } else if(bwPerTick % 1000 == 0) {
+                  snprintf(buf, sizeof(buf), "%d kHz", ((int)frequencyOffset - (int)tick) / 1000);
+                } else {
+                  snprintf(buf, sizeof(buf), "%d Hz", (int)frequencyOffset - tick);
+                }
+              painter.drawText(5, tickny - 5, buf); // draws neg text
             }
 
-            if (!inputSource->realSignal())
-                painter.drawText(5, tickny - 5, buf);
-
-            buf[0] = ' ';
-            painter.drawText(5, tickpy + 15, buf);
+            if (bwPerTick % 1000000000 == 0) {
+              snprintf(buf, sizeof(buf), "%d MHz", ((int)frequencyOffset + (int)tick) / 1000000000);
+            } else if (bwPerTick % 1000000 == 0) {
+              snprintf(buf, sizeof(buf), "%d MHz", ((int)frequencyOffset + (int)tick) / 1000000);
+            } else if(bwPerTick % 1000 == 0) {
+              snprintf(buf, sizeof(buf), "%d kHz", ((int)frequencyOffset + (int)tick) / 1000);
+            } else {
+              snprintf(buf, sizeof(buf), "%d Hz", (int)frequencyOffset + tick);
+            }
+             painter.drawText(5, tickpy + 15, buf); // draws pos text
         }
 
         tick += bwPerTick;
@@ -127,7 +137,6 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
 
     // Draw small ticks
     bwPerTick /= 10;
-
     if (bwPerTick >= 1 ) {
         tick = 0;
         while (tick <= sampleRate / 2) {
@@ -327,6 +336,11 @@ void SpectrogramPlot::setZoomLevel(int zoom)
 void SpectrogramPlot::setSampleRate(size_t rate)
 {
     sampleRate = rate;
+}
+
+void SpectrogramPlot::setFrequencyOffset(size_t rate)
+{
+    frequencyOffset = rate;
 }
 
 void SpectrogramPlot::enableScales(bool enabled)

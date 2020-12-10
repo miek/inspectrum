@@ -36,6 +36,8 @@ public slots:
     void openFile(QString fileName);
     void setSampleRate(QString rate);
     void setSampleRate(double rate);
+    void setFrequencyOffset(QString rate);
+    void setFrequencyOffset(double rate);
     void setFormat(QString fmt);
 
 private:

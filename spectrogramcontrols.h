@@ -62,6 +62,7 @@ private:
 public:
     QPushButton *fileOpenButton;
     QLineEdit *sampleRate;
+    QLineEdit *frequencyOffset;
     QSlider *fftSizeSlider;
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
