@@ -70,6 +70,14 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<size_t>
 
 void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
 {
+    if (sampleRate == 0) {
+        return;
+    }
+
+    if (sampleRate / 2 > UINT64_MAX) {
+        return;
+    }
+
     // At which pixel is F_+sampleRate/2
     int y = rect.y();
 
@@ -80,7 +88,7 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
     double bwPerPixel = (double)sampleRate / plotHeight;
     int tickHeight = 50;
 
-    int bwPerTick = 10 * pow(10, floor(log(bwPerPixel * tickHeight) / log(10)));
+    uint64_t bwPerTick = 10 * pow(10, floor(log(bwPerPixel * tickHeight) / log(10)));
 
     if (bwPerTick < 1) {
         return;
@@ -93,7 +101,7 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
     QFontMetrics fm(painter.font());
 
 
-    int tick = 0;
+    uint64_t tick = 0;
 
     while (tick <= sampleRate / 2) {
 
@@ -107,12 +115,14 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
         if (tick != 0) {
             char buf[128];
 
-            if (bwPerTick % 1000000 == 0) {
-                snprintf(buf, sizeof(buf), "-%d MHz", (int)tick / 1000000);
+            if (bwPerTick % 1000000000 == 0) {
+                snprintf(buf, sizeof(buf), "-%lu GHz", tick / 1000000000);
+            } else if (bwPerTick % 1000000 == 0) {
+                snprintf(buf, sizeof(buf), "-%lu MHz", tick / 1000000);
             } else if(bwPerTick % 1000 == 0) {
-                snprintf(buf, sizeof(buf), "-%d kHz", tick / 1000);
+                snprintf(buf, sizeof(buf), "-%lu kHz", tick / 1000);
             } else {
-                snprintf(buf, sizeof(buf), "-%d Hz", tick);
+                snprintf(buf, sizeof(buf), "-%lu Hz", tick);
             }
 
             if (!inputSource->realSignal())
