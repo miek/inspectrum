@@ -31,8 +31,10 @@
 #include "util.h"
 
 
-SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), fftSize(512), tuner(fftSize, this)
+SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src, Tuner *tuner)
+    : Plot(src), inputSource(src), fftSize(512) //, tuner(fftSize, this)
 {
+    this->tuner = tuner;
     setFFTSize(fftSize);
     zoomLevel = 1;
     powerMax = 0.0f;
@@ -46,7 +48,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     }
 
     tunerTransform = std::make_shared<TunerTransform>(src);
-    connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
+//    connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
 }
 
 void SpectrogramPlot::invalidateEvent()
@@ -62,7 +64,7 @@ void SpectrogramPlot::invalidateEvent()
 void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     if (tunerEnabled())
-        tuner.paintFront(painter, rect, sampleRange);
+        tuner->paintFront(painter, rect, sampleRange);
 
     if (frequencyScaleEnabled)
         paintFrequencyScale(painter, rect);
@@ -258,13 +260,13 @@ int SpectrogramPlot::getStride()
 
 float SpectrogramPlot::getTunerPhaseInc()
 {
-    auto freq = 0.5f - tuner.centre() / (float)fftSize;
+    auto freq = 0.5f - tuner->centre() / (float)fftSize;
     return freq * Tau;
 }
 
 std::vector<float> SpectrogramPlot::getTunerTaps()
 {
-    float cutoff = tuner.deviation() / (float)fftSize;
+    float cutoff = tuner->deviation() / (float)fftSize;
     float gain = pow(10.0f, powerMax / -10.0f);
     auto atten = 60.0f;
     auto len = estimate_req_filter_len(std::min(cutoff, 0.05f), atten);
@@ -283,7 +285,7 @@ int SpectrogramPlot::linesPerTile()
 bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
     if (tunerEnabled())
-        return tuner.mouseEvent(type, event);
+        return tuner->mouseEvent(type, event);
 
     return false;
 }
@@ -309,18 +311,18 @@ void SpectrogramPlot::setFFTSize(int size)
     } else {
         setHeight(fftSize);
     }
-    auto dev = tuner.deviation();
-    auto centre = tuner.centre();
-    tuner.setHeight(height());
-    tuner.setDeviation( dev * sizeScale );
-    tuner.setCentre( centre * sizeScale );
+    auto dev = tuner->deviation();
+    auto centre = tuner->centre();
+    tuner->setHeight(height());
+    tuner->setDeviation( dev * sizeScale );
+    tuner->setCentre( centre * sizeScale );
 }
 
 void SpectrogramPlot::setPowerMax(int power)
 {
     powerMax = power;
     pixmapCache.clear();
-    tunerMoved();
+    tunerMoved(666);
 }
 
 void SpectrogramPlot::setPowerMin(int power)
@@ -349,11 +351,11 @@ bool SpectrogramPlot::tunerEnabled()
     return (tunerTransform->subscriberCount() > 0);
 }
 
-void SpectrogramPlot::tunerMoved()
+void SpectrogramPlot::tunerMoved(int deviation)
 {
     tunerTransform->setFrequency(getTunerPhaseInc());
     tunerTransform->setTaps(getTunerTaps());
-    tunerTransform->setRelativeBandwith(tuner.deviation() * 2.0 / height());
+    tunerTransform->setRelativeBandwith(deviation * 2.0 / height());
 
     // TODO: for invalidating traceplot cache, this shouldn't really go here
     QPixmapCache::clear();

@@ -42,4 +42,5 @@ private:
     SpectrogramControls *dock;
     PlotView *plots;
     InputSource *input;
+    Tuner *tuner;
 };

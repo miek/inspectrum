@@ -38,7 +38,10 @@ MainWindow::MainWindow()
 
     input = new InputSource();
 
-    plots = new PlotView(input);
+    QSettings settings;
+    tuner = new Tuner(settings.value("FFTSize", 9).toInt(), this);
+
+    plots = new PlotView(input, tuner);
     setCentralWidget(plots);
 
     // Connect dock inputs
@@ -50,6 +53,7 @@ MainWindow::MainWindow()
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
+    connect(tuner, &Tuner::tunerMoved, dock, &SpectrogramControls::tunerMoved);
 
     // Connect dock outputs
     connect(plots, &PlotView::timeSelectionChanged, dock, &SpectrogramControls::timeSelectionChanged);
