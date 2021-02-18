@@ -104,7 +104,14 @@ void MainWindow::openFile(QString fileName)
 void MainWindow::invalidateEvent()
 {
     plots->setSampleRate(input->rate());
-    setSampleRate(input->rate());
+
+    // Only update the text box if it is not already representing
+    // the current value. Otherwise the cursor might jump or the
+    // representation might change (e.g. to scientific).
+    double currentValue = dock->sampleRate->text().toDouble();
+    if(QString::number(input->rate()) != QString::number(currentValue)) {
+        setSampleRate(input->rate());
+    }
 }
 
 void MainWindow::setSampleRate(QString rate)
