@@ -29,7 +29,9 @@
 
 #include <QFileInfo>
 
+#if ENABLE_SIGMF
 #include <sigmf/sigmf.h>
+#endif
 
 #include <QElapsedTimer>
 #include <QPainter>
@@ -194,6 +196,7 @@ void InputSource::cleanup()
     }
 }
 
+#if ENABLE_SIGMF
 void InputSource::readMetaData(const QString &filename)
 {
     QFile datafile(filename);
@@ -249,6 +252,7 @@ void InputSource::readMetaData(const QString &filename)
         annotationList.append(a);
     }
 }
+#endif
 
 
 void InputSource::openFile(const char *filename)
@@ -289,6 +293,8 @@ void InputSource::openFile(const char *filename)
     }
 
     QString dataFilename;
+
+#if ENABLE_SIGMF
     QString metaFilename;
 
     if (suffix == "sigmf-meta") {
@@ -304,6 +310,11 @@ void InputSource::openFile(const char *filename)
     else if (suffix == "sigmf") {
         throw std::runtime_error("SigMF archives are not supported. Consider extracting a recording.");
     }
+#else
+    if (suffix == "sigmf-meta" || suffix == "sigmf-data" || suffix == "sigmf") {
+        throw std::runtime_error("Support for SigMF recordings is not enabled");
+    }
+#endif
     else {
         dataFilename = filename;
     }
