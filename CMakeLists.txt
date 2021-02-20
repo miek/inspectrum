@@ -60,7 +60,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Concurrent REQUIRED)
 find_package(FFTW REQUIRED)
 find_package(Liquid REQUIRED)
-find_package(libsigmf REQUIRED)
+find_package(libsigmf QUIET)
 
 include_directories(
     ${FFTW_INCLUDES}
@@ -71,10 +71,20 @@ add_executable(inspectrum ${EXE_ARGS} ${inspectrum_sources})
 
 target_link_libraries(inspectrum
     Qt5::Core Qt5::Widgets Qt5::Concurrent
-    libsigmf::libsigmf
     ${FFTW_LIBRARIES}
     ${LIQUID_LIBRARIES}
 )
+
+if (libsigmf_FOUND)
+    message("-- libsigmf found. Enabling SigMF support")
+    target_link_libraries(inspectrum
+        libsigmf::libsigmf
+    )
+    add_definitions(-DENABLE_SIGMF)
+else()
+    message("-- libsigmf not found. Disabling SigMF support")
+endif()
+
 set(INSTALL_DEFAULT_BINDIR "bin" CACHE STRING "Appended to CMAKE_INSTALL_PREFIX")
 
 install(TARGETS inspectrum RUNTIME DESTINATION ${INSTALL_DEFAULT_BINDIR})
