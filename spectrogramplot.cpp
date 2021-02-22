@@ -314,7 +314,7 @@ std::vector<float> SpectrogramPlot::getTunerTaps()
     auto taps = std::vector<float>(len);
     liquid_firdes_kaiser(len, cutoff, atten, 0.0f, taps.data());
     std::transform(taps.begin(), taps.end(), taps.begin(),
-                   std::bind1st(std::multiplies<float>(), gain));
+                   std::bind(std::multiplies<float>(), std::placeholders::_1, gain));
     return taps;
 }
 
