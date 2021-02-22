@@ -66,6 +66,7 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<size_t>
 
     if (frequencyScaleEnabled)
         paintFrequencyScale(painter, rect);
+    paintAnnotations(painter, rect, sampleRange);
 }
 
 void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
@@ -152,6 +153,48 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
             tick += bwPerTick;
         }
     }
+    painter.restore();
+}
+
+void SpectrogramPlot::paintAnnotations(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
+{
+    // Pixel (from the top) at which 0 Hz sits
+    int zero = rect.y() + rect.height() / 2;
+
+    painter.save();
+    QPen pen(Qt::white, 1, Qt::SolidLine);
+    painter.setPen(pen);
+    QFontMetrics fm(painter.font());
+
+    for (int i = 0; i < inputSource->annotationList.size(); i++) {
+        Annotation a = inputSource->annotationList.at(i);
+
+        uint64_t descriptionLength = fm.boundingRect(a.description).width() * getStride();
+
+        // Check if:
+        //  (1) End of annotation (might be maximum, or end of description text) is still visible in time
+        //  (2) Part of the annotation is already visible in time
+        //
+        // Currently there is no check if the annotation is visible in frequency. This is a
+        // possible performance improvement
+        //
+        size_t start = a.sampleRange.minimum;
+        size_t end = std::max(a.sampleRange.minimum + descriptionLength, a.sampleRange.maximum);
+
+        if(start <= sampleRange.maximum && end >= sampleRange.minimum) {
+
+            double frequency = a.frequencyRange.maximum - inputSource->getFrequency();
+            int x = (a.sampleRange.minimum - sampleRange.minimum) / getStride();
+            int y = zero - frequency / sampleRate * rect.height();
+            int height = (a.frequencyRange.maximum - a.frequencyRange.minimum) / sampleRate * rect.height();
+            int width = (a.sampleRange.maximum - a.sampleRange.minimum) / getStride();
+
+            // Draw the description 2 pixels above the box
+            painter.drawText(x, y - 2, a.description);
+            painter.drawRect(x, y, width, height);
+        }
+    }
+
     painter.restore();
 }
 
@@ -334,7 +377,7 @@ void SpectrogramPlot::setZoomLevel(int zoom)
     zoomLevel = zoom;
 }
 
-void SpectrogramPlot::setSampleRate(size_t rate)
+void SpectrogramPlot::setSampleRate(double rate)
 {
     sampleRate = rate;
 }

@@ -37,6 +37,7 @@ MainWindow::MainWindow()
     addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     input = new InputSource();
+    input->subscribe(this);
 
     plots = new PlotView(input);
     setCentralWidget(plots);
@@ -93,6 +94,19 @@ void MainWindow::openFile(QString fileName)
     {
         QMessageBox msgBox(QMessageBox::Critical, "Inspectrum openFile error", QString("%1: %2").arg(fileName).arg(ex.what()));
         msgBox.exec();
+    }
+}
+
+void MainWindow::invalidateEvent()
+{
+    plots->setSampleRate(input->rate());
+
+    // Only update the text box if it is not already representing
+    // the current value. Otherwise the cursor might jump or the
+    // representation might change (e.g. to scientific).
+    double currentValue = dock->sampleRate->text().toDouble();
+    if(QString::number(input->rate()) != QString::number(currentValue)) {
+        setSampleRate(input->rate());
     }
 }
 

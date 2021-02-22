@@ -24,7 +24,7 @@
 #include "spectrogramcontrols.h"
 #include "plotview.h"
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, Subscriber
 {
     Q_OBJECT
 
@@ -37,6 +37,7 @@ public slots:
     void setSampleRate(QString rate);
     void setSampleRate(double rate);
     void setFormat(QString fmt);
+    void invalidateEvent() override;
 
 private:
     SpectrogramControls *dock;

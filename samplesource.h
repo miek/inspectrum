@@ -23,9 +23,23 @@
 #include <memory>
 #include "abstractsamplesource.h"
 
+#include "util.h"
+#include <QString>
+#include <QObject>
+
+class Annotation
+{
+public:
+    range_t<size_t> sampleRange;
+    range_t<double> frequencyRange;
+    QString description;
+};
+
 template<typename T>
 class SampleSource : public AbstractSampleSource
 {
+protected:
+    double frequency;
 
 public:
     virtual ~SampleSource() {};
@@ -35,6 +49,8 @@ public:
     virtual size_t count() = 0;
     virtual double rate() = 0;
     virtual float relativeBandwidth() = 0;
+    QList<Annotation> annotationList;
     std::type_index sampleType() override;
     virtual bool realSignal() { return false; };
+    double getFrequency();
 };
