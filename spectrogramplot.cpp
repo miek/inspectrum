@@ -169,7 +169,7 @@ void SpectrogramPlot::paintAnnotations(QPainter &painter, QRect &rect, range_t<s
     for (int i = 0; i < inputSource->annotationList.size(); i++) {
         Annotation a = inputSource->annotationList.at(i);
 
-        uint64_t descriptionLength = fm.boundingRect(a.description).width() * getStride();
+        size_t descriptionLength = fm.boundingRect(a.description).width() * getStride();
 
         // Check if:
         //  (1) End of annotation (might be maximum, or end of description text) is still visible in time
