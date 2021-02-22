@@ -211,24 +211,24 @@ void InputSource::readMetaData(const QString &filename)
     auto global_core = metaData.global.access<core::GlobalT>();
 
     if(global_core.datatype.compare("cf32_le") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
     } else if(global_core.datatype.compare("ci16_le") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS16SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexS16SampleAdapter>();
     } else if(global_core.datatype.compare("ci8") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS8SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexS8SampleAdapter>();
     } else if(global_core.datatype.compare("cu8") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexU8SampleAdapter>();
     } else if(global_core.datatype.compare("rf32_le") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealF32SampleAdapter());
+        sampleAdapter = std::make_unique<RealF32SampleAdapter>();
         _realSignal = true;
     } else if(global_core.datatype.compare("ri16_le") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS16SampleAdapter());
+        sampleAdapter = std::make_unique<RealS16SampleAdapter>();
         _realSignal = true;
     } else if(global_core.datatype.compare("ri8") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS8SampleAdapter());
+        sampleAdapter = std::make_unique<RealS8SampleAdapter>();
         _realSignal = true;
     } else if(global_core.datatype.compare("ru8") == 0) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealU8SampleAdapter());
+        sampleAdapter = std::make_unique<RealU8SampleAdapter>();
         _realSignal = true;
     } else {
         throw std::runtime_error("SigMF meta data specifies unsupported datatype");
@@ -261,35 +261,35 @@ void InputSource::openFile(const char *filename)
     std::string suffix = std::string(fileInfo.suffix().toLower().toUtf8().constData());
     if(_fmt!=""){ suffix = _fmt; } // allow fmt override
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
     }
     else if ((suffix == "cs16") || (suffix == "sc16") || (suffix == "c16")) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS16SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexS16SampleAdapter>();
     }
     else if ((suffix == "cs8") || (suffix == "sc8") || (suffix == "c8")) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexS8SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexS8SampleAdapter>();
     }
     else if ((suffix == "cu8") || (suffix == "uc8")) {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexU8SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexU8SampleAdapter>();
     }
     else if (suffix == "f32") {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealF32SampleAdapter());
+        sampleAdapter = std::make_unique<RealF32SampleAdapter>();
         _realSignal = true;
     }
     else if (suffix == "s16") {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS16SampleAdapter());
+        sampleAdapter = std::make_unique<RealS16SampleAdapter>();
         _realSignal = true;
     }
     else if (suffix == "s8") {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealS8SampleAdapter());
+        sampleAdapter = std::make_unique<RealS8SampleAdapter>();
         _realSignal = true;
     }
     else if (suffix == "u8") {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new RealU8SampleAdapter());
+        sampleAdapter = std::make_unique<RealU8SampleAdapter>();
         _realSignal = true;
     }
     else {
-        sampleAdapter = std::unique_ptr<SampleAdapter>(new ComplexF32SampleAdapter());
+        sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
     }
 
     QString dataFilename;
@@ -319,7 +319,7 @@ void InputSource::openFile(const char *filename)
         dataFilename = filename;
     }
 
-    std::unique_ptr<QFile> file(new QFile(dataFilename));
+    auto file = std::make_unique<QFile>(dataFilename);
     if (!file->open(QFile::ReadOnly)) {
         throw std::runtime_error(file->errorString().toStdString());
     }
@@ -364,7 +364,7 @@ std::unique_ptr<std::complex<float>[]> InputSource::getSamples(size_t start, siz
     if (start + length > sampleCount)
         return nullptr;
 
-    std::unique_ptr<std::complex<float>[]> dest(new std::complex<float>[length]);
+    auto dest = std::make_unique<std::complex<float>[]>(length);
     sampleAdapter->copyRange(mmapData, start, length, dest.get());
 
     return dest;
