@@ -28,6 +28,7 @@ class SampleAdapter {
 public:
     virtual size_t sampleSize() = 0;
     virtual void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) = 0;
+    virtual ~SampleAdapter() { };
 };
 
 class InputSource : public SampleSource<std::complex<float>>
