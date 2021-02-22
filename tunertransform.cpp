@@ -29,7 +29,7 @@ TunerTransform::TunerTransform(std::shared_ptr<SampleSource<std::complex<float>>
 void TunerTransform::work(void *input, void *output, int count, size_t sampleid)
 {
     auto out = static_cast<std::complex<float>*>(output);
-    std::unique_ptr<std::complex<float>[]> temp(new std::complex<float>[count]);
+    auto temp = std::make_unique<std::complex<float>[]>(count);
 
     // Mix down
     nco_crcf mix = nco_crcf_create(LIQUID_NCO);

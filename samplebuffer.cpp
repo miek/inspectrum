@@ -42,8 +42,8 @@ std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(size_t start, size_t
     if (samples == nullptr)
     	return nullptr;
 
-    std::unique_ptr<Tout[]> temp(new Tout[history + length]);
-    std::unique_ptr<Tout[]> dest(new Tout[length]);
+    auto temp = std::make_unique<Tout[]>(history + length);
+    auto dest = std::make_unique<Tout[]>(length);
     QMutexLocker ml(&mutex);
     work(samples.get(), temp.get(), history + length, start);
     memcpy(dest.get(), temp.get() + history, length * sizeof(Tout));
