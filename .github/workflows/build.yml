@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ['macos-latest', 'ubuntu-latest']
+        os: ['macos-latest', 'ubuntu-20.04', 'ubuntu-18.04']
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -23,7 +23,7 @@ jobs:
 
     - name: Install dependencies (Ubuntu)
       run: sudo apt install libfftw3-dev libliquid-dev qtbase5-dev
-      if: matrix.os == 'ubuntu-latest'
+      if: startsWith(matrix.os, 'ubuntu-')
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
