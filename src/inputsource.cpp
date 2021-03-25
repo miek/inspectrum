@@ -295,6 +295,7 @@ void InputSource::openFile(const char *filename)
     QString dataFilename;
 
 #if ENABLE_SIGMF
+    annotationList.clear();
     QString metaFilename;
 
     if (suffix == "sigmf-meta") {
