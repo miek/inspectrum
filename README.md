@@ -43,4 +43,4 @@ If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
  * Export of selected time period, filtered samples and demodulated data
 
 ## Contact
- * #inspectrum on freenode IRC
+ * #inspectrum on [libera.chat](https://libera.chat)
