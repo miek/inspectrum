@@ -298,13 +298,8 @@ void InputSource::openFile(const char *filename)
     annotationList.clear();
     QString metaFilename;
 
-    if (suffix == "sigmf-meta") {
+    if (suffix == "sigmf-meta" || suffix == "sigmf-data" || suffix == "sigmf-") {
         dataFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-data";
-        metaFilename = filename;
-        readMetaData(metaFilename);
-    }
-    else if (suffix == "sigmf-data") {
-        dataFilename = filename;
         metaFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-meta";
         readMetaData(metaFilename);
     }
@@ -312,7 +307,7 @@ void InputSource::openFile(const char *filename)
         throw std::runtime_error("SigMF archives are not supported. Consider extracting a recording.");
     }
 #else
-    if (suffix == "sigmf-meta" || suffix == "sigmf-data" || suffix == "sigmf") {
+    if (suffix == "sigmf-meta" || suffix == "sigmf-data" || suffix == "sigmf-" || suffix == "sigmf") {
         throw std::runtime_error("Support for SigMF recordings is not enabled");
     }
 #endif
