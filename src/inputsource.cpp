@@ -397,13 +397,8 @@ void InputSource::openFile(const char *filename)
     annotationList.clear();
     QString metaFilename;
 
-    if (suffix == "sigmf-meta") {
+    if (suffix == "sigmf-meta" || suffix == "sigmf-data" || suffix == "sigmf-") {
         dataFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-data";
-        metaFilename = filename;
-        readMetaData(metaFilename);
-    }
-    else if (suffix == "sigmf-data") {
-        dataFilename = filename;
         metaFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-meta";
         readMetaData(metaFilename);
     }
