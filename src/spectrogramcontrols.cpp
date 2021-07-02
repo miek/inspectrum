@@ -93,6 +93,14 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     symbolPeriodLabel = new QLabel();
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
+    // Hotkey Guide
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Hotkeys</b>")));
+
+    layout->addRow(new QLabel(tr("Control+ScrollWheel: Zoom in/out")));
+    layout->addRow(new QLabel(tr("Alt+ScrollWheel: Shift in time")));
+    layout->addRow(new QLabel(tr("Menu key: Open plotting/export menu")));
+    
     widget->setLayout(layout);
     setWidget(widget);
 
