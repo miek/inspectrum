@@ -93,6 +93,13 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     symbolPeriodLabel = new QLabel();
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
+    // SigMF selection settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>SigMF Control</b>")));
+
+    annosCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Display Annotations:")), annosCheckBox);
+
     widget->setLayout(layout);
     setWidget(widget);
 
@@ -125,6 +132,8 @@ void SpectrogramControls::setDefaults()
 
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
+
+    annosCheckBox->setCheckState(Qt::Checked);
 
     // Try to set the sample rate from the last-used value
     QSettings settings;

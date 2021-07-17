@@ -49,6 +49,8 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 
     enableScales(true);
 
+    enableAnnos(true);
+
     addPlot(spectrogramPlot);
 
     mainSampleSource->subscribe(this);
@@ -601,6 +603,14 @@ void PlotView::enableScales(bool enabled)
 
     if (spectrogramPlot != nullptr)
         spectrogramPlot->enableScales(enabled);
+
+    viewport()->update();
+}
+
+void PlotView::enableAnnos(bool enabled)
+{
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->enableAnnos(enabled);
 
     viewport()->update();
 }

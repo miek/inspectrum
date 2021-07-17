@@ -40,6 +40,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     powerMin = -50.0f;
     sampleRate = 0;
     frequencyScaleEnabled = false;
+    sigmfAnnotationsEnabled = true;
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
@@ -67,7 +68,9 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<size_t>
 
     if (frequencyScaleEnabled)
         paintFrequencyScale(painter, rect);
-    paintAnnotations(painter, rect, sampleRange);
+
+    if (sigmfAnnotationsEnabled)
+        paintAnnotations(painter, rect, sampleRange);
 }
 
 void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
@@ -391,6 +394,11 @@ void SpectrogramPlot::setSampleRate(double rate)
 void SpectrogramPlot::enableScales(bool enabled)
 {
    frequencyScaleEnabled = enabled;
+}
+
+void SpectrogramPlot::enableAnnos(bool enabled)
+{
+   sigmfAnnotationsEnabled = enabled;
 }
 
 bool SpectrogramPlot::tunerEnabled()
