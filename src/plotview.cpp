@@ -439,9 +439,12 @@ void PlotView::setFFTAndZoom(int size, int zoom)
         spectrogramPlot->setFFTSize(size);
 
     // Set new zoom level
-    zoomLevel = zoom;
-    if (spectrogramPlot != nullptr)
-        spectrogramPlot->setZoomLevel(zoom);
+    zoomLevel = std::max(1,zoom);
+    nfftSkip = std::max(1,-1*zoom);
+    if (spectrogramPlot != nullptr) {
+        spectrogramPlot->setZoomLevel(zoomLevel);
+        spectrogramPlot->setSkip(nfftSkip);
+    }
 
     // Update horizontal (time) scrollbar
     horizontalScrollBar()->setSingleStep(10);
@@ -568,7 +571,7 @@ void PlotView::resizeEvent(QResizeEvent * event)
 
 size_t PlotView::samplesPerColumn()
 {
-    return fftSize / zoomLevel;
+    return fftSize * nfftSkip / zoomLevel;
 }
 
 void PlotView::scrollContentsBy(int dx, int dy)
