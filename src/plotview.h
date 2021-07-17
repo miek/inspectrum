@@ -73,6 +73,7 @@ private:
 
     int fftSize = 1024;
     int zoomLevel = 1;
+    int nfftSkip = 1;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
