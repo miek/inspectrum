@@ -29,6 +29,7 @@
 
 #include <QFileInfo>
 
+using namespace std;
 #if ENABLE_SIGMF
 #include <sigmf/sigmf.h>
 #endif
