@@ -52,7 +52,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
     zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
-    zoomLevelSlider->setRange(0, 10);
+    zoomLevelSlider->setRange(-6, 10);
     zoomLevelSlider->setPageStep(1);
 
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
@@ -139,7 +139,13 @@ void SpectrogramControls::setDefaults()
 void SpectrogramControls::fftOrZoomChanged(void)
 {
     int fftSize = pow(2, fftSizeSlider->value());
-    int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
+    int zoomLevel = zoomLevelSlider->value();
+    if (zoomLevel >= 0)
+        // zooming in by power-of-two steps
+        zoomLevel = std::min(fftSize, (int)pow(2, zoomLevel));
+    else
+        // zooming out (skipping FFTs) by power-of-two steps
+        zoomLevel = -1*std::min(fftSize, (int)pow(2, -1*zoomLevel));
     emit fftOrZoomChanged(fftSize, zoomLevel);
 }
 

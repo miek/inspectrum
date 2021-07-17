@@ -54,6 +54,7 @@ public slots:
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
+    void setSkip(int skip);
     void tunerMoved();
 
 private:
@@ -69,6 +70,7 @@ private:
 
     int fftSize;
     int zoomLevel;
+    int nfftSkip;
     float powerMax;
     float powerMin;
     double sampleRate;
@@ -92,19 +94,22 @@ class TileCacheKey
 {
 
 public:
-    TileCacheKey(int fftSize, int zoomLevel, size_t sample) {
+    TileCacheKey(int fftSize, int zoomLevel, int nfftSkip, size_t sample) {
         this->fftSize = fftSize;
         this->zoomLevel = zoomLevel;
+        this->nfftSkip = nfftSkip;
         this->sample = sample;
     }
 
     bool operator==(const TileCacheKey &k2) const {
         return (this->fftSize == k2.fftSize) &&
                (this->zoomLevel == k2.zoomLevel) &&
+               (this->nfftSkip == k2.nfftSkip) &&
                (this->sample == k2.sample);
     }
 
     int fftSize;
     int zoomLevel;
+    int nfftSkip;
     size_t sample;
 };
