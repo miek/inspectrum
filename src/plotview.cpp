@@ -390,6 +390,7 @@ void PlotView::setCursorSegments(int segments)
     selectedSamples.maximum = selectedSamples.minimum + (segments * sampPerSeg + 0.5f);
 
     cursors.setSegments(segments);
+
     updateView();
     emitTimeSelection();
 }
@@ -397,6 +398,9 @@ void PlotView::setCursorSegments(int segments)
 void PlotView::setFFTAndZoom(int size, int zoom)
 {
     auto oldSamplesPerColumn = samplesPerColumn();
+    float oldPlotCenter = (verticalScrollBar()->value() + viewport()->height() / 2.0) / plotsHeight();
+    if (verticalScrollBar()->maximum() == 0)
+        oldPlotCenter = 0.5;
 
     // Set new FFT size
     fftSize = size;
@@ -416,6 +420,10 @@ void PlotView::setFFTAndZoom(int size, int zoom)
     horizontalScrollBar()->setPageStep(100);
 
     updateView(true, samplesPerColumn() < oldSamplesPerColumn);
+
+    // maintain the relative position of the vertical scroll bar
+    if (verticalScrollBar()->maximum())
+        verticalScrollBar()->setValue((int )(oldPlotCenter * plotsHeight() - viewport()->height() / 2.0 + 0.5f));
 }
 
 void PlotView::setPowerMin(int power)
@@ -572,6 +580,7 @@ void PlotView::updateView(bool reCenter, bool expanding)
     }
     horizontalScrollBar()->setMaximum(std::max(0, sampleToColumn(mainSampleSource->count()) - width()));
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
+
     if (expanding) {
         updateViewRange(reCenter);
     }
