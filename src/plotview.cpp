@@ -181,6 +181,23 @@ void PlotView::enableCursors(bool enabled)
     viewport()->update();
 }
 
+void PlotView::keyPressEvent(QKeyEvent *keyEvent) {
+    int key = keyEvent->key();
+    if (key == Qt::Key_PageDown ||
+        key == Qt::Key_PageUp) {
+
+        int stride = width() - verticalScrollBar()->width();
+
+        horizontalScrollBar()->setValue(
+            horizontalScrollBar()->value() + stride * (key == Qt::Key_PageDown ? 1 : -1)
+        );
+        updateView(false);
+        return;
+    }
+
+    QGraphicsView::keyPressEvent(keyEvent);
+}
+
 bool PlotView::viewportEvent(QEvent *event) {
     // Handle wheel events for zooming (before the parent's handler to stop normal scrolling)
     if (event->type() == QEvent::Wheel) {
