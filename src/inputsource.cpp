@@ -42,6 +42,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
+#include <QColor>
 
 
 class ComplexF32SampleAdapter : public SampleAdapter {
@@ -244,6 +245,12 @@ void InputSource::readMetaData(const QString &filename)
     for(auto annotation : metaData.annotations) {
         Annotation a;
         auto core = annotation.access<core::AnnotationT>();
+
+        if (QColor::isValidColor(QString::fromStdString(core.comment))) {
+            a.annoColor = QString::fromStdString(core.comment);
+        } else {
+            a.annoColor = QString::fromStdString("white");
+        }
 
         a.sampleRange = range_t<size_t>{core.sample_start, core.sample_start + core.sample_count - 1};
         a.frequencyRange = range_t<double>{core.freq_lower_edge, core.freq_upper_edge};

@@ -25,6 +25,7 @@
 
 #include "util.h"
 #include <QString>
+#include <QColor>
 #include <QObject>
 
 class Annotation
@@ -32,6 +33,7 @@ class Annotation
 public:
     range_t<size_t> sampleRange;
     range_t<double> frequencyRange;
+    QColor annoColor;
     QString description;
 };
 
