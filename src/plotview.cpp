@@ -51,6 +51,8 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 
     enableAnnos(true);
 
+    enableAnnoColors(true);
+
     addPlot(spectrogramPlot);
 
     mainSampleSource->subscribe(this);
@@ -620,6 +622,14 @@ void PlotView::enableAnnos(bool enabled)
 {
     if (spectrogramPlot != nullptr)
         spectrogramPlot->enableAnnos(enabled);
+
+    viewport()->update();
+}
+
+void PlotView::enableAnnoColors(bool enabled)
+{
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->enableAnnoColors(enabled);
 
     viewport()->update();
 }

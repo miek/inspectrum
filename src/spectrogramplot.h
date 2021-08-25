@@ -49,6 +49,7 @@ public:
     bool tunerEnabled();
     void enableScales(bool enabled);
     void enableAnnos(bool enabled);
+    void enableAnnoColors(bool enabled);
 
 public slots:
     void setFFTSize(int size);
@@ -77,6 +78,7 @@ private:
     double sampleRate;
     bool frequencyScaleEnabled;
     bool sigmfAnnotationsEnabled;
+    bool sigmfAnnotationColors;
 
     Tuner tuner;
     std::shared_ptr<TunerTransform> tunerTransform;
