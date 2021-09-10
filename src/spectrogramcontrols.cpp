@@ -47,7 +47,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
 
     fftSizeSlider = new QSlider(Qt::Horizontal, widget);
-    fftSizeSlider->setRange(4, 13);
+    fftSizeSlider->setRange(4, 16);
     fftSizeSlider->setPageStep(1);
     
     QObject::connect(fftSizeSlider, &QSlider::sliderMoved,
@@ -58,7 +58,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
     zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
-    zoomLevelSlider->setRange(0, 10);
+    zoomLevelSlider->setRange(-6, 10);
     zoomLevelSlider->setPageStep(1);
 
     layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
@@ -99,6 +99,15 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     symbolPeriodLabel = new QLabel();
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
+    // SigMF selection settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>SigMF Control</b>")));
+
+    annosCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Display Annotations:")), annosCheckBox);
+    annoColorCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Annotation Colors:")), annoColorCheckBox);
+
     widget->setLayout(layout);
     setWidget(widget);
 
@@ -132,6 +141,9 @@ void SpectrogramControls::setDefaults()
     cursorsCheckBox->setCheckState(Qt::Unchecked);
     cursorSymbolsSpinBox->setValue(1);
 
+    annosCheckBox->setCheckState(Qt::Checked);
+    annoColorCheckBox->setCheckState(Qt::Checked);
+
     // Try to set the sample rate from the last-used value
     QSettings settings;
     int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
@@ -145,7 +157,13 @@ void SpectrogramControls::setDefaults()
 void SpectrogramControls::fftOrZoomChanged(void)
 {
     int fftSize = pow(2, fftSizeSlider->value());
-    int zoomLevel = std::min(fftSize, (int)pow(2, zoomLevelSlider->value()));
+    int zoomLevel = zoomLevelSlider->value();
+    if (zoomLevel >= 0)
+        // zooming in by power-of-two steps
+        zoomLevel = std::min(fftSize, (int)pow(2, zoomLevel));
+    else
+        // zooming out (skipping FFTs) by power-of-two steps
+        zoomLevel = -1*std::min(fftSize, (int)pow(2, -1*zoomLevel));
     emit fftOrZoomChanged(fftSize, zoomLevel);
 }
 

@@ -49,6 +49,10 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 
     enableScales(true);
 
+    enableAnnos(true);
+
+    enableAnnoColors(true);
+
     addPlot(spectrogramPlot);
 
     mainSampleSource->subscribe(this);
@@ -388,6 +392,7 @@ void PlotView::setCursorSegments(int segments)
     selectedSamples.maximum = selectedSamples.minimum + (segments * sampPerSeg + 0.5f);
 
     cursors.setSegments(segments);
+
     updateView();
     emitTimeSelection();
 }
@@ -395,6 +400,9 @@ void PlotView::setCursorSegments(int segments)
 void PlotView::setFFTAndZoom(int size, int zoom)
 {
     auto oldSamplesPerColumn = samplesPerColumn();
+    float oldPlotCenter = (verticalScrollBar()->value() + viewport()->height() / 2.0) / plotsHeight();
+    if (verticalScrollBar()->maximum() == 0)
+        oldPlotCenter = 0.5;
 
     // Set new FFT size
     fftSize = size;
@@ -402,15 +410,22 @@ void PlotView::setFFTAndZoom(int size, int zoom)
         spectrogramPlot->setFFTSize(size);
 
     // Set new zoom level
-    zoomLevel = zoom;
-    if (spectrogramPlot != nullptr)
-        spectrogramPlot->setZoomLevel(zoom);
+    zoomLevel = std::max(1,zoom);
+    nfftSkip = std::max(1,-1*zoom);
+    if (spectrogramPlot != nullptr) {
+        spectrogramPlot->setZoomLevel(zoomLevel);
+        spectrogramPlot->setSkip(nfftSkip);
+    }
 
     // Update horizontal (time) scrollbar
     horizontalScrollBar()->setSingleStep(10);
     horizontalScrollBar()->setPageStep(100);
 
     updateView(true, samplesPerColumn() < oldSamplesPerColumn);
+
+    // maintain the relative position of the vertical scroll bar
+    if (verticalScrollBar()->maximum())
+        verticalScrollBar()->setValue((int )(oldPlotCenter * plotsHeight() - viewport()->height() / 2.0 + 0.5f));
 }
 
 void PlotView::setPowerMin(int power)
@@ -531,7 +546,7 @@ void PlotView::resizeEvent(QResizeEvent * event)
 
 size_t PlotView::samplesPerColumn()
 {
-    return fftSize / zoomLevel;
+    return fftSize * nfftSkip / zoomLevel;
 }
 
 void PlotView::scrollContentsBy(int dx, int dy)
@@ -567,6 +582,7 @@ void PlotView::updateView(bool reCenter, bool expanding)
     }
     horizontalScrollBar()->setMaximum(std::max(0, sampleToColumn(mainSampleSource->count()) - width()));
     verticalScrollBar()->setMaximum(std::max(0, plotsHeight() - viewport()->height()));
+
     if (expanding) {
         updateViewRange(reCenter);
     }
@@ -598,6 +614,22 @@ void PlotView::enableScales(bool enabled)
 
     if (spectrogramPlot != nullptr)
         spectrogramPlot->enableScales(enabled);
+
+    viewport()->update();
+}
+
+void PlotView::enableAnnos(bool enabled)
+{
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->enableAnnos(enabled);
+
+    viewport()->update();
+}
+
+void PlotView::enableAnnoColors(bool enabled)
+{
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->enableAnnoColors(enabled);
 
     viewport()->update();
 }

@@ -46,6 +46,8 @@ public slots:
     void cursorsMoved();
     void enableCursors(bool enabled);
     void enableScales(bool enabled);
+    void enableAnnos(bool enabled);
+    void enableAnnoColors(bool enabled);
     void invalidateEvent() override;
     void repaint();
     void setCursorSegments(int segments);
@@ -73,6 +75,7 @@ private:
 
     int fftSize = 1024;
     int zoomLevel = 1;
+    int nfftSkip = 1;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;

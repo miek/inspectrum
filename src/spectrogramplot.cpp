@@ -35,10 +35,13 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
 {
     setFFTSize(fftSize);
     zoomLevel = 1;
+    nfftSkip = 1;
     powerMax = 0.0f;
     powerMin = -50.0f;
     sampleRate = 0;
     frequencyScaleEnabled = false;
+    sigmfAnnotationsEnabled = true;
+    sigmfAnnotationColors = true;
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
@@ -66,7 +69,9 @@ void SpectrogramPlot::paintFront(QPainter &painter, QRect &rect, range_t<size_t>
 
     if (frequencyScaleEnabled)
         paintFrequencyScale(painter, rect);
-    paintAnnotations(painter, rect, sampleRange);
+
+    if (sigmfAnnotationsEnabled)
+        paintAnnotations(painter, rect, sampleRange);
 }
 
 void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
@@ -188,6 +193,8 @@ void SpectrogramPlot::paintAnnotations(QPainter &painter, QRect &rect, range_t<s
             int y = zero - frequency / sampleRate * rect.height();
             int height = (a.frequencyRange.maximum - a.frequencyRange.minimum) / sampleRate * rect.height();
             int width = (a.sampleRange.maximum - a.sampleRange.minimum) / getStride();
+            
+            if (sigmfAnnotationColors) painter.setPen(a.annoColor);
 
             // Draw the description 2 pixels above the box
             painter.drawText(x, y - 2, a.description);
@@ -222,7 +229,7 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> s
 
 QPixmap* SpectrogramPlot::getPixmapTile(size_t tile)
 {
-    QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));
+    QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile));
     if (obj != 0)
         return obj;
 
@@ -241,13 +248,13 @@ QPixmap* SpectrogramPlot::getPixmapTile(size_t tile)
         }
     }
     obj->convertFromImage(image);
-    pixmapCache.insert(TileCacheKey(fftSize, zoomLevel, tile), obj);
+    pixmapCache.insert(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile), obj);
     return obj;
 }
 
 float* SpectrogramPlot::getFFTTile(size_t tile)
 {
-    std::array<float, tileSize>* obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
+    std::array<float, tileSize>* obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile));
     if (obj != nullptr)
         return obj->data();
 
@@ -259,7 +266,7 @@ float* SpectrogramPlot::getFFTTile(size_t tile)
         sample += getStride();
         ptr += fftSize;
     }
-    fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), destStorage);
+    fftCache.insert(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile), destStorage);
     return destStorage->data();
 }
 
@@ -296,7 +303,7 @@ void SpectrogramPlot::getLine(float *dest, size_t sample)
 
 int SpectrogramPlot::getStride()
 {
-    return fftSize / zoomLevel;
+    return fftSize * nfftSkip / zoomLevel;
 }
 
 float SpectrogramPlot::getTunerPhaseInc()
@@ -377,6 +384,11 @@ void SpectrogramPlot::setZoomLevel(int zoom)
     zoomLevel = zoom;
 }
 
+void SpectrogramPlot::setSkip(int skip)
+{
+    nfftSkip = skip;
+}
+
 void SpectrogramPlot::setSampleRate(double rate)
 {
     sampleRate = rate;
@@ -385,6 +397,16 @@ void SpectrogramPlot::setSampleRate(double rate)
 void SpectrogramPlot::enableScales(bool enabled)
 {
    frequencyScaleEnabled = enabled;
+}
+
+void SpectrogramPlot::enableAnnos(bool enabled)
+{
+   sigmfAnnotationsEnabled = enabled;
+}
+
+void SpectrogramPlot::enableAnnoColors(bool enabled)
+{
+   sigmfAnnotationColors = enabled;
 }
 
 bool SpectrogramPlot::tunerEnabled()
