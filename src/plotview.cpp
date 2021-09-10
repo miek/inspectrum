@@ -21,17 +21,18 @@
 #include <iostream>
 #include <fstream>
 #include <QApplication>
+#include <QClipboard>
 #include <QDebug>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QGroupBox>
 #include <QMenu>
 #include <QPainter>
-#include <QScrollBar>
-#include <QFileDialog>
+#include <QProgressDialog>
 #include <QRadioButton>
-#include <QVBoxLayout>
-#include <QGroupBox>
-#include <QGridLayout>
+#include <QScrollBar>
 #include <QSpinBox>
-#include <QClipboard>
+#include <QVBoxLayout>
 #include "plots.h"
 
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
@@ -349,7 +350,13 @@ void PlotView::exportSamples(std::shared_ptr<AbstractSampleSource> src)
         // viewRange.length() is used as some less arbitrary step value
         size_t step = viewRange.length();
 
+        QProgressDialog progress("Exporting samples...", "Cancel", start, end, this);
+        progress.setWindowModality(Qt::WindowModal);
         for (index = start; index < end; index += step) {
+            progress.setValue(index);
+            if (progress.wasCanceled())
+                break;
+
             size_t length = std::min(step, end - index);
             auto samples = sampleSrc->getSamples(index, length);
             if (samples != nullptr) {

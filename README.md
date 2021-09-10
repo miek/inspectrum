@@ -6,11 +6,12 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 ## Try it
 ### Prerequisites
 
- * cmake >= 2.8.11
+ * cmake >= 3.1
  * fftw 3.x
  * [liquid-dsp](https://github.com/jgaeddert/liquid-dsp) >= v1.3.0
  * pkg-config
  * qt5
+ * [libsigmf](https://github.com/deepsig/libsigmf) (optional, for SigMF support)
 
 ### Build instructions
 
@@ -22,6 +23,7 @@ Build instructions can be found here: https://github.com/miek/inspectrum/wiki/Bu
 
 ## Input
 inspectrum supports the following file types:
+ * `*.sigmf-meta, *.sigmf-data` - SigMF recordings
  * `*.cf32`, `*.cfile` - Complex 32-bit floating point samples (GNURadio, osmocom_fft)
  * `*.cs16` - Complex 16-bit signed integer samples (BladeRF)
  * `*.cs8` - Complex 8-bit signed integer samples (HackRF)
@@ -41,4 +43,4 @@ If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
  * Export of selected time period, filtered samples and demodulated data
 
 ## Contact
- * #inspectrum on freenode IRC
+ * #inspectrum on [libera.chat](https://libera.chat)
