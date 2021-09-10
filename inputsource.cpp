@@ -56,6 +56,22 @@ public:
     }
 };
 
+class ComplexF64SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(std::complex<double>);
+    }
+
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const std::complex<double>*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const std::complex<double>& v) -> std::complex<float> {
+                return { (float)v.real() , (float)v.imag() };
+            }
+        );
+    }
+};
+
 class ComplexS16SampleAdapter : public SampleAdapter {
 public:
     size_t sampleSize() override {
@@ -262,6 +278,9 @@ void InputSource::openFile(const char *filename)
     if(_fmt!=""){ suffix = _fmt; } // allow fmt override
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
+    }
+    else if ((suffix == "cf64")  || (suffix == "fc64")) {
+        sampleAdapter = std::make_unique<ComplexF64SampleAdapter>();
     }
     else if ((suffix == "cs16") || (suffix == "sc16") || (suffix == "c16")) {
         sampleAdapter = std::make_unique<ComplexS16SampleAdapter>();
