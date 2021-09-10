@@ -23,6 +23,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QLabel>
+#include <QtWidgets>
 #include <cmath>
 #include "util.h"
 
@@ -48,6 +49,11 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     fftSizeSlider = new QSlider(Qt::Horizontal, widget);
     fftSizeSlider->setRange(4, 13);
     fftSizeSlider->setPageStep(1);
+    
+    QObject::connect(fftSizeSlider, &QSlider::sliderMoved,
+    [&](int value) {
+      QToolTip::showText(QCursor::pos(), QString("%1").arg((int)pow(2, value)), nullptr);
+    });
 
     layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
 
