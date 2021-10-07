@@ -217,6 +217,16 @@ void SpectrogramControls::timeSelectionChanged(float time)
     }
 }
 
+void SpectrogramControls::adjustPowerMin(int amount)
+{
+    powerMinSlider->setValue(std::max(std::min(powerMinSlider->value() + amount, 10), -140));
+}
+
+void SpectrogramControls::adjustPowerMax(int amount)
+{
+    powerMaxSlider->setValue(std::max(std::min(powerMaxSlider->value() + amount, 10), -140));
+}
+
 void SpectrogramControls::zoomIn()
 {
     zoomLevelSlider->setValue(zoomLevelSlider->value() + 1);

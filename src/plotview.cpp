@@ -238,6 +238,22 @@ bool PlotView::viewportEvent(QEvent *event) {
                 return true;
     }
 
+    if (event->type() == QEvent::MouseMove && (QApplication::keyboardModifiers() & Qt::ControlModifier))
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        int delta_x = mouseEvent->pos().x() - last_x_clicked;
+        int delta_y = last_y_clicked - mouseEvent->pos().y();
+        last_x_clicked = mouseEvent->pos().x();
+        last_y_clicked = mouseEvent->pos().y();
+        if (std::abs(delta_x) > 30 || std::abs(delta_y) > 30)
+        {
+            return true;
+        }
+        emit adjustPowerMin(delta_x);
+        emit adjustPowerMax(delta_y);
+        return true;
+    }
+
     // Handle parent eveents
     return QGraphicsView::viewportEvent(event);
 }

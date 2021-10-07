@@ -54,6 +54,8 @@ MainWindow::MainWindow()
 
     // Connect dock outputs
     connect(plots, &PlotView::timeSelectionChanged, dock, &SpectrogramControls::timeSelectionChanged);
+    connect(plots, &PlotView::adjustPowerMax, dock, &SpectrogramControls::adjustPowerMax);
+    connect(plots, &PlotView::adjustPowerMin, dock, &SpectrogramControls::adjustPowerMin);
     connect(plots, &PlotView::zoomIn, dock, &SpectrogramControls::zoomIn);
     connect(plots, &PlotView::zoomOut, dock, &SpectrogramControls::zoomOut);
 
