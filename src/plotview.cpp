@@ -249,8 +249,8 @@ bool PlotView::viewportEvent(QEvent *event) {
         {
             return true;
         }
-        emit adjustPowerMin(delta_x);
-        emit adjustPowerMax(delta_y);
+        emit adjustPowerBias(delta_x);
+        emit adjustPowerContrast(delta_y);
         return true;
     }
 

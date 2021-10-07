@@ -39,8 +39,8 @@ public:
 
 signals:
     void timeSelectionChanged(float time);
-    void adjustPowerMax(int amount);
-    void adjustPowerMin(int amount);
+    void adjustPowerContrast(int amount);
+    void adjustPowerBias(int amount);
     void zoomIn();
     void zoomOut();
 
