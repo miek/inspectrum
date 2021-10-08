@@ -245,7 +245,15 @@ void InputSource::readMetaData(const QString &filename)
         Annotation a;
         auto core = annotation.access<core::AnnotationT>();
 
-        a.sampleRange = range_t<size_t>{core.sample_start, core.sample_start + core.sample_count - 1};
+        const size_t offset = global_core.offset;
+        const size_t sample_start = core.sample_start;
+
+        if (sample_start < offset)
+            continue;
+
+        const size_t rel_sample_start = sample_start - offset;
+
+        a.sampleRange = range_t<size_t>{rel_sample_start, rel_sample_start + core.sample_count - 1};
         a.frequencyRange = range_t<double>{core.freq_lower_edge, core.freq_upper_edge};
         a.description = QString::fromStdString(core.description);
 
