@@ -492,7 +492,15 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sa
         int tickLine = sampleToColumn(tickSample - sampleRange.minimum);
 
         char buf[128];
-        snprintf(buf, sizeof(buf), "%.06f s", tick);
+        if (duration < .5)
+            snprintf(buf, sizeof(buf), "%.06f s", tick);
+        else if (duration < 3)
+            snprintf(buf, sizeof(buf), "%.02f s", tick);
+        else if (duration < 10)
+            snprintf(buf, sizeof(buf), "%.02f s", tick);
+        else
+            snprintf(buf, sizeof(buf), "%.0f s", tick);
+
         painter.drawLine(tickLine, 0, tickLine, 30);
         painter.drawText(tickLine + 2, 25, buf);
 
