@@ -73,4 +73,5 @@ public:
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
     QCheckBox *scalesCheckBox;
+    QCheckBox *annosCheckBox;
 };
