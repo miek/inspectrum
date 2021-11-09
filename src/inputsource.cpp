@@ -123,6 +123,22 @@ public:
     }
 };
 
+class RealF64SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(double);
+    }
+
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const double*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const double& v) -> std::complex<float> {
+                return {static_cast<float>(v), 0.0f};
+            }
+        );
+    }
+};
+
 class RealS16SampleAdapter : public SampleAdapter {
 public:
     size_t sampleSize() override {
@@ -282,6 +298,10 @@ void InputSource::openFile(const char *filename)
     }
     else if (suffix == "f32") {
         sampleAdapter = std::make_unique<RealF32SampleAdapter>();
+        _realSignal = true;
+    }
+    else if (suffix == "f64") {
+        sampleAdapter = std::make_unique<RealF64SampleAdapter>();
         _realSignal = true;
     }
     else if (suffix == "s16") {
