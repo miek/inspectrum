@@ -33,6 +33,9 @@ public:
     range_t<size_t> sampleRange;
     range_t<double> frequencyRange;
     QString description;
+
+    Annotation(range_t<size_t> sampleRange, range_t<double>frequencyRange, QString description)
+        : sampleRange(sampleRange), frequencyRange(frequencyRange), description(description) {}
 };
 
 template<typename T>
@@ -49,7 +52,7 @@ public:
     virtual size_t count() = 0;
     virtual double rate() = 0;
     virtual float relativeBandwidth() = 0;
-    QList<Annotation> annotationList;
+    std::vector<Annotation> annotationList;
     std::type_index sampleType() override;
     virtual bool realSignal() { return false; };
     double getFrequency();

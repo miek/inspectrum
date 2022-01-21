@@ -273,8 +273,6 @@ void InputSource::readMetaData(const QString &filename)
             if(annotation_ref.isObject()) {
                 auto sigmf_annotation = annotation_ref.toObject();
 
-                Annotation a;
-
                 const size_t sample_start = sigmf_annotation["core:sample_start"].toDouble();
 
                 if (sample_start < offset)
@@ -283,15 +281,15 @@ void InputSource::readMetaData(const QString &filename)
                 const size_t rel_sample_start = sample_start - offset;
 
                 const size_t sample_count = sigmf_annotation["core:sample_count"].toDouble();
-                a.sampleRange = range_t<size_t>{rel_sample_start, rel_sample_start + sample_count - 1};
+                auto sampleRange = range_t<size_t>{rel_sample_start, rel_sample_start + sample_count - 1};
 
                 const double freq_lower_edge = sigmf_annotation["core:freq_lower_edge"].toDouble();
                 const double freq_upper_edge = sigmf_annotation["core:freq_upper_edge"].toDouble();
-                a.frequencyRange = range_t<double>{freq_lower_edge, freq_upper_edge};
+                auto frequencyRange = range_t<double>{freq_lower_edge, freq_upper_edge};
 
-                a.description = sigmf_annotation["core:description"].toString();
+                auto description = sigmf_annotation["core:description"].toString();
 
-                annotationList.append(a);
+                annotationList.emplace_back(sampleRange, frequencyRange, description);
             }
         }
     }
