@@ -287,9 +287,9 @@ void InputSource::readMetaData(const QString &filename)
                 const double freq_upper_edge = sigmf_annotation["core:freq_upper_edge"].toDouble();
                 auto frequencyRange = range_t<double>{freq_lower_edge, freq_upper_edge};
 
-                auto description = sigmf_annotation["core:description"].toString();
+                auto label = sigmf_annotation["core:label"].toString();
 
-                annotationList.emplace_back(sampleRange, frequencyRange, description);
+                annotationList.emplace_back(sampleRange, frequencyRange, label);
             }
         }
     }

@@ -32,10 +32,10 @@ class Annotation
 public:
     range_t<size_t> sampleRange;
     range_t<double> frequencyRange;
-    QString description;
+    QString label;
 
-    Annotation(range_t<size_t> sampleRange, range_t<double>frequencyRange, QString description)
-        : sampleRange(sampleRange), frequencyRange(frequencyRange), description(description) {}
+    Annotation(range_t<size_t> sampleRange, range_t<double>frequencyRange, QString label)
+        : sampleRange(sampleRange), frequencyRange(frequencyRange), label(label) {}
 };
 
 template<typename T>

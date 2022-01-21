@@ -169,17 +169,17 @@ void SpectrogramPlot::paintAnnotations(QPainter &painter, QRect &rect, range_t<s
     for (int i = 0; i < inputSource->annotationList.size(); i++) {
         Annotation a = inputSource->annotationList.at(i);
 
-        size_t descriptionLength = fm.boundingRect(a.description).width() * getStride();
+        size_t labelLength = fm.boundingRect(a.label).width() * getStride();
 
         // Check if:
-        //  (1) End of annotation (might be maximum, or end of description text) is still visible in time
+        //  (1) End of annotation (might be maximum, or end of label text) is still visible in time
         //  (2) Part of the annotation is already visible in time
         //
         // Currently there is no check if the annotation is visible in frequency. This is a
         // possible performance improvement
         //
         size_t start = a.sampleRange.minimum;
-        size_t end = std::max(a.sampleRange.minimum + descriptionLength, a.sampleRange.maximum);
+        size_t end = std::max(a.sampleRange.minimum + labelLength, a.sampleRange.maximum);
 
         if(start <= sampleRange.maximum && end >= sampleRange.minimum) {
 
@@ -189,8 +189,8 @@ void SpectrogramPlot::paintAnnotations(QPainter &painter, QRect &rect, range_t<s
             int height = (a.frequencyRange.maximum - a.frequencyRange.minimum) / sampleRate * rect.height();
             int width = (a.sampleRange.maximum - a.sampleRange.minimum) / getStride();
 
-            // Draw the description 2 pixels above the box
-            painter.drawText(x, y - 2, a.description);
+            // Draw the label 2 pixels above the box
+            painter.drawText(x, y - 2, a.label);
             painter.drawRect(x, y, width, height);
         }
     }
