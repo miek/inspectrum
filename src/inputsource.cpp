@@ -203,54 +203,54 @@ void InputSource::readMetaData(const QString &filename)
     datafile.close();
     auto root = d.object();
 
-    if(!root.contains("global") || !root["global"].isObject()) {
+    if (!root.contains("global") || !root["global"].isObject()) {
         throw std::runtime_error("SigMF meta data is invalid (no global object found)");
     }
 
     auto global = root["global"].toObject();
 
-    if(!global.contains("core:datatype") || !global["core:datatype"].isString()) {
+    if (!global.contains("core:datatype") || !global["core:datatype"].isString()) {
         throw std::runtime_error("SigMF meta data does not specify a valid datatype");
     }
 
 
     auto datatype = global["core:datatype"].toString();
-    if(datatype.compare("cf32_le") == 0) {
+    if (datatype.compare("cf32_le") == 0) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
-    } else if(datatype.compare("ci16_le") == 0) {
+    } else if (datatype.compare("ci16_le") == 0) {
         sampleAdapter = std::make_unique<ComplexS16SampleAdapter>();
-    } else if(datatype.compare("ci8") == 0) {
+    } else if (datatype.compare("ci8") == 0) {
         sampleAdapter = std::make_unique<ComplexS8SampleAdapter>();
-    } else if(datatype.compare("cu8") == 0) {
+    } else if (datatype.compare("cu8") == 0) {
         sampleAdapter = std::make_unique<ComplexU8SampleAdapter>();
-    } else if(datatype.compare("rf32_le") == 0) {
+    } else if (datatype.compare("rf32_le") == 0) {
         sampleAdapter = std::make_unique<RealF32SampleAdapter>();
         _realSignal = true;
-    } else if(datatype.compare("ri16_le") == 0) {
+    } else if (datatype.compare("ri16_le") == 0) {
         sampleAdapter = std::make_unique<RealS16SampleAdapter>();
         _realSignal = true;
-    } else if(datatype.compare("ri8") == 0) {
+    } else if (datatype.compare("ri8") == 0) {
         sampleAdapter = std::make_unique<RealS8SampleAdapter>();
         _realSignal = true;
-    } else if(datatype.compare("ru8") == 0) {
+    } else if (datatype.compare("ru8") == 0) {
         sampleAdapter = std::make_unique<RealU8SampleAdapter>();
         _realSignal = true;
     } else {
         throw std::runtime_error("SigMF meta data specifies unsupported datatype");
     }
 
-    if(global.contains("core:sample_rate") && global["core:sample_rate"].isDouble()) {
+    if (global.contains("core:sample_rate") && global["core:sample_rate"].isDouble()) {
         setSampleRate(global["core:sample_rate"].toDouble());
     }
 
 
-    if(root.contains("captures") && root["captures"].isArray()) {
+    if (root.contains("captures") && root["captures"].isArray()) {
         auto captures = root["captures"].toArray();
 
-        for(auto capture_ref : captures) {
-            if(capture_ref.isObject()) {
+        for (auto capture_ref : captures) {
+            if (capture_ref.isObject()) {
                 auto capture = capture_ref.toObject();
-                if(capture.contains("core:frequency") && capture["core:frequency"].isDouble()) {
+                if (capture.contains("core:frequency") && capture["core:frequency"].isDouble()) {
                     frequency = capture["core:frequency"].toDouble();
                 }
             } else {
@@ -263,14 +263,14 @@ void InputSource::readMetaData(const QString &filename)
 
         size_t offset = 0;
 
-        if(global.contains("core:offset")) {
+        if (global.contains("core:offset")) {
             offset = global["offset"].toDouble();
         }
 
         auto annotations = root["annotations"].toArray();
 
-        for(auto annotation_ref : annotations) {
-            if(annotation_ref.isObject()) {
+        for (auto annotation_ref : annotations) {
+            if (annotation_ref.isObject()) {
                 auto sigmf_annotation = annotation_ref.toObject();
 
                 const size_t sample_start = sigmf_annotation["core:sample_start"].toDouble();
@@ -299,7 +299,7 @@ void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
     std::string suffix = std::string(fileInfo.suffix().toLower().toUtf8().constData());
-    if(_fmt!=""){ suffix = _fmt; } // allow fmt override
+    if (_fmt != "") { suffix = _fmt; } // allow fmt override
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
     }
