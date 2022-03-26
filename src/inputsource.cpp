@@ -29,10 +29,6 @@
 
 #include <QFileInfo>
 
-#if ENABLE_SIGMF
-#include <sigmf/sigmf.h>
-#endif
-
 #include <QElapsedTimer>
 #include <QPainter>
 #include <QPaintEvent>
@@ -196,7 +192,6 @@ void InputSource::cleanup()
     }
 }
 
-#if ENABLE_SIGMF
 void InputSource::readMetaData(const QString &filename)
 {
     QFile datafile(filename);
@@ -204,70 +199,107 @@ void InputSource::readMetaData(const QString &filename)
         throw std::runtime_error("Error while opening meta data file: " + datafile.errorString().toStdString());
     }
 
-    sigmf::SigMF<sigmf::Global<core::DescrT>,
-            sigmf::Capture<core::DescrT>,
-            sigmf::Annotation<core::DescrT> > metaData = json::parse(datafile.readAll());
+    QJsonDocument d = QJsonDocument::fromJson(datafile.readAll());
+    datafile.close();
+    auto root = d.object();
 
-    auto global_core = metaData.global.access<core::GlobalT>();
+    if (!root.contains("global") || !root["global"].isObject()) {
+        throw std::runtime_error("SigMF meta data is invalid (no global object found)");
+    }
 
-    if(global_core.datatype.compare("cf32_le") == 0) {
+    auto global = root["global"].toObject();
+
+    if (!global.contains("core:datatype") || !global["core:datatype"].isString()) {
+        throw std::runtime_error("SigMF meta data does not specify a valid datatype");
+    }
+
+
+    auto datatype = global["core:datatype"].toString();
+    if (datatype.compare("cf32_le") == 0) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
-    } else if(global_core.datatype.compare("ci16_le") == 0) {
+    } else if (datatype.compare("ci16_le") == 0) {
         sampleAdapter = std::make_unique<ComplexS16SampleAdapter>();
-    } else if(global_core.datatype.compare("ci8") == 0) {
+    } else if (datatype.compare("ci8") == 0) {
         sampleAdapter = std::make_unique<ComplexS8SampleAdapter>();
-    } else if(global_core.datatype.compare("cu8") == 0) {
+    } else if (datatype.compare("cu8") == 0) {
         sampleAdapter = std::make_unique<ComplexU8SampleAdapter>();
-    } else if(global_core.datatype.compare("rf32_le") == 0) {
+    } else if (datatype.compare("rf32_le") == 0) {
         sampleAdapter = std::make_unique<RealF32SampleAdapter>();
         _realSignal = true;
-    } else if(global_core.datatype.compare("ri16_le") == 0) {
+    } else if (datatype.compare("ri16_le") == 0) {
         sampleAdapter = std::make_unique<RealS16SampleAdapter>();
         _realSignal = true;
-    } else if(global_core.datatype.compare("ri8") == 0) {
+    } else if (datatype.compare("ri8") == 0) {
         sampleAdapter = std::make_unique<RealS8SampleAdapter>();
         _realSignal = true;
-    } else if(global_core.datatype.compare("ru8") == 0) {
+    } else if (datatype.compare("ru8") == 0) {
         sampleAdapter = std::make_unique<RealU8SampleAdapter>();
         _realSignal = true;
     } else {
         throw std::runtime_error("SigMF meta data specifies unsupported datatype");
     }
 
-    setSampleRate(global_core.sample_rate);
-
-    for(auto capture : metaData.captures) {
-        auto core = capture.access<core::CaptureT>();
-        frequency = core.frequency;
+    if (global.contains("core:sample_rate") && global["core:sample_rate"].isDouble()) {
+        setSampleRate(global["core:sample_rate"].toDouble());
     }
 
-    for(auto annotation : metaData.annotations) {
-        Annotation a;
-        auto core = annotation.access<core::AnnotationT>();
 
-        const size_t offset = global_core.offset;
-        const size_t sample_start = core.sample_start;
+    if (root.contains("captures") && root["captures"].isArray()) {
+        auto captures = root["captures"].toArray();
 
-        if (sample_start < offset)
-            continue;
+        for (auto capture_ref : captures) {
+            if (capture_ref.isObject()) {
+                auto capture = capture_ref.toObject();
+                if (capture.contains("core:frequency") && capture["core:frequency"].isDouble()) {
+                    frequency = capture["core:frequency"].toDouble();
+                }
+            } else {
+                throw std::runtime_error("SigMF meta data is invalid (invalid capture object)");
+            }
+        }
+    }
 
-        const size_t rel_sample_start = sample_start - offset;
+    if(root.contains("annotations") && root["annotations"].isArray()) {
 
-        a.sampleRange = range_t<size_t>{rel_sample_start, rel_sample_start + core.sample_count - 1};
-        a.frequencyRange = range_t<double>{core.freq_lower_edge, core.freq_upper_edge};
-        a.description = QString::fromStdString(core.description);
+        size_t offset = 0;
 
-        annotationList.append(a);
+        if (global.contains("core:offset")) {
+            offset = global["offset"].toDouble();
+        }
+
+        auto annotations = root["annotations"].toArray();
+
+        for (auto annotation_ref : annotations) {
+            if (annotation_ref.isObject()) {
+                auto sigmf_annotation = annotation_ref.toObject();
+
+                const size_t sample_start = sigmf_annotation["core:sample_start"].toDouble();
+
+                if (sample_start < offset)
+                    continue;
+
+                const size_t rel_sample_start = sample_start - offset;
+
+                const size_t sample_count = sigmf_annotation["core:sample_count"].toDouble();
+                auto sampleRange = range_t<size_t>{rel_sample_start, rel_sample_start + sample_count - 1};
+
+                const double freq_lower_edge = sigmf_annotation["core:freq_lower_edge"].toDouble();
+                const double freq_upper_edge = sigmf_annotation["core:freq_upper_edge"].toDouble();
+                auto frequencyRange = range_t<double>{freq_lower_edge, freq_upper_edge};
+
+                auto label = sigmf_annotation["core:label"].toString();
+
+                annotationList.emplace_back(sampleRange, frequencyRange, label);
+            }
+        }
     }
 }
-#endif
-
 
 void InputSource::openFile(const char *filename)
 {
     QFileInfo fileInfo(filename);
     std::string suffix = std::string(fileInfo.suffix().toLower().toUtf8().constData());
-    if(_fmt!=""){ suffix = _fmt; } // allow fmt override
+    if (_fmt != "") { suffix = _fmt; } // allow fmt override
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
     }
@@ -302,7 +334,6 @@ void InputSource::openFile(const char *filename)
 
     QString dataFilename;
 
-#if ENABLE_SIGMF
     annotationList.clear();
     QString metaFilename;
 
@@ -319,11 +350,6 @@ void InputSource::openFile(const char *filename)
     else if (suffix == "sigmf") {
         throw std::runtime_error("SigMF archives are not supported. Consider extracting a recording.");
     }
-#else
-    if (suffix == "sigmf-meta" || suffix == "sigmf-data" || suffix == "sigmf") {
-        throw std::runtime_error("Support for SigMF recordings is not enabled");
-    }
-#endif
     else {
         dataFilename = filename;
     }
