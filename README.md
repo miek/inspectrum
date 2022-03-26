@@ -11,7 +11,6 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
  * [liquid-dsp](https://github.com/jgaeddert/liquid-dsp) >= v1.3.0
  * pkg-config
  * qt5
- * [libsigmf](https://github.com/deepsig/libsigmf) (optional, for SigMF support)
 
 ### Build instructions
 
