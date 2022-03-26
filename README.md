@@ -37,6 +37,8 @@ inspectrum supports the following file types:
 
 If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
 
+Note: 64-bit samples will be truncated to 32-bit before processing, as inspectrum only supports 32-bit internally.
+
 ## Features
  * Large (100GB+) file support
  * Spectrogram with zoom/pan
