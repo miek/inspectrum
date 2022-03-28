@@ -53,6 +53,7 @@ public:
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
     bool isAnnotationsEnabled();
+    void enableAnnoColors(bool enabled);
     QString *mouseAnnotationComment(const QMouseEvent *event);
 
 public slots:
@@ -81,6 +82,7 @@ private:
     double sampleRate;
     bool frequencyScaleEnabled;
     bool sigmfAnnotationsEnabled;
+    bool sigmfAnnotationColors;
 
     Tuner tuner;
     std::shared_ptr<TunerTransform> tunerTransform;

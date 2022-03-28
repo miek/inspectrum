@@ -48,6 +48,7 @@ public slots:
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
     void enableAnnotationCommentsTooltips(bool enabled);
+    void enableAnnoColors(bool enabled);
     void invalidateEvent() override;
     void repaint();
     void setCursorSegments(int segments);

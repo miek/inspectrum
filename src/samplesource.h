@@ -26,6 +26,7 @@
 #include "util.h"
 #include <QString>
 #include <QObject>
+#include <QColor>
 
 class Annotation
 {
@@ -34,11 +35,12 @@ public:
     range_t<double> frequencyRange;
     QString label;
     QString comment;
+    QColor boxColor;
 
     Annotation(range_t<size_t> sampleRange, range_t<double>frequencyRange, QString label,
-               QString comment)
+               QString comment, QColor boxColor)
       : sampleRange(sampleRange), frequencyRange(frequencyRange), label(label),
-        comment(comment) {}
+        comment(comment), boxColor(boxColor) {}
 };
 
 template<typename T>
