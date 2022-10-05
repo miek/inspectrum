@@ -78,7 +78,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     cursorSymbolsSpinBox = new QSpinBox();
     cursorSymbolsSpinBox->setMinimum(1);
-    cursorSymbolsSpinBox->setMaximum(9999);
+    cursorSymbolsSpinBox->setMaximum(99999);
     layout->addRow(new QLabel(tr("Symbols:")), cursorSymbolsSpinBox);
 
     rateLabel = new QLabel();
