@@ -106,7 +106,7 @@ void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleR
 
     // Draw vertical edges for individual segments
     painter.setPen(QPen(Qt::gray, 1, Qt::DashLine));
-    for (int i = 1; i < segmentCount; i++) {
+    for (long i = 1; i < segmentCount; i++) {
         int pos = minCursor->pos() + (i * cursorRect.width() / segmentCount);
         painter.drawLine(pos, rect.top(), pos, rect.bottom());
     }
