@@ -60,6 +60,7 @@ protected:
     void resizeEvent(QResizeEvent * event) override;
     void scrollContentsBy(int dx, int dy) override;
     bool viewportEvent(QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
     void showEvent(QShowEvent *event) override;
 
 private:
