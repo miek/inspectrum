@@ -25,6 +25,7 @@ inspectrum supports the following file types:
  * `*.sigmf-meta, *.sigmf-data` - SigMF recordings
  * `*.cf32`, `*.cfile` - Complex 32-bit floating point samples (GNU Radio, osmocom_fft)
  * `*.cf64` - Complex 64-bit floating point samples
+ * `*.cs32` - Complex 16-bit signed integer samples (SDRAngel)
  * `*.cs16` - Complex 16-bit signed integer samples (BladeRF)
  * `*.cs8` - Complex 8-bit signed integer samples (HackRF)
  * `*.cu8` - Complex 8-bit unsigned integer samples (RTL-SDR)

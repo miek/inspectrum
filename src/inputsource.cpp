@@ -68,6 +68,23 @@ public:
     }
 };
 
+class ComplexS32SampleAdapter : public SampleAdapter {
+public:
+    size_t sampleSize() override {
+        return sizeof(std::complex<int32_t>);
+    }
+
+    void copyRange(const void* const src, size_t start, size_t length, std::complex<float>* const dest) override {
+        auto s = reinterpret_cast<const std::complex<int32_t>*>(src);
+        std::transform(&s[start], &s[start + length], dest,
+            [](const std::complex<int32_t>& v) -> std::complex<float> {
+                const float k = 1.0f / 2147483648.0f;
+                return { v.real() * k, v.imag() * k };
+            }
+        );
+    }
+};
+
 class ComplexS16SampleAdapter : public SampleAdapter {
 public:
     size_t sampleSize() override {
@@ -249,6 +266,8 @@ void InputSource::readMetaData(const QString &filename)
     auto datatype = global["core:datatype"].toString();
     if (datatype.compare("cf32_le") == 0) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
+    } else if (datatype.compare("ci32_le") == 0) {
+        sampleAdapter = std::make_unique<ComplexS32SampleAdapter>();
     } else if (datatype.compare("ci16_le") == 0) {
         sampleAdapter = std::make_unique<ComplexS16SampleAdapter>();
     } else if (datatype.compare("ci8") == 0) {
