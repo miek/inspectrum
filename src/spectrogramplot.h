@@ -20,6 +20,7 @@
 #pragma once
 
 #include <QCache>
+#include <QString>
 #include <QWidget>
 #include "fft.h"
 #include "inputsource.h"
@@ -30,8 +31,10 @@
 #include <memory>
 #include <array>
 #include <math.h>
+#include <vector>
 
 class TileCacheKey;
+class AnnotationLocation;
 
 class SpectrogramPlot : public Plot
 {
@@ -49,6 +52,8 @@ public:
     bool tunerEnabled();
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
+    bool isAnnotationsEnabled();
+    QString *mouseAnnotationComment(const QMouseEvent *event);
 
 public slots:
     void setFFTSize(int size);
@@ -62,6 +67,7 @@ private:
     static const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
     std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
+    std::vector<AnnotationLocation> visibleAnnotationLocations;
     std::unique_ptr<FFT> fft;
     std::unique_ptr<float[]> window;
     QCache<TileCacheKey, QPixmap> pixmapCache;
@@ -109,4 +115,24 @@ public:
     int fftSize;
     int zoomLevel;
     size_t sample;
+};
+
+class AnnotationLocation
+{
+public:
+    Annotation annotation;
+
+    AnnotationLocation(Annotation annotation, int x, int y, int width, int height)
+        : annotation(annotation), x(x), y(y), width(width), height(height) {}
+
+    bool isInside(int pos_x, int pos_y) {
+        return (x <= pos_x) && (pos_x <= x + width)
+            && (y <= pos_y) && (pos_y <= y + height);
+    }
+
+private:
+    int x;
+    int y;
+    int width;
+    int height;
 };

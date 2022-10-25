@@ -44,6 +44,7 @@ public slots:
     void timeSelectionChanged(float time);
     void zoomIn();
     void zoomOut();
+    void enableAnnotations(bool enabled);
 
 private slots:
     void fftSizeChanged(int value);
@@ -74,4 +75,5 @@ public:
     QLabel *symbolPeriodLabel;
     QCheckBox *scalesCheckBox;
     QCheckBox *annosCheckBox;
+    QCheckBox *commentsCheckBox;
 };

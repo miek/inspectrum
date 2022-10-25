@@ -340,7 +340,9 @@ void InputSource::readMetaData(const QString &filename)
 
                 auto label = sigmf_annotation["core:label"].toString();
 
-                annotationList.emplace_back(sampleRange, frequencyRange, label);
+                auto comment = sigmf_annotation["core:comment"].toString();
+
+                annotationList.emplace_back(sampleRange, frequencyRange, label, comment);
             }
         }
     }

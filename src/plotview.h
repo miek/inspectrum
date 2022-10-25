@@ -47,6 +47,7 @@ public slots:
     void enableCursors(bool enabled);
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
+    void enableAnnotationCommentsTooltips(bool enabled);
     void invalidateEvent() override;
     void repaint();
     void setCursorSegments(int segments);
@@ -55,6 +56,8 @@ public slots:
     void setPowerMax(int power);
 
 protected:
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void contextMenuEvent(QContextMenuEvent * event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent * event) override;
@@ -80,6 +83,7 @@ private:
     double sampleRate = 0.0;
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;
+    bool annotationCommentsEnabled;
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
@@ -91,6 +95,7 @@ private:
     void updateViewRange(bool reCenter);
     void updateView(bool reCenter = false, bool expanding = false);
     void paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
+    void updateAnnotationTooltip(QMouseEvent *event);
 
     int sampleToColumn(size_t sample);
     size_t columnToSample(int col);
