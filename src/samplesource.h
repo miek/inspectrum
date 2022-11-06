@@ -33,9 +33,12 @@ public:
     range_t<size_t> sampleRange;
     range_t<double> frequencyRange;
     QString label;
+    QString comment;
 
-    Annotation(range_t<size_t> sampleRange, range_t<double>frequencyRange, QString label)
-        : sampleRange(sampleRange), frequencyRange(frequencyRange), label(label) {}
+    Annotation(range_t<size_t> sampleRange, range_t<double>frequencyRange, QString label,
+               QString comment)
+      : sampleRange(sampleRange), frequencyRange(frequencyRange), label(label),
+        comment(comment) {}
 };
 
 template<typename T>

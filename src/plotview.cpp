@@ -32,6 +32,7 @@
 #include <QRadioButton>
 #include <QScrollBar>
 #include <QSpinBox>
+#include <QToolTip>
 #include <QVBoxLayout>
 #include "plots.h"
 
@@ -50,6 +51,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
     enableScales(true);
 
     enableAnnotations(true);
+    enableAnnotationCommentsTooltips(true);
 
     addPlot(spectrogramPlot);
 
@@ -60,6 +62,39 @@ void PlotView::addPlot(Plot *plot)
 {
     plots.emplace_back(plot);
     connect(plot, &Plot::repaint, this, &PlotView::repaint);
+}
+
+void PlotView::mouseMoveEvent(QMouseEvent *event)
+{
+    updateAnnotationTooltip(event);
+    QGraphicsView::mouseMoveEvent(event);
+}
+
+void PlotView::mouseReleaseEvent(QMouseEvent *event)
+{
+    // This is used to show the tooltip again on drag release if the mouse is
+    // hovering over an annotation.
+    updateAnnotationTooltip(event);
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
+void PlotView::updateAnnotationTooltip(QMouseEvent *event)
+{
+    // If there are any mouse buttons pressed, we assume
+    // that the plot is being dragged and hide the tooltip.
+    bool isDrag = event->buttons() != Qt::NoButton;
+    if (!annotationCommentsEnabled
+        || !spectrogramPlot->isAnnotationsEnabled()
+        || isDrag)  {
+        QToolTip::hideText();
+    } else {
+        QString* comment = spectrogramPlot->mouseAnnotationComment(event);
+        if (comment != nullptr) {
+            QToolTip::showText(event->globalPos(), *comment);
+        } else {
+            QToolTip::hideText();
+        }
+    }
 }
 
 void PlotView::contextMenuEvent(QContextMenuEvent * event)
@@ -608,6 +643,13 @@ void PlotView::enableAnnotations(bool enabled)
 {
     if (spectrogramPlot != nullptr)
         spectrogramPlot->enableAnnotations(enabled);
+
+    viewport()->update();
+}
+
+void PlotView::enableAnnotationCommentsTooltips(bool enabled)
+{
+    annotationCommentsEnabled = enabled;
 
     viewport()->update();
 }

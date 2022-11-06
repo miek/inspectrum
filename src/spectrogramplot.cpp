@@ -169,6 +169,8 @@ void SpectrogramPlot::paintAnnotations(QPainter &painter, QRect &rect, range_t<s
     painter.setPen(pen);
     QFontMetrics fm(painter.font());
 
+    visibleAnnotationLocations.clear();
+
     for (int i = 0; i < inputSource->annotationList.size(); i++) {
         Annotation a = inputSource->annotationList.at(i);
 
@@ -195,10 +197,25 @@ void SpectrogramPlot::paintAnnotations(QPainter &painter, QRect &rect, range_t<s
             // Draw the label 2 pixels above the box
             painter.drawText(x, y - 2, a.label);
             painter.drawRect(x, y, width, height);
+
+            visibleAnnotationLocations.emplace_back(a, x, y, width, height);
         }
     }
 
     painter.restore();
+}
+
+QString *SpectrogramPlot::mouseAnnotationComment(const QMouseEvent *event) {
+    auto pos = event->pos();
+    int mouse_x = pos.x();
+    int mouse_y = pos.y();
+
+    for (auto& a : visibleAnnotationLocations) {
+        if (a.isInside(mouse_x, mouse_y)) {
+            return &a.annotation.comment;
+        }
+    }
+    return nullptr;
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
@@ -393,6 +410,11 @@ void SpectrogramPlot::enableScales(bool enabled)
 void SpectrogramPlot::enableAnnotations(bool enabled)
 {
    sigmfAnnotationsEnabled = enabled;
+}
+
+bool SpectrogramPlot::isAnnotationsEnabled(void)
+{
+    return sigmfAnnotationsEnabled;
 }
 
 bool SpectrogramPlot::tunerEnabled()
