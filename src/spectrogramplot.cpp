@@ -28,6 +28,7 @@
 #include <liquid/liquid.h>
 #include <functional>
 #include <cstdlib>
+#include <limits>
 #include "util.h"
 
 
