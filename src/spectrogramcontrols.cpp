@@ -69,6 +69,18 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     scalesCheckBox->setCheckState(Qt::Checked);
     layout->addRow(new QLabel(tr("Scales:")), scalesCheckBox);
 
+    tunerCenter = new QLineEdit();
+    double_validator = new QDoubleValidator(this);
+    double_validator->setBottom(0.0);
+    tunerCenter->setValidator(double_validator);
+    layout->addRow(new QLabel(tr("Tuner center:")), tunerCenter);
+
+    tunerDeviation = new QLineEdit();
+    double_validator = new QDoubleValidator(this);
+    double_validator->setBottom(0.0);
+    tunerDeviation->setValidator(double_validator);
+    layout->addRow(new QLabel(tr("Tuner deviation:")), tunerDeviation);
+
     // Time selection settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
     layout->addRow(new QLabel(tr("<b>Time selection</b>")));
@@ -111,6 +123,8 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     connect(cursorsCheckBox, &QCheckBox::stateChanged, this, &SpectrogramControls::cursorsStateChanged);
     connect(powerMinSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMinChanged);
     connect(powerMaxSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMaxChanged);
+    connect(tunerCenter, &QLineEdit::returnPressed, this, static_cast<void (SpectrogramControls::*)()>(&SpectrogramControls::tunerCenterSet));
+    connect(tunerDeviation, &QLineEdit::returnPressed, this, static_cast<void (SpectrogramControls::*)()>(&SpectrogramControls::tunerDeviationSet));
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -181,6 +195,18 @@ void SpectrogramControls::powerMaxChanged(int value)
     settings.setValue("PowerMax", value);
 }
 
+void SpectrogramControls::tunerCenterSet()
+{
+    auto center = tunerCenter->text().toDouble();
+    emit tunerCenterSet(center);
+}
+
+void SpectrogramControls::tunerDeviationSet()
+{
+    auto deviation = tunerDeviation->text().toDouble();
+    emit tunerDeviationSet(deviation);
+}
+
 void SpectrogramControls::fileOpenButtonClicked()
 {
     QSettings settings;
@@ -227,6 +253,20 @@ void SpectrogramControls::timeSelectionChanged(float time)
         symbolPeriodLabel->setText(QString::fromStdString(formatSIValue(time / symbols)) + "s");
         symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Bd");
     }
+}
+
+void SpectrogramControls::tunerChanged(double center, double deviation, bool enabled)
+{
+    if (enabled) {
+        tunerCenter->setText(QString::number((int)center));
+        tunerDeviation->setText(QString::number((int)deviation));
+    } else {
+        tunerCenter->setText("");
+        tunerDeviation->setText("");
+    }
+
+    tunerCenter->setEnabled(enabled);
+    tunerDeviation->setEnabled(enabled);
 }
 
 void SpectrogramControls::zoomIn()

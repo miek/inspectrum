@@ -22,6 +22,7 @@
 void AbstractSampleSource::subscribe(Subscriber *subscriber)
 {
 	subscribers.insert(subscriber);
+    emit subscribersChanged();
 }
 
 void AbstractSampleSource::invalidate()
@@ -39,4 +40,5 @@ int AbstractSampleSource::subscriberCount()
 void AbstractSampleSource::unsubscribe(Subscriber *subscriber)
 {
 	subscribers.erase(subscriber);
+    emit subscribersChanged();
 }

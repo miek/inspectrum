@@ -23,10 +23,12 @@
 #include <memory>
 #include <set>
 #include <typeindex>
+#include <QObject>
 #include "subscriber.h"
 
-class AbstractSampleSource
+class AbstractSampleSource : public QObject
 {
+    Q_OBJECT
 
 public:
     virtual ~AbstractSampleSource() {};
@@ -34,6 +36,9 @@ public:
     void subscribe(Subscriber *subscriber);
     int subscriberCount();
     void unsubscribe(Subscriber *subscriber);
+
+signals:
+    void subscribersChanged();
 
 protected:
     virtual void invalidate();

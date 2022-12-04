@@ -48,6 +48,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
 
     tunerTransform = std::make_shared<TunerTransform>(src);
     connect(&tuner, &Tuner::tunerMoved, this, &SpectrogramPlot::tunerMoved);
+    connect(tunerTransform.get(), &TunerTransform::subscribersChanged, this, &SpectrogramPlot::tunerMoved);
 }
 
 void SpectrogramPlot::invalidateEvent()
@@ -379,6 +380,30 @@ void SpectrogramPlot::setFFTSize(int size)
     tuner.setCentre( centre * sizeScale );
 }
 
+void SpectrogramPlot::setTunerCenter(double abs_center)
+{
+    double k;
+    if (inputSource->realSignal())
+        k = sampleRate / 2;
+    else
+        k = sampleRate;
+
+    int center = tuner.height() * (1 - abs_center / k);
+    tuner.setCentre(center);
+}
+
+void SpectrogramPlot::setTunerDeviation(double abs_deviation)
+{
+    double k;
+    if (inputSource->realSignal())
+        k = sampleRate / 2;
+    else
+        k = sampleRate;
+
+    int deviation = tuner.height() * abs_deviation / k;
+    tuner.setDeviation(deviation);
+}
+
 void SpectrogramPlot::setPowerMax(int power)
 {
     powerMax = power;
@@ -432,6 +457,16 @@ void SpectrogramPlot::tunerMoved()
     QPixmapCache::clear();
 
     emit repaint();
+
+    double k;
+    if (inputSource->realSignal())
+        k = sampleRate / 2;
+    else
+        k = sampleRate;
+
+    double abs_center = k * (1 - (double)tuner.centre() / tuner.height());
+    double abs_deviation = k * (double)tuner.deviation() / tuner.height();
+    emit tunerChanged(abs_center, abs_deviation, tunerEnabled());
 }
 
 uint qHash(const TileCacheKey &key, uint seed)

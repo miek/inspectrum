@@ -47,6 +47,7 @@ PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
     auto tunerOutput = std::dynamic_pointer_cast<SampleSource<std::complex<float>>>(spectrogramPlot->output());
+    connect(spectrogramPlot, &SpectrogramPlot::tunerChanged, this, &PlotView::tunerChanged);
 
     enableScales(true);
 
@@ -198,6 +199,11 @@ void PlotView::cursorsMoved()
 
     emitTimeSelection();
     viewport()->update();
+}
+
+void PlotView::tunerChanged(double center, double deviation, bool enabled)
+{
+    emit plotTunerChanged(center, deviation, enabled);
 }
 
 void PlotView::emitTimeSelection()
@@ -427,6 +433,16 @@ void PlotView::setCursorSegments(int segments)
     cursors.setSegments(segments);
     updateView();
     emitTimeSelection();
+}
+
+void PlotView::setTunerCenter(double center) {
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setTunerCenter(center);
+}
+
+void PlotView::setTunerDeviation(double deviation) {
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setTunerDeviation(deviation);
 }
 
 void PlotView::setFFTAndZoom(int size, int zoom)
