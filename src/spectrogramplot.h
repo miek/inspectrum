@@ -55,8 +55,13 @@ public:
     bool isAnnotationsEnabled();
     QString *mouseAnnotationComment(const QMouseEvent *event);
 
+signals:
+    void tunerChanged(double center, double deviation, bool enabled);
+
 public slots:
     void setFFTSize(int size);
+    void setTunerCenter(double center);
+    void setTunerDeviation(double deviation);
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);

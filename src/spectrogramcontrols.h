@@ -39,9 +39,12 @@ public:
 signals:
     void fftOrZoomChanged(int fftSize, int zoomLevel);
     void openFile(QString fileName);
+    void tunerCenterSet(double center);
+    void tunerDeviationSet(double deviation);
 
 public slots:
     void timeSelectionChanged(float time);
+    void tunerChanged(double center, double deviation, bool enabled);
     void zoomIn();
     void zoomOut();
     void enableAnnotations(bool enabled);
@@ -53,6 +56,8 @@ private slots:
     void powerMaxChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
+    void tunerCenterSet();
+    void tunerDeviationSet();
 
 private:
     QWidget *widget;
@@ -63,6 +68,8 @@ private:
 public:
     QPushButton *fileOpenButton;
     QLineEdit *sampleRate;
+    QLineEdit *tunerCenter;
+    QLineEdit *tunerDeviation;
     QSlider *fftSizeSlider;
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;

@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include "tuner.h"
 
-Tuner::Tuner(int height, QObject * parent) : height(height), QObject::QObject(parent)
+Tuner::Tuner(int height, QObject * parent) : _height(height), QObject::QObject(parent)
 {
     minCursor = new Cursor(Qt::Horizontal, Qt::SizeVerCursor, this);
     cfCursor = new Cursor(Qt::Horizontal, Qt::SizeAllCursor, this);
@@ -44,14 +44,14 @@ void Tuner::cursorMoved()
     Cursor *sender = static_cast<Cursor*>(QObject::sender());
     if (sender != cfCursor) {
         // Limit cursor positions to within plot
-        auto posRange = range_t<int>{0, height};
+        auto posRange = range_t<int>{0, _height};
         sender->setPos(posRange.clip(sender->pos()));
 
         // Limit deviation range to half of total BW (either side of centre)
-        auto deviationRange = range_t<int>{2, height / 2};
+        auto deviationRange = range_t<int>{2, _height / 2};
         _deviation = deviationRange.clip(std::abs(sender->pos() - cfCursor->pos()));
     } else {
-        auto cfRange = range_t<int>{_deviation, height - _deviation};
+        auto cfRange = range_t<int>{_deviation, _height - _deviation};
         sender->setPos(cfRange.clip(sender->pos()));
     }
 
@@ -113,7 +113,11 @@ void Tuner::setDeviation(int dev)
 
 void Tuner::setHeight(int height)
 {
-    this->height = height;
+    _height = height;
+}
+
+int Tuner::height() {
+    return _height;
 }
 
 void Tuner::updateCursors()

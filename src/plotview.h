@@ -39,11 +39,13 @@ public:
 
 signals:
     void timeSelectionChanged(float time);
+    void plotTunerChanged(double center, double deviation, bool enabled);
     void zoomIn();
     void zoomOut();
 
 public slots:
     void cursorsMoved();
+    void tunerChanged(double center, double deviation, bool enabled);
     void enableCursors(bool enabled);
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
@@ -51,6 +53,8 @@ public slots:
     void invalidateEvent() override;
     void repaint();
     void setCursorSegments(int segments);
+    void setTunerCenter(double center);
+    void setTunerDeviation(double deviation);
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);

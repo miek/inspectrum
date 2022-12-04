@@ -34,6 +34,7 @@ public:
     Tuner(int height, QObject * parent);
     int centre();
     int deviation();
+    int height();
     bool mouseEvent(QEvent::Type, QMouseEvent event);
     void paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
     void setCentre(int centre);
@@ -53,5 +54,5 @@ private:
     Cursor *cfCursor;
     Cursor *maxCursor;
     int _deviation;
-    int height;
+    int _height;
 };

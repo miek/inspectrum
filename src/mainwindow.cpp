@@ -54,9 +54,12 @@ MainWindow::MainWindow()
     connect(dock->annosCheckBox, &QCheckBox::stateChanged, dock, &SpectrogramControls::enableAnnotations);
     connect(dock->commentsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableAnnotationCommentsTooltips);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
+    connect(dock, static_cast<void (SpectrogramControls::*)(double)>(&SpectrogramControls::tunerCenterSet), plots, &PlotView::setTunerCenter);
+    connect(dock, static_cast<void (SpectrogramControls::*)(double)>(&SpectrogramControls::tunerDeviationSet), plots, &PlotView::setTunerDeviation);
 
     // Connect dock outputs
     connect(plots, &PlotView::timeSelectionChanged, dock, &SpectrogramControls::timeSelectionChanged);
+    connect(plots, &PlotView::plotTunerChanged, dock, &SpectrogramControls::tunerChanged);
     connect(plots, &PlotView::zoomIn, dock, &SpectrogramControls::zoomIn);
     connect(plots, &PlotView::zoomOut, dock, &SpectrogramControls::zoomOut);
 
