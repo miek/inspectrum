@@ -23,12 +23,12 @@ Build instructions can be found here: https://github.com/miek/inspectrum/wiki/Bu
 ## Input
 inspectrum supports the following file types:
  * `*.sigmf-meta, *.sigmf-data` - SigMF recordings
- * `*.cf32`, `*.cfile` - Complex 32-bit floating point samples (GNU Radio, osmocom_fft)
- * `*.cf64` - Complex 64-bit floating point samples
- * `*.cs32` - Complex 32-bit signed integer samples (SDRAngel)
- * `*.cs16` - Complex 16-bit signed integer samples (BladeRF)
- * `*.cs8` - Complex 8-bit signed integer samples (HackRF)
- * `*.cu8` - Complex 8-bit unsigned integer samples (RTL-SDR)
+ * `*.cf32`, `*.fc32`, `*.cfile` - Complex 32-bit floating point samples (GNU Radio, osmocom_fft)
+ * `*.cf64`, `*.fc64` - Complex 64-bit floating point samples
+ * `*.cs32`, `*.sc32`, `*.c32` - Complex 32-bit signed integer samples (SDRAngel)
+ * `*.cs16`, `*.sc16`, `*.c16` - Complex 16-bit signed integer samples (BladeRF)
+ * `*.cs8`, `*.sc8`, `*.c8` - Complex 8-bit signed integer samples (HackRF)
+ * `*.cu8`, `*.uc8` - Complex 8-bit unsigned integer samples (RTL-SDR)
  * `*.f32` - Real 32-bit floating point samples
  * `*.f64` - Real 64-bit floating point samples (MATLAB)
  * `*.s16` - Real 16-bit signed integer samples
