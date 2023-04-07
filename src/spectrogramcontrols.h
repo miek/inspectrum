@@ -76,4 +76,5 @@ public:
     QCheckBox *scalesCheckBox;
     QCheckBox *annosCheckBox;
     QCheckBox *commentsCheckBox;
+    QCheckBox *annoColorCheckBox;
 };

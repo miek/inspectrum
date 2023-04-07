@@ -100,7 +100,9 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     annosCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Display Annotations:")), annosCheckBox);
     commentsCheckBox = new QCheckBox(widget);
-    layout->addRow(new QLabel(tr("Display annotation comments tooltips:")), commentsCheckBox);
+    layout->addRow(new QLabel(tr("Annotation comments:")), commentsCheckBox);
+    annoColorCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Annotation Colors:")), annoColorCheckBox);
 
     widget->setLayout(layout);
     setWidget(widget);
@@ -136,7 +138,7 @@ void SpectrogramControls::setDefaults()
     cursorSymbolsSpinBox->setValue(1);
 
     annosCheckBox->setCheckState(Qt::Checked);
-    commentsCheckBox->setCheckState(Qt::Checked);
+    annoColorCheckBox->setCheckState(Qt::Checked);
 
     // Try to set the sample rate from the last-used value
     QSettings settings;
