@@ -359,6 +359,9 @@ void InputSource::openFile(const char *filename)
     else if ((suffix == "cf64")  || (suffix == "fc64")) {
         sampleAdapter = std::make_unique<ComplexF64SampleAdapter>();
     }
+    else if ((suffix == "cs32") || (suffix == "sc32") || (suffix == "c32")) {
+        sampleAdapter = std::make_unique<ComplexS32SampleAdapter>();
+    }
     else if ((suffix == "cs16") || (suffix == "sc16") || (suffix == "c16")) {
         sampleAdapter = std::make_unique<ComplexS16SampleAdapter>();
     }
