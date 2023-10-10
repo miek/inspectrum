@@ -26,6 +26,7 @@
 #include <QPixmapCache>
 #include <QRect>
 #include <liquid/liquid.h>
+#include <algorithm>
 #include <functional>
 #include <cstdlib>
 #include "util.h"
@@ -286,7 +287,13 @@ float* SpectrogramPlot::getFFTTile(size_t tile)
 void SpectrogramPlot::getLine(float *dest, size_t sample)
 {
     if (inputSource && fft) {
-        auto buffer = inputSource->getSamples(sample, fftSize);
+        // Make sample be the midpoint of the FFT, unless this takes us
+        // past the beginning of the inputSource (if we remove the
+        // std::max(·, 0), then an ugly red bar appears at the beginning
+        // of the spectrogram with large zooms and FFT sizes).
+        const auto first_sample = std::max(static_cast<ssize_t>(sample) - fftSize / 2,
+                        static_cast<ssize_t>(0));
+        auto buffer = inputSource->getSamples(first_sample, fftSize);
         if (buffer == nullptr) {
             auto neg_infinity = -1 * std::numeric_limits<float>::infinity();
             for (int i = 0; i < fftSize; i++, dest++)
