@@ -20,6 +20,7 @@
 #include "plotview.h"
 #include <iostream>
 #include <fstream>
+#include <QtGlobal>
 #include <QApplication>
 #include <QClipboard>
 #include <QDebug>
@@ -231,7 +232,11 @@ bool PlotView::viewportEvent(QEvent *event) {
 
                 // `updateViewRange()` keeps the center sample in the same place after zoom. Apply
                 // a scroll adjustment to keep the sample under the mouse cursor in the same place instead.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+                zoomPos = wheelEvent->position().x();
+#else
                 zoomPos = wheelEvent->pos().x();
+#endif
                 zoomSample = columnToSample(horizontalScrollBar()->value() + zoomPos);
                 if (scrollZoomStepsAccumulated >= 120) {
                     scrollZoomStepsAccumulated -= 120;
