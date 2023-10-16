@@ -21,22 +21,22 @@
 
 void AbstractSampleSource::subscribe(Subscriber *subscriber)
 {
-	subscribers.insert(subscriber);
+    subscribers.insert(subscriber);
 }
 
 void AbstractSampleSource::invalidate()
 {
-	for (auto subscriber : subscribers) {
-		subscriber->invalidateEvent();
-	}
+    for (auto subscriber : subscribers) {
+        subscriber->invalidateEvent();
+    }
 }
 
 int AbstractSampleSource::subscriberCount()
 {
-	return subscribers.size();
+    return subscribers.size();
 }
 
 void AbstractSampleSource::unsubscribe(Subscriber *subscriber)
 {
-	subscribers.erase(subscriber);
+    subscribers.erase(subscriber);
 }

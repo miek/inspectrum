@@ -24,13 +24,13 @@
 template <typename Tin, typename Tout>
 SampleBuffer<Tin, Tout>::SampleBuffer(std::shared_ptr<SampleSource<Tin>> src) : src(src)
 {
-	src->subscribe(this);
+    src->subscribe(this);
 }
 
 template <typename Tin, typename Tout>
 SampleBuffer<Tin, Tout>::~SampleBuffer()
 {
-	src->unsubscribe(this);
+    src->unsubscribe(this);
 }
 
 template <typename Tin, typename Tout>
@@ -40,7 +40,7 @@ std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(size_t start, size_t
     auto history = std::min(start, (size_t)256);
     auto samples = src->getSamples(start - history, length + history);
     if (samples == nullptr)
-    	return nullptr;
+        return nullptr;
 
     auto temp = std::make_unique<Tout[]>(history + length);
     auto dest = std::make_unique<Tout[]>(length);
@@ -53,7 +53,7 @@ std::unique_ptr<Tout[]> SampleBuffer<Tin, Tout>::getSamples(size_t start, size_t
 template <typename Tin, typename Tout>
 void SampleBuffer<Tin, Tout>::invalidateEvent()
 {
-	SampleSource<Tout>::invalidate();
+    SampleSource<Tout>::invalidate();
 }
 
 template class SampleBuffer<std::complex<float>, std::complex<float>>;

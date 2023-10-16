@@ -21,12 +21,12 @@
 
 Plot::Plot(std::shared_ptr<AbstractSampleSource> src) : sampleSource(src)
 {
-	sampleSource->subscribe(this);
+    sampleSource->subscribe(this);
 }
 
 Plot::~Plot()
 {
-	sampleSource->unsubscribe(this);
+    sampleSource->unsubscribe(this);
 }
 
 void Plot::invalidateEvent()
@@ -36,12 +36,12 @@ void Plot::invalidateEvent()
 
 bool Plot::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
-	return false;
+    return false;
 }
 
 std::shared_ptr<AbstractSampleSource> Plot::output()
 {
-	return sampleSource;
+    return sampleSource;
 }
 
 void Plot::paintBack(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)

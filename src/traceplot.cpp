@@ -79,10 +79,10 @@ void TracePlot::drawTile(QString key, const QRect &rect, range_t<size_t> sampleR
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-	auto firstSample = sampleRange.minimum;
-	auto length = sampleRange.length();
+    auto firstSample = sampleRange.minimum;
+    auto length = sampleRange.length();
 
-	// Is it a 2-channel (complex) trace?
+    // Is it a 2-channel (complex) trace?
     if (auto src = dynamic_cast<SampleSource<std::complex<float>>*>(sampleSource.get())) {
         auto samples = src->getSamples(firstSample, length);
         if (samples == nullptr)
@@ -102,7 +102,7 @@ void TracePlot::drawTile(QString key, const QRect &rect, range_t<size_t> sampleR
         painter.setPen(Qt::green);
         plotTrace(painter, rect, samples.get(), length, 1);
     } else {
-    	throw std::runtime_error("TracePlot::paintMid: Unsupported source type");
+        throw std::runtime_error("TracePlot::paintMid: Unsupported source type");
     }
 
     emit imageReady(key, image);
