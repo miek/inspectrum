@@ -339,6 +339,9 @@ void InputSource::readMetaData(const QString &filename)
                 auto frequencyRange = range_t<double>{freq_lower_edge, freq_upper_edge};
 
                 auto label = sigmf_annotation["core:label"].toString();
+                if (label.isEmpty()) {
+                    label = sigmf_annotation["core:description"].toString();
+                }
 
                 auto comment = sigmf_annotation["core:comment"].toString();
 
