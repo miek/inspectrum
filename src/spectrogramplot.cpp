@@ -212,7 +212,7 @@ QString *SpectrogramPlot::mouseAnnotationComment(const QMouseEvent *event) {
     int mouse_y = pos.y();
 
     for (auto& a : visibleAnnotationLocations) {
-        if (a.isInside(mouse_x, mouse_y)) {
+        if (!a.annotation.comment.isEmpty() && a.isInside(mouse_x, mouse_y)) {
             return &a.annotation.comment;
         }
     }
