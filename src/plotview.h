@@ -39,6 +39,8 @@ public:
 
 signals:
     void timeSelectionChanged(float time);
+    void adjustPowerContrast(int amount);
+    void adjustPowerBias(int amount);
     void zoomIn();
     void zoomOut();
 
@@ -77,6 +79,8 @@ private:
 
     int fftSize = 1024;
     int zoomLevel = 1;
+    int last_y_clicked = 0;
+    int last_x_clicked = 0;
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
