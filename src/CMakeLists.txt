@@ -5,6 +5,16 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 # For OSX - don't clear RPATH on install
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+find_program(CCACHE "ccache")
+if(CCACHE)
+    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+    if(APPLE)
+        set(CMAKE_OBJCXX_COMPILER_LAUNCHER ${CCACHE})
+    endif()
+    set(ENV{CCACHE_SLOPPINESS} pch_defines,time_macros)
+endif(CCACHE)
+
 if (MSVC)
     #force std::complex<> typedefs in liquiddsp
     add_definitions(-D_LIBCPP_COMPLEX)
