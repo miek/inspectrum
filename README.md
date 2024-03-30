@@ -3,7 +3,26 @@ inspectrum is a tool for analysing captured signals, primarily from software-def
 
 ![inspectrum screenshot](/screenshot.jpg)
 
-## Try it
+## Features
+ * Large (100GB+) file support
+ * Spectrogram with zoom/pan
+ * Plots of amplitude, frequency, phase and IQ samples
+ * Cursors for measuring period, symbol rate and extracting symbols
+ * Export of selected time period, filtered samples and demodulated data
+
+## Install
+### Linux
+Install inspectrum with your package manager, it should be present in most distros.
+
+### macOS
+ * [Homebrew](https://formulae.brew.sh/formula/inspectrum)
+ * [MacPorts](https://ports.macports.org/port/inspectrum/)
+
+## Windows
+ * [radioconda](https://github.com/ryanvolz/radioconda)
+ * [conda](https://anaconda.org/conda-forge/inspectrum)
+
+## Build from source
 ### Prerequisites
 
  * cmake >= 3.1
@@ -38,13 +57,3 @@ inspectrum supports the following file types:
 If an unknown file extension is loaded, inspectrum will default to `*.cf32`.
 
 Note: 64-bit samples will be truncated to 32-bit before processing, as inspectrum only supports 32-bit internally.
-
-## Features
- * Large (100GB+) file support
- * Spectrogram with zoom/pan
- * Plots of amplitude, frequency, phase and IQ samples
- * Cursors for measuring period, symbol rate and extracting symbols
- * Export of selected time period, filtered samples and demodulated data
-
-## Contact
- * #inspectrum on [libera.chat](https://libera.chat)
