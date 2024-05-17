@@ -11,7 +11,7 @@ on:
 env:
   BUILD_TYPE: Release
   # For macOS qt keg-only package
-  CMAKE_PREFIX_PATH: '/usr/local/opt/qt@5'
+  CMAKE_PREFIX_PATH: '/opt/homebrew/opt/qt@5'
 
 jobs:
   build:
