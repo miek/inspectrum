@@ -37,6 +37,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
 {
     setFFTSize(fftSize);
     zoomLevel = 1;
+    nfftSkip = 1;
     powerMax = 0.0f;
     powerMin = -50.0f;
     sampleRate = 0;
@@ -244,7 +245,7 @@ void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> s
 
 QPixmap* SpectrogramPlot::getPixmapTile(size_t tile)
 {
-    QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, tile));
+    QPixmap *obj = pixmapCache.object(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile));
     if (obj != 0)
         return obj;
 
@@ -263,13 +264,13 @@ QPixmap* SpectrogramPlot::getPixmapTile(size_t tile)
         }
     }
     obj->convertFromImage(image);
-    pixmapCache.insert(TileCacheKey(fftSize, zoomLevel, tile), obj);
+    pixmapCache.insert(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile), obj);
     return obj;
 }
 
 float* SpectrogramPlot::getFFTTile(size_t tile)
 {
-    std::array<float, tileSize>* obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, tile));
+    std::array<float, tileSize>* obj = fftCache.object(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile));
     if (obj != nullptr)
         return obj->data();
 
@@ -281,7 +282,7 @@ float* SpectrogramPlot::getFFTTile(size_t tile)
         sample += getStride();
         ptr += fftSize;
     }
-    fftCache.insert(TileCacheKey(fftSize, zoomLevel, tile), destStorage);
+    fftCache.insert(TileCacheKey(fftSize, zoomLevel, nfftSkip, tile), destStorage);
     return destStorage->data();
 }
 
@@ -324,7 +325,7 @@ void SpectrogramPlot::getLine(float *dest, size_t sample)
 
 int SpectrogramPlot::getStride()
 {
-    return fftSize / zoomLevel;
+    return fftSize * nfftSkip / zoomLevel;
 }
 
 float SpectrogramPlot::getTunerPhaseInc()
@@ -403,6 +404,11 @@ void SpectrogramPlot::setPowerMin(int power)
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;
+}
+
+void SpectrogramPlot::setSkip(int skip)
+{
+    nfftSkip = skip;
 }
 
 void SpectrogramPlot::setSampleRate(double rate)
