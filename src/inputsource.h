@@ -42,7 +42,7 @@ private:
     std::string _fmt;
     bool _realSignal = false;
 
-    void readMetaData(const QString &filename);
+    QJsonObject readMetaData(const QString &filename);
 
 public:
     InputSource();
