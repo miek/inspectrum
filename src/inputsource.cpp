@@ -241,7 +241,7 @@ void InputSource::cleanup()
     }
 }
 
-void InputSource::readMetaData(const QString &filename)
+QJsonObject InputSource::readMetaData(const QString &filename)
 {
     QFile datafile(filename);
     if (!datafile.open(QFile::ReadOnly | QIODevice::Text)) {
@@ -349,6 +349,8 @@ void InputSource::readMetaData(const QString &filename)
             }
         }
     }
+
+    return root;
 }
 
 void InputSource::openFile(const char *filename)
@@ -406,7 +408,20 @@ void InputSource::openFile(const char *filename)
     if (suffix == "sigmf-meta" || suffix == "sigmf-data" || suffix == "sigmf-") {
         dataFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-data";
         metaFilename = fileInfo.path() + "/" + fileInfo.completeBaseName() + ".sigmf-meta";
-        readMetaData(metaFilename);
+        auto metaData = readMetaData(metaFilename);
+        QFile datafile(dataFilename);
+        if (!datafile.open(QFile::ReadOnly | QIODevice::Text)) {
+            auto global = metaData["global"].toObject();
+            if (global.contains("core:dataset")) {
+                auto datasetfilename = global["core:dataset"].toString();
+                if(QFileInfo(datasetfilename).isAbsolute()){
+                    dataFilename = datasetfilename;
+                }
+                else{
+                    dataFilename = fileInfo.path() + "/" + datasetfilename;
+                }
+            }
+        }
     }
     else if (suffix == "sigmf") {
         throw std::runtime_error("SigMF archives are not supported. Consider extracting a recording.");
