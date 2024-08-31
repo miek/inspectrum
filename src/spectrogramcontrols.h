@@ -42,6 +42,8 @@ signals:
 
 public slots:
     void timeSelectionChanged(float time);
+    void adjustPowerContrast(int amount);
+    void adjustPowerBias(int amount);
     void zoomIn();
     void zoomOut();
     void enableAnnotations(bool enabled);
