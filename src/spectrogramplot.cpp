@@ -32,6 +32,9 @@
 #include <limits>
 #include "util.h"
 
+#define TINYCOLORMAP_WITH_QT5
+#include <tinycolormap.hpp>
+
 
 SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src) : Plot(src), inputSource(src), fftSize(512), tuner(fftSize, this)
 {
@@ -45,7 +48,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
-        colormap[i] = QColor::fromHsvF(p * 0.83f, 1.0, 1.0 - p).rgba();
+        colormap[i] = tinycolormap::GetColor(1.0 - float(i)/255, tinycolormap::ColormapType::Viridis).ConvertToQColor().rgba();
     }
 
     tunerTransform = std::make_shared<TunerTransform>(src);
