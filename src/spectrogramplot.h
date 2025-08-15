@@ -33,8 +33,29 @@
 #include <math.h>
 #include <vector>
 
-class TileCacheKey;
 class AnnotationLocation;
+
+
+class TileCacheKey
+{
+
+public:
+    TileCacheKey(int fftSize, int zoomLevel, size_t sample) {
+        this->fftSize = fftSize;
+        this->zoomLevel = zoomLevel;
+        this->sample = sample;
+    }
+
+    bool operator==(const TileCacheKey &k2) const {
+        return (this->fftSize == k2.fftSize) &&
+               (this->zoomLevel == k2.zoomLevel) &&
+               (this->sample == k2.sample);
+    }
+
+    int fftSize;
+    int zoomLevel;
+    size_t sample;
+};
 
 class SpectrogramPlot : public Plot
 {
@@ -94,27 +115,6 @@ private:
     int linesPerTile();
     void paintFrequencyScale(QPainter &painter, QRect &rect);
     void paintAnnotations(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
-};
-
-class TileCacheKey
-{
-
-public:
-    TileCacheKey(int fftSize, int zoomLevel, size_t sample) {
-        this->fftSize = fftSize;
-        this->zoomLevel = zoomLevel;
-        this->sample = sample;
-    }
-
-    bool operator==(const TileCacheKey &k2) const {
-        return (this->fftSize == k2.fftSize) &&
-               (this->zoomLevel == k2.zoomLevel) &&
-               (this->sample == k2.sample);
-    }
-
-    int fftSize;
-    int zoomLevel;
-    size_t sample;
 };
 
 class AnnotationLocation
