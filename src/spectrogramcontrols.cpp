@@ -75,6 +75,8 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     cursorsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
+    cursorsFreezeCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Freeze cursors:")), cursorsFreezeCheckBox);
 
     cursorSymbolsSpinBox = new QSpinBox();
     cursorSymbolsSpinBox->setMinimum(1);

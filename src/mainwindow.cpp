@@ -49,6 +49,7 @@ MainWindow::MainWindow()
     connect(dock->powerMaxSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMax);
     connect(dock->powerMinSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMin);
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
+    connect(dock->cursorsFreezeCheckBox, &QCheckBox::stateChanged, plots, &PlotView::freezeCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->annosCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableAnnotations);
     connect(dock->annosCheckBox, &QCheckBox::stateChanged, dock, &SpectrogramControls::enableAnnotations);

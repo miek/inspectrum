@@ -29,6 +29,10 @@
 #include "spectrogramplot.h"
 #include "traceplot.h"
 
+typedef struct PlotViewFrozenCursors {
+	bool enabled;
+	range_t<int> range;
+} FrozenCursors;
 class PlotView : public QGraphicsView, Subscriber
 {
     Q_OBJECT
@@ -45,6 +49,7 @@ signals:
 public slots:
     void cursorsMoved();
     void enableCursors(bool enabled);
+    void freezeCursors(bool enabled);
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
     void enableAnnotationCommentsTooltips(bool enabled);
@@ -80,6 +85,7 @@ private:
     int powerMin;
     int powerMax;
     bool cursorsEnabled;
+    FrozenCursors cursorsFrozen;
     double sampleRate = 0.0;
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;

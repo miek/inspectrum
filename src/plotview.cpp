@@ -37,13 +37,14 @@
 #include <QVBoxLayout>
 #include "plots.h"
 
-PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
+PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0}), selectedSamples({0,0})
 {
     mainSampleSource = input;
     setDragMode(QGraphicsView::ScrollHandDrag);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setMouseTracking(true);
     enableCursors(false);
+    freezeCursors(false);
     connect(&cursors, &Cursors::cursorsMoved, this, &PlotView::cursorsMoved);
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
@@ -97,6 +98,7 @@ void PlotView::updateAnnotationTooltip(QMouseEvent *event)
         }
     }
 }
+
 
 void PlotView::contextMenuEvent(QContextMenuEvent * event)
 {
@@ -208,12 +210,40 @@ void PlotView::emitTimeSelection()
     emit timeSelectionChanged(selectionTime);
 }
 
+void PlotView::freezeCursors(bool enabled) {
+
+    cursorsFrozen.enabled = enabled;
+	if (cursorsEnabled) {
+		if (enabled) {
+			cursorsFrozen.range = cursors.selection();
+		}
+
+		cursors.frozen(enabled);
+	}
+}
 void PlotView::enableCursors(bool enabled)
 {
     cursorsEnabled = enabled;
     if (enabled) {
         int margin = viewport()->rect().width() / 3;
-        cursors.setSelection({viewport()->rect().left() + margin, viewport()->rect().right() - margin});
+
+
+        // Update cursors
+        int startColumn = viewport()->rect().left() + margin;
+        if (selectedSamples.minimum != selectedSamples.maximum) {
+
+        	int colWidth = sampleToColumn(selectedSamples.maximum) - sampleToColumn(selectedSamples.minimum);
+
+        	range_t<int> newSelection = {
+        			startColumn,
+					startColumn + colWidth
+        	        };
+        	cursors.setSelection(newSelection);
+        } else {
+        	cursors.setSelection({startColumn, viewport()->rect().right() - margin});
+        }
+
+        //
         cursorsMoved();
     }
     viewport()->update();

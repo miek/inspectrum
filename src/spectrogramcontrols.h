@@ -69,6 +69,7 @@ public:
     QSlider *powerMinSlider;
     QCheckBox *cursorsCheckBox;
     QSpinBox *cursorSymbolsSpinBox;
+    QCheckBox *cursorsFreezeCheckBox;
     QLabel *rateLabel;
     QLabel *periodLabel;
     QLabel *symbolRateLabel;
