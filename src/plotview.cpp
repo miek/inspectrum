@@ -35,7 +35,15 @@
 #include <QSpinBox>
 #include <QToolTip>
 #include <QVBoxLayout>
+#include <QFileDialog>
+#include <QProcess>
+#include <QMessageBox>
+#include <QSettings>
+
 #include "plots.h"
+#include "symbolprogoutput.h"
+
+
 
 PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0}), selectedSamples({0,0})
 {
@@ -150,6 +158,25 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     extract->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
     extractMenu->addAction(extract);
 
+
+
+    // Add action to run external program
+    auto runProgramAction = new QAction("Feed to External...", extractMenu);
+    connect(
+    		runProgramAction, &QAction::triggered,
+			this, [=]() {
+    			feedSymbolsToExternalProgram(src);
+    		}
+    );
+
+    runProgramAction->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
+    extractMenu->addAction(runProgramAction);
+
+
+
+
+
+
     // Add action to extract symbols from selected plot to clipboard
     auto extractClipboard = new QAction("Copy to clipboard", extractMenu);
     connect(
@@ -190,6 +217,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     updateViewRange(false);
     if(menu.exec(event->globalPos()))
         updateView(false);
+
 }
 
 void PlotView::cursorsMoved()
@@ -314,6 +342,91 @@ bool PlotView::viewportEvent(QEvent *event) {
 
     // Handle parent eveents
     return QGraphicsView::viewportEvent(event);
+}
+
+QByteArray vectorToTextByteArray(const std::vector<float>& data)
+{
+    QString text;
+    for (float value : data) {
+        text += QString::number(value, 'f', 6) + ","; // One float per line, 6 decimal places
+    }
+    return text.toUtf8(); // Convert to QByteArray with UTF-8 encoding
+}
+
+void PlotView::feedSymbolsToExternalProgram(std::shared_ptr<AbstractSampleSource> src) {
+
+    if (!cursorsEnabled)
+        return;
+    // Step 1: Open a file dialog to select the program
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setWindowTitle("Select External Program");
+
+
+    QSettings settings;
+    QString lastProgramPath = settings.value("lastProgramPath", QDir::homePath()).toString();
+    dialog.selectFile(lastProgramPath);
+    // Optional: Filter for executable files (platform-specific)
+#ifdef Q_OS_WIN
+    dialog.setNameFilter("Executables (*.exe);;All Files (*)");
+#else
+    dialog.setNameFilter("All Files (*)");
+#endif
+
+    if (dialog.exec() != QDialog::Accepted || dialog.selectedFiles().isEmpty()) {
+        return; // User canceled or didn't select a file
+    }
+
+    QString programPath = dialog.selectedFiles().first();
+
+    // Save the selected program path to QSettings
+    settings.setValue("lastProgramPath", programPath);
+
+
+    // Step 2: Execute the program and pipe data
+    QProcess process(this);
+
+    // Configure the process to allow writing to stdin
+    process.setProcessChannelMode(QProcess::MergedChannels); // Merge stdout and stderr for simplicity
+    process.start(programPath, QStringList()); // No arguments, adjust if needed
+
+    if (!process.waitForStarted()) {
+        QMessageBox::critical(this, "Error", "Failed to start program: " + process.errorString());
+        return;
+    }
+
+
+    auto floatSrc = std::dynamic_pointer_cast<SampleSource<float>>(src);
+    if (!floatSrc)
+        return;
+    auto samples = floatSrc->getSamples(selectedSamples.minimum, selectedSamples.length());
+    auto step = (float)selectedSamples.length() / cursors.segments();
+    auto symbols = std::vector<float>();
+    for (auto i = step / 2; i < selectedSamples.length(); i += step)
+    {
+        symbols.push_back(samples[i]);
+    }
+
+    // Step 3: Pipe data to the program's stdin
+    // Assume data is a QString or QByteArray from your class
+    QByteArray dataToSend = vectorToTextByteArray(symbols);
+    process.write(dataToSend);
+    process.closeWriteChannel(); // Signal EOF to stdin
+
+    // Step 4: Wait for the process to finish (optional, depending on your needs)
+    if (!process.waitForFinished()) {
+        QMessageBox::critical(this, "Error", "Program failed: " + process.errorString());
+        return;
+    }
+
+    // Optional: Read output if needed
+    QByteArray output = process.readAllStandardOutput();
+    if (!output.isEmpty()) {
+                SymbolProgOutput outputDialog(QString(output), this);
+                outputDialog.exec();
+    }
+
+
 }
 
 void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src,

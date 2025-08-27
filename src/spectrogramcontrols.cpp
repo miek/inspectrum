@@ -157,6 +157,9 @@ void SpectrogramControls::setDefaults()
     powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
     powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());
     zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
+
+    int savedFreq = settings.value("CenterFrequency", 0).toInt();
+    centerFrequency->setText(QString::number(savedFreq));
 }
 
 void SpectrogramControls::fftOrZoomChanged(void)
