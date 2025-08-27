@@ -78,6 +78,8 @@ private:
     std::vector<std::unique_ptr<Plot>> plots;
     range_t<size_t> viewRange;
     range_t<size_t> selectedSamples;
+    size_t samplesPerSegment;
+
     int zoomPos;
     size_t zoomSample;
 

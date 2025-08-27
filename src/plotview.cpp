@@ -199,6 +199,8 @@ void PlotView::cursorsMoved()
         columnToSample(horizontalScrollBar()->value() + cursors.selection().maximum)
     };
 
+    samplesPerSegment = selectedSamples.length() / cursors.segments();
+
     emitTimeSelection();
     viewport()->update();
 }
@@ -451,14 +453,17 @@ void PlotView::repaint()
     viewport()->update();
 }
 
+#include <iostream>
 void PlotView::setCursorSegments(int segments)
 {
-    // Calculate number of samples per segment
-    float sampPerSeg = (float)selectedSamples.length() / cursors.segments();
 
-    // Alter selection to keep samples per segment the same
-    selectedSamples.maximum = selectedSamples.minimum + (segments * sampPerSeg + 0.5f);
+    int curSegments = cursors.segments();
+    if (curSegments != segments) {
 
+    	int deltaSegments = segments - curSegments;
+        // Calculate number of samples per segment
+        selectedSamples.maximum = selectedSamples.maximum + (deltaSegments * samplesPerSegment);
+    }
     cursors.setSegments(segments);
     updateView();
     emitTimeSelection();
@@ -671,8 +676,7 @@ void PlotView::setCenterFrequency(double freq) {
 
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setCenterFrequency(freq);
-#warning "PSY EMIT WHAT?"
-    emitTimeSelection();
+
 }
 
 void PlotView::enableScales(bool enabled)
