@@ -283,10 +283,17 @@ bool PlotView::viewportEvent(QEvent *event) {
     // Handle wheel events for zooming (before the parent's handler to stop normal scrolling)
     if (event->type() == QEvent::Wheel) {
         QWheelEvent *wheelEvent = (QWheelEvent*)event;
-        if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        int delta = wheelEvent->angleDelta().y();
+
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+    		QScrollBar *scrollBar = horizontalScrollBar();
+        	scrollBar->setValue(scrollBar->value() + scrollBar->pageStep() * -1 * delta);
+
+        	return true;
+
+        } else if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
             bool canZoomIn = zoomLevel < fftSize;
             bool canZoomOut = zoomLevel > 1;
-            int delta = wheelEvent->angleDelta().y();
             if ((delta > 0 && canZoomIn) || (delta < 0 && canZoomOut)) {
                 scrollZoomStepsAccumulated += delta;
 
@@ -307,6 +314,9 @@ bool PlotView::viewportEvent(QEvent *event) {
                 }
             }
             return true;
+        } else {
+        	QScrollBar *scrollBar = horizontalScrollBar();
+        	scrollBar->setValue(scrollBar->value() - delta);
         }
     }
 
