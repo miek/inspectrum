@@ -40,6 +40,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     powerMax = 0.0f;
     powerMin = -50.0f;
     sampleRate = 0;
+    centerFrequency = 0;
     frequencyScaleEnabled = false;
     sigmfAnnotationsEnabled = true;
 
@@ -92,6 +93,8 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
         plotHeight *= 2;
 
     double bwPerPixel = (double)sampleRate / plotHeight;
+
+    int ybottom = plotHeight / 2 - sampleRate / bwPerPixel + y;
     int tickHeight = 50;
 
     uint64_t bwPerTick = 10 * pow(10, floor(log(bwPerPixel * tickHeight) / log(10)));
@@ -109,41 +112,53 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
 
     uint64_t tick = 0;
 
-    while (tick <= sampleRate / 2) {
+    char suffixBuf[4];
+    uint64_t divisor = 1;
+    if (bwPerTick % 1000000000 == 0) {
+        snprintf(suffixBuf, sizeof(suffixBuf), "GHz");
+        divisor = 1000000000;
+    } else if (bwPerTick % 1000000 == 0) {
+        snprintf(suffixBuf, sizeof(suffixBuf), "MHz");
+        divisor = 1000000;
+    } else if(bwPerTick % 1000 == 0) {
+        snprintf(suffixBuf, sizeof(suffixBuf), "kHz");
+        divisor = 1000;
+    } else {
+        snprintf(suffixBuf, sizeof(suffixBuf), "Hz");
+        divisor = 1;
+    }
 
+    double bottomFreq = centerFrequency - (sampleRate / 2);
+
+    while (tick <= sampleRate) {
+        // int ticky = (-1*tick / bwPerPixel) + ybottom;
+        int ticky = plotHeight - (tick / bwPerPixel) + y;
         int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
         int tickny = plotHeight / 2 + tick / bwPerPixel + y;
 
-        if (!inputSource->realSignal())
-            painter.drawLine(0, tickny, 30, tickny);
-        painter.drawLine(0, tickpy, 30, tickpy);
+        int64_t tfreq =  (bottomFreq + tick)/divisor;
+		painter.drawLine(0, tickpy, 30, tickpy);
+		if (!inputSource->realSignal())
+			painter.drawLine(0, tickny, 30, tickny);
 
-        if (tick != 0) {
-            char buf[128];
+        if (tfreq != 0) {
+			char buf[128];
+			snprintf(buf, sizeof(buf), "%li %s",tfreq, suffixBuf);
+			if (tfreq > centerFrequency/divisor) {
 
-            if (bwPerTick % 1000000000 == 0) {
-                snprintf(buf, sizeof(buf), "-%lu GHz", tick / 1000000000);
-            } else if (bwPerTick % 1000000 == 0) {
-                snprintf(buf, sizeof(buf), "-%lu MHz", tick / 1000000);
-            } else if(bwPerTick % 1000 == 0) {
-                snprintf(buf, sizeof(buf), "-%lu kHz", tick / 1000);
-            } else {
-                snprintf(buf, sizeof(buf), "-%lu Hz", tick);
-            }
+				painter.drawText(5, ticky + 15, buf);
+			} else {
+				painter.drawText(5, ticky, buf);
 
-            if (!inputSource->realSignal())
-                painter.drawText(5, tickny - 5, buf);
-
-            buf[0] = ' ';
-            painter.drawText(5, tickpy + 15, buf);
+			}
         }
-
         tick += bwPerTick;
+
     }
+
 
     // Draw small ticks
     bwPerTick /= 10;
-
     if (bwPerTick >= 1 ) {
         tick = 0;
         while (tick <= sampleRate / 2) {
@@ -158,6 +173,7 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
             tick += bwPerTick;
         }
     }
+
     painter.restore();
 }
 
@@ -410,6 +426,10 @@ void SpectrogramPlot::setSampleRate(double rate)
     sampleRate = rate;
 }
 
+
+void SpectrogramPlot::setCenterFrequency(double freq) {
+	centerFrequency = freq;
+}
 void SpectrogramPlot::enableScales(bool enabled)
 {
    frequencyScaleEnabled = enabled;

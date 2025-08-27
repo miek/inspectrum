@@ -37,6 +37,7 @@ private:
     QFile *inputFile = nullptr;
     size_t sampleCount = 0;
     double sampleRate = 0.0;
+    double centerFreq = 0.0;
     uchar *mmapData = nullptr;
     std::unique_ptr<SampleAdapter> sampleAdapter;
     std::string _fmt;
@@ -54,8 +55,10 @@ public:
         return sampleCount;
     };
     void setSampleRate(double rate);
+    void setCenterFrequency(double freq);
     void setFormat(std::string fmt);
     double rate();
+    double centerFrequency();
     bool realSignal() {
         return _realSignal;
     };

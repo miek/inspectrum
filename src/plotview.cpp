@@ -664,6 +664,17 @@ void PlotView::setSampleRate(double rate)
     emitTimeSelection();
 }
 
+
+void PlotView::setCenterFrequency(double freq) {
+
+    centerFrequency = freq;
+
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setCenterFrequency(freq);
+#warning "PSY EMIT WHAT?"
+    emitTimeSelection();
+}
+
 void PlotView::enableScales(bool enabled)
 {
     timeScaleEnabled = enabled;

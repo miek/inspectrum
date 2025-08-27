@@ -41,6 +41,15 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     sampleRate->setValidator(double_validator);
     layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
+
+
+
+    centerFrequency = new QLineEdit();
+    auto freq_double_validator = new QDoubleValidator(this);
+    freq_double_validator->setBottom(0.0);
+    centerFrequency->setValidator(freq_double_validator);
+    layout->addRow(new QLabel(tr("Center frequency:")), centerFrequency);
+
     // Spectrogram settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
     layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));

@@ -40,6 +40,7 @@ class PlotView : public QGraphicsView, Subscriber
 public:
     PlotView(InputSource *input);
     void setSampleRate(double rate);
+    void setCenterFrequency(double freq);
 
 signals:
     void timeSelectionChanged(float time);
@@ -87,6 +88,7 @@ private:
     bool cursorsEnabled;
     FrozenCursors cursorsFrozen;
     double sampleRate = 0.0;
+    double centerFrequency = 0.0;
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;
     bool annotationCommentsEnabled;

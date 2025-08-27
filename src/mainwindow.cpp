@@ -44,7 +44,9 @@ MainWindow::MainWindow()
 
     // Connect dock inputs
     connect(dock, &SpectrogramControls::openFile, this, &MainWindow::openFile);
+
     connect(dock->sampleRate, static_cast<void (QLineEdit::*)(const QString&)>(&QLineEdit::textChanged), this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setSampleRate));
+    connect(dock->centerFrequency, static_cast<void (QLineEdit::*)(const QString&)>(&QLineEdit::textChanged), this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setCenterFrequency));
     connect(dock, static_cast<void (SpectrogramControls::*)(int, int)>(&SpectrogramControls::fftOrZoomChanged), plots, &PlotView::setFFTAndZoom);
     connect(dock->powerMaxSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMax);
     connect(dock->powerMinSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMin);
@@ -88,6 +90,14 @@ void MainWindow::openFile(QString fileName)
         if (!ss.fail()) {
             setSampleRate(rate);
         }
+
+
+        std::stringstream ssfreq(centerfreq.toUtf8().constData());
+        double freq;
+        ssfreq >> freq;
+        if (!ssfreq.fail()) {
+        	setCenterFrequency(freq);
+        }
     }
 
     try
@@ -104,6 +114,7 @@ void MainWindow::openFile(QString fileName)
 void MainWindow::invalidateEvent()
 {
     plots->setSampleRate(input->rate());
+    plots->setCenterFrequency(input->centerFrequency());
 
     // Only update the text box if it is not already representing
     // the current value. Otherwise the cursor might jump or the
@@ -128,6 +139,22 @@ void MainWindow::setSampleRate(QString rate)
 void MainWindow::setSampleRate(double rate)
 {
     dock->sampleRate->setText(QString::number(rate));
+}
+
+void MainWindow::setCenterFrequency(QString freq)
+{
+    auto centerFreq = freq.toDouble();
+    input->setCenterFrequency(centerFreq);
+    plots->setCenterFrequency(centerFreq);
+
+    // Save the sample rate in settings as we're likely to be opening the same file across multiple runs
+    QSettings settings;
+    settings.setValue("CenterFrequency", centerFreq);
+}
+
+void MainWindow::setCenterFrequency(double freq)
+{
+    dock->centerFrequency->setText(QString::number(freq));
 }
 
 void MainWindow::setFormat(QString fmt)
