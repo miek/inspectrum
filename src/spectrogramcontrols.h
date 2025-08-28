@@ -45,6 +45,8 @@ public slots:
     void zoomIn();
     void zoomOut();
     void enableAnnotations(bool enabled);
+    void coordinateClick(double time_pos, double freq_pos, bool down);
+
 
 private slots:
     void fftSizeChanged(int value);
@@ -77,6 +79,14 @@ public:
     QLabel *periodLabel;
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
+
+    QLabel *startTimeLabel;
+    double startTime;
+    double endTime;
+    QLabel *endTimeLabel;
+    QLabel *deltaTimeLabel;
+
+
     QCheckBox *scalesCheckBox;
     QCheckBox *annosCheckBox;
     QCheckBox *commentsCheckBox;

@@ -47,6 +47,8 @@ signals:
     void timeSelectionChanged(float time);
     void zoomIn();
     void zoomOut();
+    void coordinateClick(double time_position, double frequency, bool down);
+
 
 public slots:
     void cursorsMoved();

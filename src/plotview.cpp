@@ -343,6 +343,7 @@ void PlotView::keyPressEvent(QKeyEvent *event) {
 }
 bool PlotView::viewportEvent(QEvent *event) {
     // Handle wheel events for zooming (before the parent's handler to stop normal scrolling)
+
     if (event->type() == QEvent::Wheel) {
         QWheelEvent *wheelEvent = (QWheelEvent*)event;
         int delta = wheelEvent->angleDelta().y();
@@ -390,7 +391,23 @@ bool PlotView::viewportEvent(QEvent *event) {
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
+
         int plotY = -verticalScrollBar()->value();
+
+        if ( (QApplication::keyboardModifiers() & Qt::ControlModifier) &&
+        		(event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease)) {
+			double clickTime = (columnToSample(mouseEvent->pos().x()) + viewRange.minimum) /  sampleRate;
+
+			// don't know how to translate mouse coords to frequency: TODO:FIXME -- setting at 0 for now
+			if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+				emit coordinateClick(clickTime, 0, false);
+			} else {
+				emit coordinateClick(clickTime, 0, event->type() == QEvent::MouseButtonPress);
+			}
+			return true;
+        }
+
+
         for (auto&& plot : plots) {
             bool result = plot->mouseEvent(
                 event->type(),

@@ -119,6 +119,25 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     commentsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Display annotation comments tooltips:")), commentsCheckBox);
 
+
+
+    // SigMF selection settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Time (ctrl-click, drag)</b>")));
+
+    startTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Start:")), startTimeLabel);
+    endTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("End:")), endTimeLabel);
+    deltaTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Delta:")), deltaTimeLabel);
+
+
+
+
+
+
+
     widget->setLayout(layout);
     setWidget(widget);
 
@@ -257,6 +276,31 @@ void SpectrogramControls::timeSelectionChanged(float time)
         symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Bd");
     }
 }
+
+void SpectrogramControls::coordinateClick(double time_pos, double freq_pos, bool down) {
+
+	if (down) {
+		endTimeLabel->setText("");
+		deltaTimeLabel->setText("");
+		startTimeLabel->setText(QString::fromStdString(formatSIValue(time_pos)) + "s");
+		startTime = time_pos;
+
+	} else {
+		endTime = time_pos;
+		if (endTime == startTime) {
+			deltaTimeLabel->setText("");
+			endTimeLabel->setText("");
+		} else {
+			if (endTime < startTime) {
+				deltaTimeLabel->setText(QString("-") + QString::fromStdString(formatSIValue(startTime - endTime)) + "s");
+			} else {
+				deltaTimeLabel->setText(QString::fromStdString(formatSIValue(endTime - startTime)) + "s");
+			}
+			endTimeLabel->setText(QString::fromStdString(formatSIValue(time_pos)) + "s");
+		}
+	}
+}
+
 
 void SpectrogramControls::zoomIn()
 {
