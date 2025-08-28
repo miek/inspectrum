@@ -112,6 +112,22 @@ void MainWindow::openFile(QString fileName)
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    switch (event->key()) {
+		case Qt::Key_C:
+			dock->cursorsCheckBox->setChecked(! plots->cursorsAreEnabled());
+			break;
+		case Qt::Key_W:
+			if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+				QApplication::closeAllWindows();
+			}
+			break;
+
+		default:
+			QMainWindow::keyPressEvent(event); // Pass to base class
+    }
+}
+
 void MainWindow::invalidateEvent()
 {
     plots->setSampleRate(input->rate());

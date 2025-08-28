@@ -41,7 +41,8 @@ public:
     PlotView(InputSource *input);
     void setSampleRate(double rate);
     void setCenterFrequency(double freq);
-
+    void keyPressEvent(QKeyEvent *event) override;
+    bool cursorsAreEnabled() { return cursorsEnabled;}
 signals:
     void timeSelectionChanged(float time);
     void zoomIn();

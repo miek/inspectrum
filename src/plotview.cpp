@@ -278,7 +278,69 @@ void PlotView::enableCursors(bool enabled)
     }
     viewport()->update();
 }
+void PlotView::keyPressEvent(QKeyEvent *event) {
+	bool shiftMod = QApplication::keyboardModifiers() & Qt::ShiftModifier;
+	bool ctrlMod = QApplication::keyboardModifiers() & Qt::ControlModifier;
+	QScrollBar *scrollBar = horizontalScrollBar();
+	std::shared_ptr<AbstractSampleSource> plot_src;
 
+    switch (event->key()) {
+		case Qt::Key_Left:
+			if (ctrlMod) {
+				scrollBar->setValue(scrollBar->value() + scrollBar->pageStep() * -1);
+			} else {
+				scrollBar->setValue(scrollBar->value() + scrollBar->singleStep() * -1);
+			}
+
+			break;
+		case Qt::Key_Right:
+			if (ctrlMod) {
+				scrollBar->setValue(scrollBar->value() + scrollBar->pageStep());
+			} else {
+				scrollBar->setValue(scrollBar->value() + scrollBar->singleStep());
+			}
+			break;
+
+		case Qt::Key_Up:
+			if (! (cursorsEnabled || ctrlMod) ) {
+				QGraphicsView::keyPressEvent(event); // Pass to base class
+				break;
+			}
+			if (shiftMod)
+				cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum+10});
+			else
+				cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum+1});
+
+	        cursorsMoved();
+			break;
+		case Qt::Key_Down:
+			if (! (cursorsEnabled || ctrlMod) ) {
+				QGraphicsView::keyPressEvent(event); // Pass to base class
+				break;
+			}
+			if (shiftMod) {
+				if (cursors.selection().maximum - cursors.selection().minimum > 10)
+					cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum-10});
+			} else {
+				if (cursors.selection().maximum - cursors.selection().minimum > 2)
+					cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum-1});
+			}
+
+
+	        cursorsMoved();
+			break;
+		case Qt::Key_F:
+			if (spectrogramPlot->tunerEnabled()) {
+				break;
+			}
+			plot_src = spectrogramPlot->output();
+			addPlot(Plots::frequencyPlot(plot_src));
+			repaint();
+			break;
+    default:
+        QGraphicsView::keyPressEvent(event); // Pass to base class
+    }
+}
 bool PlotView::viewportEvent(QEvent *event) {
     // Handle wheel events for zooming (before the parent's handler to stop normal scrolling)
     if (event->type() == QEvent::Wheel) {
