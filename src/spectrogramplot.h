@@ -60,6 +60,7 @@ public slots:
     void setFFTSize(int size);
     void setPowerMax(int power);
     void setPowerMin(int power);
+    void setSquelch(int power);
     void setZoomLevel(int zoom);
     void tunerMoved();
 
@@ -79,6 +80,7 @@ private:
     int zoomLevel;
     float powerMax;
     float powerMin;
+    float squelch;
     double sampleRate;
     double centerFrequency;
     bool frequencyScaleEnabled;

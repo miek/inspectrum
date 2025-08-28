@@ -621,6 +621,13 @@ void PlotView::setPowerMin(int power)
     updateView();
 }
 
+void PlotView::setSquelch(int sq) {
+	squelch = sq;
+	if (spectrogramPlot != nullptr)
+		spectrogramPlot->setSquelch(sq);
+    updateView();
+}
+
 void PlotView::setPowerMax(int power)
 {
     powerMax = power;

@@ -137,13 +137,17 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
         int tickny = plotHeight / 2 + tick / bwPerPixel + y;
 
         int64_t tfreq =  (bottomFreq + tick)/divisor;
+        /*
 		painter.drawLine(0, tickpy, 30, tickpy);
 		if (!inputSource->realSignal())
 			painter.drawLine(0, tickny, 30, tickny);
+		*/
 
         if (tfreq != 0) {
 			char buf[128];
 			snprintf(buf, sizeof(buf), "%li %s",tfreq, suffixBuf);
+
+			painter.drawLine(0, ticky, 40, ticky);
 			if (tfreq > centerFrequency/divisor) {
 
 				painter.drawText(5, ticky + 15, buf);
@@ -416,6 +420,13 @@ void SpectrogramPlot::setPowerMin(int power)
     pixmapCache.clear();
 }
 
+void SpectrogramPlot::setSquelch(int sq)
+{
+    squelch = sq;
+    pixmapCache.clear();
+
+    tunerMoved();
+}
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
     zoomLevel = zoom;

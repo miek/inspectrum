@@ -60,6 +60,7 @@ public slots:
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
+    void setSquelch(int squelch);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -87,6 +88,7 @@ private:
     int zoomLevel = 1;
     int powerMin;
     int powerMax;
+    int squelch;
     bool cursorsEnabled;
     FrozenCursors cursorsFrozen;
     double sampleRate = 0.0;

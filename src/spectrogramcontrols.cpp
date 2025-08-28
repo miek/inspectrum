@@ -74,6 +74,12 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     powerMinSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
+    squelchSlider = new QSlider(Qt::Horizontal, widget);
+    squelchSlider->setRange(0, 10);
+    layout->addRow(new QLabel(tr("Squelch:")), squelchSlider);
+
+
+
     scalesCheckBox = new QCheckBox(widget);
     scalesCheckBox->setCheckState(Qt::Checked);
     layout->addRow(new QLabel(tr("Scales:")), scalesCheckBox);
@@ -122,6 +128,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     connect(cursorsCheckBox, &QCheckBox::stateChanged, this, &SpectrogramControls::cursorsStateChanged);
     connect(powerMinSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMinChanged);
     connect(powerMaxSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMaxChanged);
+    connect(squelchSlider, &QSlider::valueChanged, this, &SpectrogramControls::squelchChanged);
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -156,6 +163,7 @@ void SpectrogramControls::setDefaults()
     fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
     powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
     powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());
+    squelchSlider->setValue(settings.value("Squelch", 0).toInt());
     zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
 
     int savedFreq = settings.value("CenterFrequency", 0).toInt();
@@ -188,6 +196,13 @@ void SpectrogramControls::powerMinChanged(int value)
     QSettings settings;
     settings.setValue("PowerMin", value);
 }
+
+void SpectrogramControls::squelchChanged(int value)
+{
+    QSettings settings;
+    settings.setValue("Squelch", value);
+}
+
 
 void SpectrogramControls::powerMaxChanged(int value)
 {

@@ -51,6 +51,7 @@ private slots:
     void zoomLevelChanged(int value);
     void powerMinChanged(int value);
     void powerMaxChanged(int value);
+    void squelchChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
 
@@ -68,6 +69,7 @@ public:
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
+    QSlider *squelchSlider;
     QCheckBox *cursorsCheckBox;
     QSpinBox *cursorSymbolsSpinBox;
     QCheckBox *cursorsFreezeCheckBox;
