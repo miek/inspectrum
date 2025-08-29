@@ -30,19 +30,20 @@ FrequencyDemod::FrequencyDemod(std::shared_ptr<SampleSource<std::complex<float>>
 
 void FrequencyDemod::work(void *input, void *output, int count, size_t sampleid)
 {
-	float power_window[10];
+	double power_window[10];
 	unsigned int window_size = 10;
 	unsigned int window_index = 0;
-	float power_sum = 0.0f;
-	float avg_power = 0.0f;
+	double power_sum = 0.0f;
+	double avg_power = 0.0f;
 
     auto in = static_cast<std::complex<float>*>(input);
     auto out = static_cast<float*>(output);
     freqdem fdem = freqdem_create(relativeBandwidth() / 2.0);
 
     QSettings settings;
-    float squelch_threshold = 100.0 * settings.value("Squelch", 0).toInt();
-    bool using_squelch = (squelch_threshold > 1) ? true : false;
+    int sqval = settings.value("Squelch", 0).toInt();
+    double squelch_threshold = pow(2, sqval+2); // 100.0 * settings.value("Squelch", 0).toInt();
+    bool using_squelch = sqval ? true : false;
 
     if (using_squelch) {
 		// Initialize power window
@@ -55,7 +56,7 @@ void FrequencyDemod::work(void *input, void *output, int count, size_t sampleid)
     for (int i = 0; i < count; i++) {
 
 		if (using_squelch) {
-			float power = in[i].real() * in[i].real()
+			double power = in[i].real() * in[i].real()
 								+ in[i].imag() * in[i].imag();
 			// Update power averaging window
 			power_sum -= power_window[window_index]; // Subtract oldest power

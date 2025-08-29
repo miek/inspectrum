@@ -75,7 +75,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
     squelchSlider = new QSlider(Qt::Horizontal, widget);
-    squelchSlider->setRange(0, 10);
+    squelchSlider->setRange(0, 21);
     layout->addRow(new QLabel(tr("Squelch:")), squelchSlider);
 
 
