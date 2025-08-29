@@ -29,6 +29,11 @@ Cursors::Cursors(QObject * parent) : QObject::QObject(parent)
     connect(maxCursor, &Cursor::posChanged, this, &Cursors::cursorMoved);
 }
 
+void Cursors::frozen(bool enable) {
+	minCursor->frozen(enable);
+	maxCursor->frozen(enable);
+}
+
 void Cursors::cursorMoved()
 {
     // Swap cursors if one has been dragged past the other

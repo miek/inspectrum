@@ -29,6 +29,10 @@
 #include "spectrogramplot.h"
 #include "traceplot.h"
 
+typedef struct PlotViewFrozenCursors {
+	bool enabled;
+	range_t<int> range;
+} FrozenCursors;
 class PlotView : public QGraphicsView, Subscriber
 {
     Q_OBJECT
@@ -36,15 +40,20 @@ class PlotView : public QGraphicsView, Subscriber
 public:
     PlotView(InputSource *input);
     void setSampleRate(double rate);
-
+    void setCenterFrequency(double freq);
+    void keyPressEvent(QKeyEvent *event) override;
+    bool cursorsAreEnabled() { return cursorsEnabled;}
 signals:
     void timeSelectionChanged(float time);
     void zoomIn();
     void zoomOut();
+    void coordinateClick(double time_position, double frequency, bool down);
+
 
 public slots:
     void cursorsMoved();
     void enableCursors(bool enabled);
+    void freezeCursors(bool enabled);
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
     void enableAnnotationCommentsTooltips(bool enabled);
@@ -54,6 +63,7 @@ public slots:
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
+    void setSquelch(int squelch);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -72,6 +82,8 @@ private:
     std::vector<std::unique_ptr<Plot>> plots;
     range_t<size_t> viewRange;
     range_t<size_t> selectedSamples;
+    size_t samplesPerSegment;
+
     int zoomPos;
     size_t zoomSample;
 
@@ -79,15 +91,23 @@ private:
     int zoomLevel = 1;
     int powerMin;
     int powerMax;
+    int squelch;
     bool cursorsEnabled;
+    FrozenCursors cursorsFrozen;
     double sampleRate = 0.0;
+    double centerFrequency = 0.0;
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;
     bool annotationCommentsEnabled;
+    std::shared_ptr<AbstractSampleSource> last_src_used;
+
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
     void extractSymbols(std::shared_ptr<AbstractSampleSource> src, bool toClipboard);
+
+    void selectAndFeedExternalProgram(std::shared_ptr<AbstractSampleSource> src);
+    void feedSymbolsToExternalProgram(QString programPath, std::shared_ptr<AbstractSampleSource> src);
     void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     template<typename SOURCETYPE> void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
@@ -100,3 +120,5 @@ private:
     int sampleToColumn(size_t sample);
     size_t columnToSample(int col);
 };
+
+

@@ -41,6 +41,15 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     sampleRate->setValidator(double_validator);
     layout->addRow(new QLabel(tr("Sample rate:")), sampleRate);
 
+
+
+
+    centerFrequency = new QLineEdit();
+    auto freq_double_validator = new QDoubleValidator(this);
+    freq_double_validator->setBottom(0.0);
+    centerFrequency->setValidator(freq_double_validator);
+    layout->addRow(new QLabel(tr("Center frequency:")), centerFrequency);
+
     // Spectrogram settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
     layout->addRow(new QLabel(tr("<b>Spectrogram</b>")));
@@ -65,6 +74,12 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     powerMinSlider->setRange(-140, 10);
     layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
 
+    squelchSlider = new QSlider(Qt::Horizontal, widget);
+    squelchSlider->setRange(0, 21);
+    layout->addRow(new QLabel(tr("Squelch:")), squelchSlider);
+
+
+
     scalesCheckBox = new QCheckBox(widget);
     scalesCheckBox->setCheckState(Qt::Checked);
     layout->addRow(new QLabel(tr("Scales:")), scalesCheckBox);
@@ -75,6 +90,8 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     cursorsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
+    cursorsFreezeCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Freeze cursors:")), cursorsFreezeCheckBox);
 
     cursorSymbolsSpinBox = new QSpinBox();
     cursorSymbolsSpinBox->setMinimum(1);
@@ -102,6 +119,25 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     commentsCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Display annotation comments tooltips:")), commentsCheckBox);
 
+
+
+    // SigMF selection settings
+    layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
+    layout->addRow(new QLabel(tr("<b>Time (ctrl-click, drag)</b>")));
+
+    startTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Start:")), startTimeLabel);
+    endTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("End:")), endTimeLabel);
+    deltaTimeLabel = new QLabel();
+    layout->addRow(new QLabel(tr("Delta:")), deltaTimeLabel);
+
+
+
+
+
+
+
     widget->setLayout(layout);
     setWidget(widget);
 
@@ -111,6 +147,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     connect(cursorsCheckBox, &QCheckBox::stateChanged, this, &SpectrogramControls::cursorsStateChanged);
     connect(powerMinSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMinChanged);
     connect(powerMaxSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMaxChanged);
+    connect(squelchSlider, &QSlider::valueChanged, this, &SpectrogramControls::squelchChanged);
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -145,7 +182,11 @@ void SpectrogramControls::setDefaults()
     fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
     powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
     powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());
+    squelchSlider->setValue(settings.value("Squelch", 0).toInt());
     zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
+
+    int savedFreq = settings.value("CenterFrequency", 0).toInt();
+    centerFrequency->setText(QString::number(savedFreq));
 }
 
 void SpectrogramControls::fftOrZoomChanged(void)
@@ -174,6 +215,13 @@ void SpectrogramControls::powerMinChanged(int value)
     QSettings settings;
     settings.setValue("PowerMin", value);
 }
+
+void SpectrogramControls::squelchChanged(int value)
+{
+    QSettings settings;
+    settings.setValue("Squelch", value);
+}
+
 
 void SpectrogramControls::powerMaxChanged(int value)
 {
@@ -228,6 +276,31 @@ void SpectrogramControls::timeSelectionChanged(float time)
         symbolRateLabel->setText(QString::fromStdString(formatSIValue(symbols / time)) + "Bd");
     }
 }
+
+void SpectrogramControls::coordinateClick(double time_pos, double freq_pos, bool down) {
+
+	if (down) {
+		endTimeLabel->setText("");
+		deltaTimeLabel->setText("");
+		startTimeLabel->setText(QString::fromStdString(formatSIValue(time_pos)) + "s");
+		startTime = time_pos;
+
+	} else {
+		endTime = time_pos;
+		if (endTime == startTime) {
+			deltaTimeLabel->setText("");
+			endTimeLabel->setText("");
+		} else {
+			if (endTime < startTime) {
+				deltaTimeLabel->setText(QString("-") + QString::fromStdString(formatSIValue(startTime - endTime)) + "s");
+			} else {
+				deltaTimeLabel->setText(QString::fromStdString(formatSIValue(endTime - startTime)) + "s");
+			}
+			endTimeLabel->setText(QString::fromStdString(formatSIValue(time_pos)) + "s");
+		}
+	}
+}
+
 
 void SpectrogramControls::zoomIn()
 {

@@ -39,6 +39,9 @@ public:
     void setSegments(int segments);
     void setSelection(range_t<int> selection);
 
+    void frozen(bool enable);
+
+
 public slots:
     void cursorMoved();
 

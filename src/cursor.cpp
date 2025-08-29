@@ -25,6 +25,9 @@ Cursor::Cursor(Qt::Orientation orientation, Qt::CursorShape mouseCursorShape, QO
 
 }
 
+void Cursor::frozen(bool enable) {
+	isFrozen = enable;
+}
 int Cursor::fromPoint(QPoint point)
 {
     return (orientation == Qt::Vertical) ? point.x() : point.y();
@@ -39,17 +42,22 @@ bool Cursor::pointOverCursor(QPoint point)
 
 bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
+	if (isFrozen) {
+		return false;
+	}
     // If the mouse pointer moves over a cursor, display a resize pointer
-    if (pointOverCursor(event.pos()) && type != QEvent::Leave) {
-        if (!cursorOverrided) {
-            cursorOverrided = true;
-            QApplication::setOverrideCursor(QCursor(cursorShape));
-        }
-    // Restore pointer if it moves off the cursor, or leaves the widget
-    } else if (cursorOverrided) {
-        cursorOverrided = false;
-        QApplication::restoreOverrideCursor();
-    }
+	if (pointOverCursor(event.pos()) && type != QEvent::Leave) {
+		if (!cursorOverrided) {
+			cursorOverrided = true;
+			QApplication::setOverrideCursor(QCursor(cursorShape));
+		}
+
+	// Restore pointer if it moves off the cursor, or leaves the widget
+	} else if (cursorOverrided) {
+		cursorOverrided = false;
+		QApplication::restoreOverrideCursor();
+	}
+
 
     // Start dragging on left mouse button press, if over a cursor
     if (type == QEvent::MouseButtonPress) {

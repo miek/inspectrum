@@ -31,11 +31,14 @@ class MainWindow : public QMainWindow, Subscriber
 public:
     MainWindow();
     void changeSampleRate(double rate);
+    void keyPressEvent(QKeyEvent *event) override;
 
 public slots:
     void openFile(QString fileName);
     void setSampleRate(QString rate);
     void setSampleRate(double rate);
+    void setCenterFrequency(QString centerfreq);
+    void setCenterFrequency(double centerfreq);
     void setFormat(QString fmt);
     void invalidateEvent() override;
 

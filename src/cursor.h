@@ -34,6 +34,8 @@ public:
     void setPos(int newPos);
     bool mouseEvent(QEvent::Type type, QMouseEvent event);
 
+    void frozen(bool enable);
+
 signals:
     void posChanged();
 
@@ -45,5 +47,6 @@ private:
     Qt::CursorShape cursorShape;
     bool dragging = false;
     bool cursorOverrided = false;
+    bool isFrozen = false;
     int cursorPosition = 0;
 };

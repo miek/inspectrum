@@ -461,6 +461,16 @@ double InputSource::rate()
     return sampleRate;
 }
 
+void InputSource::setCenterFrequency(double freq)
+{
+	centerFreq = freq;
+    invalidate();
+}
+
+double InputSource::centerFrequency()
+{
+    return centerFreq;
+}
 std::unique_ptr<std::complex<float>[]> InputSource::getSamples(size_t start, size_t length)
 {
     if (inputFile == nullptr)

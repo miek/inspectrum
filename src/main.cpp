@@ -45,6 +45,11 @@ int main(int argc, char *argv[])
                                   QCoreApplication::translate("main", "fmt"));
     parser.addOption(formatOption);
 
+    QCommandLineOption centerFreqOption(QStringList() << "c" << "centerfreq",
+                                  QCoreApplication::translate("main", "Set center frequency."),
+                                  QCoreApplication::translate("main", "Hz"));
+    parser.addOption(centerFreqOption);
+
     // Process the actual command line
     parser.process(a);
  
@@ -57,14 +62,24 @@ int main(int argc, char *argv[])
     if (args.size()>=1)
         mainWin.openFile(args.at(0));
 
+    bool ok;
     if (parser.isSet(rateOption)) {
-        bool ok;
         auto rate = parser.value(rateOption).toDouble(&ok);
         if(!ok) {
             fputs("ERROR: could not parse rate\n", stderr);
             return 1;
         }
         mainWin.setSampleRate(rate);
+    }
+
+
+    if (parser.isSet(centerFreqOption)) {
+        auto centerfreq = parser.value(centerFreqOption).toDouble(&ok);
+        if(!ok) {
+            fputs("ERROR: could not parse center frequency\n", stderr);
+            return 1;
+        }
+        mainWin.setCenterFrequency(centerfreq);
     }
 
     mainWin.show();

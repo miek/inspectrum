@@ -45,12 +45,15 @@ public slots:
     void zoomIn();
     void zoomOut();
     void enableAnnotations(bool enabled);
+    void coordinateClick(double time_pos, double freq_pos, bool down);
+
 
 private slots:
     void fftSizeChanged(int value);
     void zoomLevelChanged(int value);
     void powerMinChanged(int value);
     void powerMaxChanged(int value);
+    void squelchChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
 
@@ -63,16 +66,27 @@ private:
 public:
     QPushButton *fileOpenButton;
     QLineEdit *sampleRate;
+    QLineEdit *centerFrequency;
     QSlider *fftSizeSlider;
     QSlider *zoomLevelSlider;
     QSlider *powerMaxSlider;
     QSlider *powerMinSlider;
+    QSlider *squelchSlider;
     QCheckBox *cursorsCheckBox;
     QSpinBox *cursorSymbolsSpinBox;
+    QCheckBox *cursorsFreezeCheckBox;
     QLabel *rateLabel;
     QLabel *periodLabel;
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
+
+    QLabel *startTimeLabel;
+    double startTime;
+    double endTime;
+    QLabel *endTimeLabel;
+    QLabel *deltaTimeLabel;
+
+
     QCheckBox *scalesCheckBox;
     QCheckBox *annosCheckBox;
     QCheckBox *commentsCheckBox;

@@ -44,11 +44,15 @@ MainWindow::MainWindow()
 
     // Connect dock inputs
     connect(dock, &SpectrogramControls::openFile, this, &MainWindow::openFile);
+
     connect(dock->sampleRate, static_cast<void (QLineEdit::*)(const QString&)>(&QLineEdit::textChanged), this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setSampleRate));
+    connect(dock->centerFrequency, static_cast<void (QLineEdit::*)(const QString&)>(&QLineEdit::textChanged), this, static_cast<void (MainWindow::*)(QString)>(&MainWindow::setCenterFrequency));
     connect(dock, static_cast<void (SpectrogramControls::*)(int, int)>(&SpectrogramControls::fftOrZoomChanged), plots, &PlotView::setFFTAndZoom);
     connect(dock->powerMaxSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMax);
     connect(dock->powerMinSlider, &QSlider::valueChanged, plots, &PlotView::setPowerMin);
+    connect(dock->squelchSlider, &QSlider::valueChanged, plots, &PlotView::setSquelch);
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
+    connect(dock->cursorsFreezeCheckBox, &QCheckBox::stateChanged, plots, &PlotView::freezeCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->annosCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableAnnotations);
     connect(dock->annosCheckBox, &QCheckBox::stateChanged, dock, &SpectrogramControls::enableAnnotations);
@@ -59,6 +63,9 @@ MainWindow::MainWindow()
     connect(plots, &PlotView::timeSelectionChanged, dock, &SpectrogramControls::timeSelectionChanged);
     connect(plots, &PlotView::zoomIn, dock, &SpectrogramControls::zoomIn);
     connect(plots, &PlotView::zoomOut, dock, &SpectrogramControls::zoomOut);
+    connect(plots, &PlotView::coordinateClick, dock, &SpectrogramControls::coordinateClick);
+
+    void coordinateClick(double time_position, double frequency);
 
     // Set defaults after making connections so everything is in sync
     dock->setDefaults();
@@ -87,6 +94,14 @@ void MainWindow::openFile(QString fileName)
         if (!ss.fail()) {
             setSampleRate(rate);
         }
+
+
+        std::stringstream ssfreq(centerfreq.toUtf8().constData());
+        double freq;
+        ssfreq >> freq;
+        if (!ssfreq.fail()) {
+        	setCenterFrequency(freq);
+        }
     }
 
     try
@@ -100,9 +115,26 @@ void MainWindow::openFile(QString fileName)
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    switch (event->key()) {
+		case Qt::Key_C:
+			dock->cursorsCheckBox->setChecked(! plots->cursorsAreEnabled());
+			break;
+		case Qt::Key_W:
+			if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+				QApplication::closeAllWindows();
+			}
+			break;
+
+		default:
+			QMainWindow::keyPressEvent(event); // Pass to base class
+    }
+}
+
 void MainWindow::invalidateEvent()
 {
     plots->setSampleRate(input->rate());
+    plots->setCenterFrequency(input->centerFrequency());
 
     // Only update the text box if it is not already representing
     // the current value. Otherwise the cursor might jump or the
@@ -127,6 +159,22 @@ void MainWindow::setSampleRate(QString rate)
 void MainWindow::setSampleRate(double rate)
 {
     dock->sampleRate->setText(QString::number(rate));
+}
+
+void MainWindow::setCenterFrequency(QString freq)
+{
+    auto centerFreq = freq.toDouble();
+    input->setCenterFrequency(centerFreq);
+    plots->setCenterFrequency(centerFreq);
+
+    // Save the sample rate in settings as we're likely to be opening the same file across multiple runs
+    QSettings settings;
+    settings.setValue("CenterFrequency", centerFreq);
+}
+
+void MainWindow::setCenterFrequency(double freq)
+{
+    dock->centerFrequency->setText(QString::number(freq));
 }
 
 void MainWindow::setFormat(QString fmt)

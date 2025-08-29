@@ -49,6 +49,7 @@ public:
     bool mouseEvent(QEvent::Type type, QMouseEvent event) override;
     std::shared_ptr<SampleSource<std::complex<float>>> input() { return inputSource; };
     void setSampleRate(double sampleRate);
+    void setCenterFrequency(double freq);
     bool tunerEnabled();
     void enableScales(bool enabled);
     void enableAnnotations(bool enabled);
@@ -59,6 +60,7 @@ public slots:
     void setFFTSize(int size);
     void setPowerMax(int power);
     void setPowerMin(int power);
+    void setSquelch(int power);
     void setZoomLevel(int zoom);
     void tunerMoved();
 
@@ -78,7 +80,9 @@ private:
     int zoomLevel;
     float powerMax;
     float powerMin;
+    float squelch;
     double sampleRate;
+    double centerFrequency;
     bool frequencyScaleEnabled;
     bool sigmfAnnotationsEnabled;
 

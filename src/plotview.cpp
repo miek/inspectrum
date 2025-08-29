@@ -35,15 +35,24 @@
 #include <QSpinBox>
 #include <QToolTip>
 #include <QVBoxLayout>
-#include "plots.h"
+#include <QFileDialog>
+#include <QProcess>
+#include <QMessageBox>
+#include <QSettings>
 
-PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0})
+#include "plots.h"
+#include "symbolprogoutput.h"
+
+
+
+PlotView::PlotView(InputSource *input) : cursors(this), viewRange({0, 0}), selectedSamples({0,0})
 {
     mainSampleSource = input;
     setDragMode(QGraphicsView::ScrollHandDrag);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setMouseTracking(true);
     enableCursors(false);
+    freezeCursors(false);
     connect(&cursors, &Cursors::cursorsMoved, this, &PlotView::cursorsMoved);
 
     spectrogramPlot = new SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>>(mainSampleSource));
@@ -98,6 +107,7 @@ void PlotView::updateAnnotationTooltip(QMouseEvent *event)
     }
 }
 
+
 void PlotView::contextMenuEvent(QContextMenuEvent * event)
 {
     QMenu menu;
@@ -121,6 +131,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     // that are compatible with selectedPlot's output
     QMenu *plotsMenu = menu.addMenu("Add derived plot");
     auto src = selectedPlot->output();
+    last_src_used = src;
     auto compatiblePlots = as_range(Plots::plots.equal_range(src->sampleType()));
     for (auto p : compatiblePlots) {
         auto plotInfo = p.second;
@@ -147,6 +158,25 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     );
     extract->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
     extractMenu->addAction(extract);
+
+
+
+    // Add action to run external program
+    auto runProgramAction = new QAction("Feed to External...", extractMenu);
+    connect(
+    		runProgramAction, &QAction::triggered,
+			this, [=]() {
+    			selectAndFeedExternalProgram(src);
+    		}
+    );
+
+    runProgramAction->setEnabled(cursorsEnabled && (src->sampleType() == typeid(float)));
+    extractMenu->addAction(runProgramAction);
+
+
+
+
+
 
     // Add action to extract symbols from selected plot to clipboard
     auto extractClipboard = new QAction("Copy to clipboard", extractMenu);
@@ -178,6 +208,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     connect(
         rem, &QAction::triggered,
         this, [=]() {
+    	    last_src_used = nullptr;
             plots.erase(it);
         }
     );
@@ -188,6 +219,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     updateViewRange(false);
     if(menu.exec(event->globalPos()))
         updateView(false);
+
 }
 
 void PlotView::cursorsMoved()
@@ -196,6 +228,8 @@ void PlotView::cursorsMoved()
         columnToSample(horizontalScrollBar()->value() + cursors.selection().minimum),
         columnToSample(horizontalScrollBar()->value() + cursors.selection().maximum)
     };
+
+    samplesPerSegment = selectedSamples.length() / cursors.segments();
 
     emitTimeSelection();
     viewport()->update();
@@ -208,25 +242,137 @@ void PlotView::emitTimeSelection()
     emit timeSelectionChanged(selectionTime);
 }
 
+void PlotView::freezeCursors(bool enabled) {
+
+    cursorsFrozen.enabled = enabled;
+	if (cursorsEnabled) {
+		if (enabled) {
+			cursorsFrozen.range = cursors.selection();
+		}
+
+		cursors.frozen(enabled);
+	}
+}
 void PlotView::enableCursors(bool enabled)
 {
     cursorsEnabled = enabled;
     if (enabled) {
         int margin = viewport()->rect().width() / 3;
-        cursors.setSelection({viewport()->rect().left() + margin, viewport()->rect().right() - margin});
+
+
+        // Update cursors
+        int startColumn = viewport()->rect().left() + margin;
+        if (selectedSamples.minimum != selectedSamples.maximum) {
+
+        	int colWidth = sampleToColumn(selectedSamples.maximum) - sampleToColumn(selectedSamples.minimum);
+
+        	range_t<int> newSelection = {
+        			startColumn,
+					startColumn + colWidth
+        	        };
+        	cursors.setSelection(newSelection);
+        } else {
+        	cursors.setSelection({startColumn, viewport()->rect().right() - margin});
+        }
+
+        //
         cursorsMoved();
     }
     viewport()->update();
 }
+void PlotView::keyPressEvent(QKeyEvent *event) {
 
+    QSettings settings;
+
+	bool shiftMod = QApplication::keyboardModifiers() & Qt::ShiftModifier;
+	bool ctrlMod = QApplication::keyboardModifiers() & Qt::ControlModifier;
+	QScrollBar *scrollBar = horizontalScrollBar();
+	std::shared_ptr<AbstractSampleSource> plot_src;
+
+    switch (event->key()) {
+		case Qt::Key_Left:
+			if (ctrlMod) {
+				scrollBar->setValue(scrollBar->value() + scrollBar->pageStep() * -1);
+			} else {
+				scrollBar->setValue(scrollBar->value() + scrollBar->singleStep() * -1);
+			}
+
+			break;
+		case Qt::Key_Right:
+			if (ctrlMod) {
+				scrollBar->setValue(scrollBar->value() + scrollBar->pageStep());
+			} else {
+				scrollBar->setValue(scrollBar->value() + scrollBar->singleStep());
+			}
+			break;
+
+		case Qt::Key_Up:
+			if (! (cursorsEnabled || ctrlMod) ) {
+				QGraphicsView::keyPressEvent(event); // Pass to base class
+				break;
+			}
+			if (shiftMod)
+				cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum+10});
+			else
+				cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum+1});
+
+	        cursorsMoved();
+			break;
+		case Qt::Key_Down:
+			if (! (cursorsEnabled || ctrlMod) ) {
+				QGraphicsView::keyPressEvent(event); // Pass to base class
+				break;
+			}
+			if (shiftMod) {
+				if (cursors.selection().maximum - cursors.selection().minimum > 10)
+					cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum-10});
+			} else {
+				if (cursors.selection().maximum - cursors.selection().minimum > 2)
+					cursors.setSelection({cursors.selection().minimum,cursors.selection().maximum-1});
+			}
+
+
+	        cursorsMoved();
+			break;
+		case Qt::Key_F:
+			if (spectrogramPlot->tunerEnabled()) {
+				break;
+			}
+			plot_src = spectrogramPlot->output();
+			addPlot(Plots::frequencyPlot(plot_src));
+			repaint();
+			break;
+		case Qt::Key_R:
+			if (last_src_used && cursorsEnabled) {
+
+			    QString lastProgramPath = settings.value("lastProgramPath", QString("")).toString();
+			    if (lastProgramPath != "") {
+			    	feedSymbolsToExternalProgram(lastProgramPath, last_src_used);
+			    }
+			}
+			break;
+
+
+    default:
+        QGraphicsView::keyPressEvent(event); // Pass to base class
+    }
+}
 bool PlotView::viewportEvent(QEvent *event) {
     // Handle wheel events for zooming (before the parent's handler to stop normal scrolling)
+
     if (event->type() == QEvent::Wheel) {
         QWheelEvent *wheelEvent = (QWheelEvent*)event;
-        if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
+        int delta = wheelEvent->angleDelta().y();
+
+        if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+    		QScrollBar *scrollBar = horizontalScrollBar();
+        	scrollBar->setValue(scrollBar->value() + scrollBar->pageStep() * -1 * delta);
+
+        	return true;
+
+        } else if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
             bool canZoomIn = zoomLevel < fftSize;
             bool canZoomOut = zoomLevel > 1;
-            int delta = wheelEvent->angleDelta().y();
             if ((delta > 0 && canZoomIn) || (delta < 0 && canZoomOut)) {
                 scrollZoomStepsAccumulated += delta;
 
@@ -247,6 +393,9 @@ bool PlotView::viewportEvent(QEvent *event) {
                 }
             }
             return true;
+        } else {
+        	QScrollBar *scrollBar = horizontalScrollBar();
+        	scrollBar->setValue(scrollBar->value() - delta);
         }
     }
 
@@ -258,7 +407,23 @@ bool PlotView::viewportEvent(QEvent *event) {
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
+
         int plotY = -verticalScrollBar()->value();
+
+        if ( (QApplication::keyboardModifiers() & Qt::ControlModifier) &&
+        		(event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease)) {
+			double clickTime = (columnToSample(mouseEvent->pos().x()) + viewRange.minimum) /  sampleRate;
+
+			// don't know how to translate mouse coords to frequency: TODO:FIXME -- setting at 0 for now
+			if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+				emit coordinateClick(clickTime, 0, false);
+			} else {
+				emit coordinateClick(clickTime, 0, event->type() == QEvent::MouseButtonPress);
+			}
+			return true;
+        }
+
+
         for (auto&& plot : plots) {
             bool result = plot->mouseEvent(
                 event->type(),
@@ -282,6 +447,96 @@ bool PlotView::viewportEvent(QEvent *event) {
 
     // Handle parent eveents
     return QGraphicsView::viewportEvent(event);
+}
+
+QByteArray vectorToTextByteArray(const std::vector<float>& data)
+{
+    QString text;
+    for (float value : data) {
+        text += QString::number(value, 'f', 6) + ","; // One float per line, 6 decimal places
+    }
+    return text.toUtf8(); // Convert to QByteArray with UTF-8 encoding
+}
+
+void PlotView::feedSymbolsToExternalProgram(QString programPath, std::shared_ptr<AbstractSampleSource> src) {
+
+    if (!cursorsEnabled)
+        return;
+
+    auto floatSrc = std::dynamic_pointer_cast<SampleSource<float>>(src);
+    if (!floatSrc)
+        return;
+
+    QProcess process(this);
+
+    // Configure the process to allow writing to stdin
+    process.setProcessChannelMode(QProcess::MergedChannels); // Merge stdout and stderr for simplicity
+    process.start(programPath, QStringList()); // No arguments, adjust if needed
+
+    if (!process.waitForStarted()) {
+        QMessageBox::critical(this, "Error", "Failed to start program: " + process.errorString());
+        return;
+    }
+
+
+    auto samples = floatSrc->getSamples(selectedSamples.minimum, selectedSamples.length());
+    auto step = (float)selectedSamples.length() / cursors.segments();
+    auto symbols = std::vector<float>();
+    for (auto i = step / 2; i < selectedSamples.length(); i += step)
+    {
+        symbols.push_back(samples[i]);
+    }
+
+    // Step 3: Pipe data to the program's stdin
+    // Assume data is a QString or QByteArray from your class
+    QByteArray dataToSend = vectorToTextByteArray(symbols);
+    process.write(dataToSend);
+    process.closeWriteChannel(); // Signal EOF to stdin
+
+    // Step 4: Wait for the process to finish (optional, depending on your needs)
+    if (!process.waitForFinished()) {
+        QMessageBox::critical(this, "Error", "Program failed: " + process.errorString());
+        return;
+    }
+
+    // Optional: Read output if needed
+    QByteArray output = process.readAllStandardOutput();
+    if (!output.isEmpty()) {
+                SymbolProgOutput outputDialog(QString(output), this);
+                outputDialog.exec();
+    }
+
+}
+void PlotView::selectAndFeedExternalProgram(std::shared_ptr<AbstractSampleSource> src) {
+
+    if (!cursorsEnabled)
+        return;
+    // Step 1: Open a file dialog to select the program
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setWindowTitle("Select External Program");
+
+
+    QSettings settings;
+    QString lastProgramPath = settings.value("lastProgramPath", QDir::homePath()).toString();
+    dialog.selectFile(lastProgramPath);
+    // Optional: Filter for executable files (platform-specific)
+#ifdef Q_OS_WIN
+    dialog.setNameFilter("Executables (*.exe);;All Files (*)");
+#else
+    dialog.setNameFilter("All Files (*)");
+#endif
+
+    if (dialog.exec() != QDialog::Accepted || dialog.selectedFiles().isEmpty()) {
+        return; // User canceled or didn't select a file
+    }
+
+    QString programPath = dialog.selectedFiles().first();
+
+    // Save the selected program path to QSettings
+    settings.setValue("lastProgramPath", programPath);
+
+    feedSymbolsToExternalProgram(programPath, src);
 }
 
 void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src,
@@ -421,14 +676,17 @@ void PlotView::repaint()
     viewport()->update();
 }
 
+#include <iostream>
 void PlotView::setCursorSegments(int segments)
 {
-    // Calculate number of samples per segment
-    float sampPerSeg = (float)selectedSamples.length() / cursors.segments();
 
-    // Alter selection to keep samples per segment the same
-    selectedSamples.maximum = selectedSamples.minimum + (segments * sampPerSeg + 0.5f);
+    int curSegments = cursors.segments();
+    if (curSegments != segments) {
 
+    	int deltaSegments = segments - curSegments;
+        // Calculate number of samples per segment
+        selectedSamples.maximum = selectedSamples.maximum + (deltaSegments * samplesPerSegment);
+    }
     cursors.setSegments(segments);
     updateView();
     emitTimeSelection();
@@ -460,6 +718,13 @@ void PlotView::setPowerMin(int power)
     powerMin = power;
     if (spectrogramPlot != nullptr)
         spectrogramPlot->setPowerMin(power);
+    updateView();
+}
+
+void PlotView::setSquelch(int sq) {
+	squelch = sq;
+	if (spectrogramPlot != nullptr)
+		spectrogramPlot->setSquelch(sq);
     updateView();
 }
 
@@ -632,6 +897,16 @@ void PlotView::setSampleRate(double rate)
         spectrogramPlot->setSampleRate(rate);
 
     emitTimeSelection();
+}
+
+
+void PlotView::setCenterFrequency(double freq) {
+
+    centerFrequency = freq;
+
+    if (spectrogramPlot != nullptr)
+        spectrogramPlot->setCenterFrequency(freq);
+
 }
 
 void PlotView::enableScales(bool enabled)
