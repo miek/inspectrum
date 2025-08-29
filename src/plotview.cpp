@@ -131,6 +131,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     // that are compatible with selectedPlot's output
     QMenu *plotsMenu = menu.addMenu("Add derived plot");
     auto src = selectedPlot->output();
+    last_src_used = src;
     auto compatiblePlots = as_range(Plots::plots.equal_range(src->sampleType()));
     for (auto p : compatiblePlots) {
         auto plotInfo = p.second;
@@ -165,7 +166,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     connect(
     		runProgramAction, &QAction::triggered,
 			this, [=]() {
-    			feedSymbolsToExternalProgram(src);
+    			selectAndFeedExternalProgram(src);
     		}
     );
 
@@ -207,6 +208,7 @@ void PlotView::contextMenuEvent(QContextMenuEvent * event)
     connect(
         rem, &QAction::triggered,
         this, [=]() {
+    	    last_src_used = nullptr;
             plots.erase(it);
         }
     );
@@ -279,6 +281,9 @@ void PlotView::enableCursors(bool enabled)
     viewport()->update();
 }
 void PlotView::keyPressEvent(QKeyEvent *event) {
+
+    QSettings settings;
+
 	bool shiftMod = QApplication::keyboardModifiers() & Qt::ShiftModifier;
 	bool ctrlMod = QApplication::keyboardModifiers() & Qt::ControlModifier;
 	QScrollBar *scrollBar = horizontalScrollBar();
@@ -337,6 +342,17 @@ void PlotView::keyPressEvent(QKeyEvent *event) {
 			addPlot(Plots::frequencyPlot(plot_src));
 			repaint();
 			break;
+		case Qt::Key_R:
+			if (last_src_used && cursorsEnabled) {
+
+			    QString lastProgramPath = settings.value("lastProgramPath", QString("")).toString();
+			    if (lastProgramPath != "") {
+			    	feedSymbolsToExternalProgram(lastProgramPath, last_src_used);
+			    }
+			}
+			break;
+
+
     default:
         QGraphicsView::keyPressEvent(event); // Pass to base class
     }
@@ -442,7 +458,56 @@ QByteArray vectorToTextByteArray(const std::vector<float>& data)
     return text.toUtf8(); // Convert to QByteArray with UTF-8 encoding
 }
 
-void PlotView::feedSymbolsToExternalProgram(std::shared_ptr<AbstractSampleSource> src) {
+void PlotView::feedSymbolsToExternalProgram(QString programPath, std::shared_ptr<AbstractSampleSource> src) {
+
+    if (!cursorsEnabled)
+        return;
+
+    auto floatSrc = std::dynamic_pointer_cast<SampleSource<float>>(src);
+    if (!floatSrc)
+        return;
+
+    QProcess process(this);
+
+    // Configure the process to allow writing to stdin
+    process.setProcessChannelMode(QProcess::MergedChannels); // Merge stdout and stderr for simplicity
+    process.start(programPath, QStringList()); // No arguments, adjust if needed
+
+    if (!process.waitForStarted()) {
+        QMessageBox::critical(this, "Error", "Failed to start program: " + process.errorString());
+        return;
+    }
+
+
+    auto samples = floatSrc->getSamples(selectedSamples.minimum, selectedSamples.length());
+    auto step = (float)selectedSamples.length() / cursors.segments();
+    auto symbols = std::vector<float>();
+    for (auto i = step / 2; i < selectedSamples.length(); i += step)
+    {
+        symbols.push_back(samples[i]);
+    }
+
+    // Step 3: Pipe data to the program's stdin
+    // Assume data is a QString or QByteArray from your class
+    QByteArray dataToSend = vectorToTextByteArray(symbols);
+    process.write(dataToSend);
+    process.closeWriteChannel(); // Signal EOF to stdin
+
+    // Step 4: Wait for the process to finish (optional, depending on your needs)
+    if (!process.waitForFinished()) {
+        QMessageBox::critical(this, "Error", "Program failed: " + process.errorString());
+        return;
+    }
+
+    // Optional: Read output if needed
+    QByteArray output = process.readAllStandardOutput();
+    if (!output.isEmpty()) {
+                SymbolProgOutput outputDialog(QString(output), this);
+                outputDialog.exec();
+    }
+
+}
+void PlotView::selectAndFeedExternalProgram(std::shared_ptr<AbstractSampleSource> src) {
 
     if (!cursorsEnabled)
         return;
@@ -471,51 +536,7 @@ void PlotView::feedSymbolsToExternalProgram(std::shared_ptr<AbstractSampleSource
     // Save the selected program path to QSettings
     settings.setValue("lastProgramPath", programPath);
 
-
-    // Step 2: Execute the program and pipe data
-    QProcess process(this);
-
-    // Configure the process to allow writing to stdin
-    process.setProcessChannelMode(QProcess::MergedChannels); // Merge stdout and stderr for simplicity
-    process.start(programPath, QStringList()); // No arguments, adjust if needed
-
-    if (!process.waitForStarted()) {
-        QMessageBox::critical(this, "Error", "Failed to start program: " + process.errorString());
-        return;
-    }
-
-
-    auto floatSrc = std::dynamic_pointer_cast<SampleSource<float>>(src);
-    if (!floatSrc)
-        return;
-    auto samples = floatSrc->getSamples(selectedSamples.minimum, selectedSamples.length());
-    auto step = (float)selectedSamples.length() / cursors.segments();
-    auto symbols = std::vector<float>();
-    for (auto i = step / 2; i < selectedSamples.length(); i += step)
-    {
-        symbols.push_back(samples[i]);
-    }
-
-    // Step 3: Pipe data to the program's stdin
-    // Assume data is a QString or QByteArray from your class
-    QByteArray dataToSend = vectorToTextByteArray(symbols);
-    process.write(dataToSend);
-    process.closeWriteChannel(); // Signal EOF to stdin
-
-    // Step 4: Wait for the process to finish (optional, depending on your needs)
-    if (!process.waitForFinished()) {
-        QMessageBox::critical(this, "Error", "Program failed: " + process.errorString());
-        return;
-    }
-
-    // Optional: Read output if needed
-    QByteArray output = process.readAllStandardOutput();
-    if (!output.isEmpty()) {
-                SymbolProgOutput outputDialog(QString(output), this);
-                outputDialog.exec();
-    }
-
-
+    feedSymbolsToExternalProgram(programPath, src);
 }
 
 void PlotView::extractSymbols(std::shared_ptr<AbstractSampleSource> src,

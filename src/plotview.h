@@ -99,11 +99,15 @@ private:
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;
     bool annotationCommentsEnabled;
+    std::shared_ptr<AbstractSampleSource> last_src_used;
+
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
     void extractSymbols(std::shared_ptr<AbstractSampleSource> src, bool toClipboard);
-    void feedSymbolsToExternalProgram(std::shared_ptr<AbstractSampleSource> src);
+
+    void selectAndFeedExternalProgram(std::shared_ptr<AbstractSampleSource> src);
+    void feedSymbolsToExternalProgram(QString programPath, std::shared_ptr<AbstractSampleSource> src);
     void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     template<typename SOURCETYPE> void exportSamples(std::shared_ptr<AbstractSampleSource> src);
     int plotsHeight();
