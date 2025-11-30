@@ -64,7 +64,11 @@ QPixmap TracePlot::getTile(size_t tileID, size_t sampleCount)
 
     if (!tasks.contains(key)) {
         range_t<size_t> sampleRange{tileID * sampleCount, (tileID + 1) * sampleCount};
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QtConcurrent::run(&TracePlot::drawTile, this, key, QRect(0, 0, tileWidth, height()), sampleRange);
+#else
         QtConcurrent::run(this, &TracePlot::drawTile, key, QRect(0, 0, tileWidth, height()), sampleRange);
+#endif
         tasks.insert(key);
     }
     pixmap.fill(Qt::transparent);

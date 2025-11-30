@@ -44,6 +44,6 @@ private:
     Qt::Orientation orientation;
     Qt::CursorShape cursorShape;
     bool dragging = false;
-    bool cursorOverrided = false;
+    bool cursorOverriden = false;
     int cursorPosition = 0;
 };
