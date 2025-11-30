@@ -260,15 +260,16 @@ bool PlotView::viewportEvent(QEvent *event) {
 
         int plotY = -verticalScrollBar()->value();
         for (auto&& plot : plots) {
+            auto mouse_event = QMouseEvent(
+                event->type(),
+                QPoint(mouseEvent->position().x(), mouseEvent->position().y() - plotY),
+                mouseEvent->button(),
+                mouseEvent->buttons(),
+                QApplication::keyboardModifiers()
+            );
             bool result = plot->mouseEvent(
                 event->type(),
-                QMouseEvent(
-                    event->type(),
-                    QPoint(mouseEvent->pos().x(), mouseEvent->pos().y() - plotY),
-                    mouseEvent->button(),
-                    mouseEvent->buttons(),
-                    QApplication::keyboardModifiers()
-                )
+                &mouse_event
             );
             if (result)
                 return true;
@@ -276,7 +277,7 @@ bool PlotView::viewportEvent(QEvent *event) {
         }
 
         if (cursorsEnabled)
-            if (cursors.mouseEvent(event->type(), *mouseEvent))
+            if (cursors.mouseEvent(event->type(), mouseEvent))
                 return true;
     }
 

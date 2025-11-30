@@ -32,7 +32,7 @@ public:
     Cursor(Qt::Orientation orientation, Qt::CursorShape mouseCursorShape, QObject * parent);
     int pos();
     void setPos(int newPos);
-    bool mouseEvent(QEvent::Type type, QMouseEvent event);
+    bool mouseEvent(QEvent::Type type, QMouseEvent *event);
 
 signals:
     void posChanged();

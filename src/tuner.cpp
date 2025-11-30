@@ -63,7 +63,7 @@ int Tuner::deviation()
     return _deviation;
 }
 
-bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent event)
+bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     if (cfCursor->mouseEvent(type, event))
         return true;

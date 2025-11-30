@@ -37,10 +37,10 @@ bool Cursor::pointOverCursor(QPoint point)
     return range.contains(fromPoint(point));
 }
 
-bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
+bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     // If the mouse pointer moves over a cursor, display a resize pointer
-    if (pointOverCursor(event.pos()) && type != QEvent::Leave) {
+    if (pointOverCursor(event->pos()) && type != QEvent::Leave) {
         if (!cursorOverrided) {
             cursorOverrided = true;
             QApplication::setOverrideCursor(QCursor(cursorShape));
@@ -53,8 +53,8 @@ bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
 
     // Start dragging on left mouse button press, if over a cursor
     if (type == QEvent::MouseButtonPress) {
-        if (event.button() == Qt::LeftButton) {
-            if (pointOverCursor(event.pos())) {
+        if (event->button() == Qt::LeftButton) {
+            if (pointOverCursor(event->pos())) {
                 dragging = true;
                 return true;
             }
@@ -63,13 +63,13 @@ bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
     // Update current cursor position if we're dragging
     } else if (type == QEvent::MouseMove) {
         if (dragging) {
-            cursorPosition = fromPoint(event.pos());
+            cursorPosition = fromPoint(event->pos());
             emit posChanged();
         }
 
     // Stop dragging on left mouse button release
     } else if (type == QEvent::MouseButtonRelease) {
-        if (event.button() == Qt::LeftButton && dragging) {
+        if (event->button() == Qt::LeftButton && dragging) {
             dragging = false;
             return true;
         }

@@ -44,15 +44,15 @@ bool Cursors::pointWithinDragRegion(QPoint point) {
     return range.contains(point.x());
 }
 
-bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent event)
+bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     if (minCursor->mouseEvent(type, event))
         return true;
     if (maxCursor->mouseEvent(type, event))
-    return true;
+        return true;
 
     // If the mouse pointer is between the cursors, display a resize pointer
-    if (pointWithinDragRegion(event.pos()) && type != QEvent::Leave) {
+    if (pointWithinDragRegion(event->pos()) && type != QEvent::Leave) {
         if (!cursorOverride) {
                 cursorOverride = true;
                 QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
@@ -66,25 +66,25 @@ bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent event)
     }
     // Start dragging on left mouse button press, if between the cursors
     if (type == QEvent::MouseButtonPress) {
-        if (event.button() == Qt::LeftButton) {
-            if (pointWithinDragRegion(event.pos())) {
+        if (event->button() == Qt::LeftButton) {
+            if (pointWithinDragRegion(event->pos())) {
                 dragging = true;
-                dragPos = event.pos();
+                dragPos = event->pos();
                 return true;
             }
         }
     // Update both cursor positons if we're dragging
     } else if (type == QEvent::MouseMove) {
         if (dragging) {
-            int dx = event.pos().x() - dragPos.x();
+            int dx = event->pos().x() - dragPos.x();
             minCursor->setPos(minCursor->pos() + dx);
             maxCursor->setPos(maxCursor->pos() + dx);
-            dragPos = event.pos();
+            dragPos = event->pos();
             emit cursorsMoved();
         }
     // Stop dragging on left mouse button release
     } else if (type == QEvent::MouseButtonRelease) {
-        if (event.button() == Qt::LeftButton && dragging) {
+        if (event->button() == Qt::LeftButton && dragging) {
             dragging = false;
             return true;
         }
