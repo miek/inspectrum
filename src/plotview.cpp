@@ -91,7 +91,11 @@ void PlotView::updateAnnotationTooltip(QMouseEvent *event)
     } else {
         QString* comment = spectrogramPlot->mouseAnnotationComment(event);
         if (comment != nullptr) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QToolTip::showText(event->globalPosition().toPoint(), *comment);
+#else
             QToolTip::showText(event->globalPos(), *comment);
+#endif
         } else {
             QToolTip::hideText();
         }
@@ -261,7 +265,11 @@ bool PlotView::viewportEvent(QEvent *event) {
         for (auto&& plot : plots) {
             auto mouse_event = QMouseEvent(
                 event->type(),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 QPoint(mouseEvent->position().x(), mouseEvent->position().y() - plotY),
+#else
+                QPoint(mouseEvent->pos().x(), mouseEvent->pos().y() - plotY),
+#endif
                 mouseEvent->button(),
                 mouseEvent->buttons(),
                 QApplication::keyboardModifiers()
