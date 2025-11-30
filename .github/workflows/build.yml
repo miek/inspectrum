@@ -16,21 +16,35 @@ env:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: ['macos-latest', 'ubuntu-24.04', 'ubuntu-22.04']
+        qt: ['qt5', 'qt6']
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
 
+    - name: Set variables Qt5
+      run: |
+        echo "QTPKG_MAC=qt@5" >> $GITHUB_ENV
+        echo "QTPKG_UBUNTU=qtbase5-dev" >> $GITHUB_ENV
+      if: matrix.qt == 'qt5'
+
+    - name: Set variables Qt6
+      run: |
+        echo "QTPKG_MAC=qt@6" >> $GITHUB_ENV
+        echo "QTPKG_UBUNTU=qt6-base-dev" >> $GITHUB_ENV
+      if: matrix.qt == 'qt6'
+
     - name: Install dependencies (macOS)
-      run: brew install fftw liquid-dsp qt@5
+      run: brew install fftw liquid-dsp ${{ env.QTPKG_MAC }}
       if: matrix.os == 'macos-latest'
 
     - name: Install dependencies (Ubuntu)
       run: |
         sudo apt update
-        sudo apt install libfftw3-dev libliquid-dev qtbase5-dev
+        sudo apt install libfftw3-dev libliquid-dev libgl1-mesa-dev ${{ env.QTPKG_UBUNTU }}
       if: startsWith(matrix.os, 'ubuntu-')
 
     - name: Create Build Environment
