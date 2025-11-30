@@ -40,12 +40,12 @@ bool Cursor::pointOverCursor(QPoint point)
 bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     // If the mouse pointer moves over a cursor, display a resize pointer
-    if (pointOverCursor(event->pos()) && type != QEvent::Leave) {
+    if (pointOverCursor(event->pos())) {
         if (!cursorOverriden) {
             cursorOverriden = true;
             QApplication::setOverrideCursor(QCursor(cursorShape));
         }
-    // Restore pointer if it moves off the cursor, or leaves the widget
+    // Restore pointer if it moves off the cursor
     } else if (cursorOverriden) {
         cursorOverriden = false;
         QApplication::restoreOverrideCursor();
@@ -75,6 +75,14 @@ bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent *event)
         }
     }
     return false;
+}
+
+void Cursor::leaveEvent()
+{
+    if (cursorOverriden) {
+        cursorOverriden = false;
+        QApplication::restoreOverrideCursor();
+    }
 }
 
 int Cursor::pos()

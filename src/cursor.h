@@ -33,6 +33,7 @@ public:
     int pos();
     void setPos(int newPos);
     bool mouseEvent(QEvent::Type type, QMouseEvent *event);
+    void leaveEvent();
 
 signals:
     void posChanged();

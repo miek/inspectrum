@@ -34,6 +34,7 @@ public:
     ~Plot();
     void invalidateEvent() override;
     virtual bool mouseEvent(QEvent::Type type, QMouseEvent *event);
+    virtual void leaveEvent();
     virtual std::shared_ptr<AbstractSampleSource> output();
     virtual void paintBack(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
     virtual void paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);

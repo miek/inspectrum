@@ -359,6 +359,12 @@ bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent *event)
     return false;
 }
 
+void SpectrogramPlot::leaveEvent()
+{
+    if (tunerEnabled())
+        tuner.leaveEvent();
+}
+
 std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()
 {
     return tunerTransform;

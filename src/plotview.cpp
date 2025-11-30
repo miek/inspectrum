@@ -253,8 +253,7 @@ bool PlotView::viewportEvent(QEvent *event) {
     // Pass mouse events to individual plot objects
     if (event->type() == QEvent::MouseButtonPress ||
         event->type() == QEvent::MouseMove ||
-        event->type() == QEvent::MouseButtonRelease ||
-        event->type() == QEvent::Leave) {
+        event->type() == QEvent::MouseButtonRelease) {
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
@@ -279,6 +278,15 @@ bool PlotView::viewportEvent(QEvent *event) {
         if (cursorsEnabled)
             if (cursors.mouseEvent(event->type(), mouseEvent))
                 return true;
+    }
+
+    if (event->type() == QEvent::Leave) {
+        for (auto&& plot : plots) {
+            plot->leaveEvent();
+        }
+
+        if (cursorsEnabled)
+            cursors.leaveEvent();
     }
 
     // Handle parent eveents

@@ -52,7 +52,7 @@ bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent *event)
         return true;
 
     // If the mouse pointer is between the cursors, display a resize pointer
-    if (pointWithinDragRegion(event->pos()) && type != QEvent::Leave) {
+    if (pointWithinDragRegion(event->pos()) ) {
         if (!cursorOverride) {
                 cursorOverride = true;
                 QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
@@ -90,6 +90,17 @@ bool Cursors::mouseEvent(QEvent::Type type, QMouseEvent *event)
         }
     }
     return false;
+}
+
+void Cursors::leaveEvent()
+{
+    minCursor->leaveEvent();
+    maxCursor->leaveEvent();
+
+    if (cursorOverride) {
+        cursorOverride = false;
+        QApplication::restoreOverrideCursor();
+    }
 }
 
 void Cursors::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)

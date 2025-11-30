@@ -68,6 +68,7 @@ public:
     void paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange) override;
     void paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange) override;
     bool mouseEvent(QEvent::Type type, QMouseEvent *event) override;
+    void leaveEvent();
     std::shared_ptr<SampleSource<std::complex<float>>> input() { return inputSource; };
     void setSampleRate(double sampleRate);
     bool tunerEnabled();
