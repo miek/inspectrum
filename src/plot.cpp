@@ -34,9 +34,14 @@ void Plot::invalidateEvent()
 
 }
 
-bool Plot::mouseEvent(QEvent::Type type, QMouseEvent event)
+bool Plot::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     return false;
+}
+
+void Plot::leaveEvent()
+{
+
 }
 
 std::shared_ptr<AbstractSampleSource> Plot::output()

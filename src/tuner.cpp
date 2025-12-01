@@ -63,7 +63,7 @@ int Tuner::deviation()
     return _deviation;
 }
 
-bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent event)
+bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     if (cfCursor->mouseEvent(type, event))
         return true;
@@ -73,6 +73,13 @@ bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent event)
         return true;
 
     return false;
+}
+
+void Tuner::leaveEvent()
+{
+    cfCursor->leaveEvent();
+    minCursor->leaveEvent();
+    maxCursor->leaveEvent();
 }
 
 void Tuner::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)

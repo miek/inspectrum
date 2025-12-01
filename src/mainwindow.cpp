@@ -72,12 +72,13 @@ void MainWindow::openFile(QString fileName)
 
     // Try to parse osmocom_fft filenames and extract the sample rate and center frequency.
     // Example file name: "name-f2.411200e+09-s5.000000e+06-t20160807180210.cfile"
-    QRegExp rx("(.*)-f(.*)-s(.*)-.*\\.cfile");
+    QRegularExpression rx(QRegularExpression::anchoredPattern("(.*)-f(.*)-s(.*)-.*\\.cfile"));
     QString basename = fileName.section('/',-1,-1);
 
-    if (rx.exactMatch(basename)) {
-        QString centerfreq = rx.cap(2);
-        QString samplerate = rx.cap(3);
+    auto match = rx.match(basename);
+    if (match.hasMatch()) {
+        QString centerfreq = match.captured(2);
+        QString samplerate = match.captured(3);
 
         std::stringstream ss(samplerate.toUtf8().constData());
 

@@ -37,24 +37,24 @@ bool Cursor::pointOverCursor(QPoint point)
     return range.contains(fromPoint(point));
 }
 
-bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
+bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     // If the mouse pointer moves over a cursor, display a resize pointer
-    if (pointOverCursor(event.pos()) && type != QEvent::Leave) {
-        if (!cursorOverrided) {
-            cursorOverrided = true;
+    if (pointOverCursor(event->pos())) {
+        if (!cursorOverriden) {
+            cursorOverriden = true;
             QApplication::setOverrideCursor(QCursor(cursorShape));
         }
-    // Restore pointer if it moves off the cursor, or leaves the widget
-    } else if (cursorOverrided) {
-        cursorOverrided = false;
+    // Restore pointer if it moves off the cursor
+    } else if (cursorOverriden) {
+        cursorOverriden = false;
         QApplication::restoreOverrideCursor();
     }
 
     // Start dragging on left mouse button press, if over a cursor
     if (type == QEvent::MouseButtonPress) {
-        if (event.button() == Qt::LeftButton) {
-            if (pointOverCursor(event.pos())) {
+        if (event->button() == Qt::LeftButton) {
+            if (pointOverCursor(event->pos())) {
                 dragging = true;
                 return true;
             }
@@ -63,18 +63,26 @@ bool Cursor::mouseEvent(QEvent::Type type, QMouseEvent event)
     // Update current cursor position if we're dragging
     } else if (type == QEvent::MouseMove) {
         if (dragging) {
-            cursorPosition = fromPoint(event.pos());
+            cursorPosition = fromPoint(event->pos());
             emit posChanged();
         }
 
     // Stop dragging on left mouse button release
     } else if (type == QEvent::MouseButtonRelease) {
-        if (event.button() == Qt::LeftButton && dragging) {
+        if (event->button() == Qt::LeftButton && dragging) {
             dragging = false;
             return true;
         }
     }
     return false;
+}
+
+void Cursor::leaveEvent()
+{
+    if (cursorOverriden) {
+        cursorOverriden = false;
+        QApplication::restoreOverrideCursor();
+    }
 }
 
 int Cursor::pos()

@@ -351,12 +351,18 @@ int SpectrogramPlot::linesPerTile()
     return tileSize / fftSize;
 }
 
-bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
+bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent *event)
 {
     if (tunerEnabled())
         return tuner.mouseEvent(type, event);
 
     return false;
+}
+
+void SpectrogramPlot::leaveEvent()
+{
+    if (tunerEnabled())
+        tuner.leaveEvent();
 }
 
 std::shared_ptr<AbstractSampleSource> SpectrogramPlot::output()

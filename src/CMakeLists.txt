@@ -52,8 +52,10 @@ list(APPEND inspectrum_sources
     util.cpp
 )
 
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Concurrent REQUIRED)
+find_package(Qt6 COMPONENTS Core Concurrent Widgets)
+if (NOT Qt6_FOUND)
+    find_package(Qt5 REQUIRED COMPONENTS Core Concurrent Widgets)
+endif()
 find_package(FFTW REQUIRED)
 find_package(Liquid REQUIRED)
 
@@ -64,11 +66,19 @@ include_directories(
 
 add_executable(inspectrum ${EXE_ARGS} ${inspectrum_sources})
 
-target_link_libraries(inspectrum
-    Qt5::Core Qt5::Widgets Qt5::Concurrent
-    ${FFTW_LIBRARIES}
-    ${LIQUID_LIBRARIES}
-)
+if (Qt6_FOUND)
+    target_link_libraries(inspectrum
+        Qt6::Core Qt6::Widgets Qt6::Concurrent
+        ${FFTW_LIBRARIES}
+        ${LIQUID_LIBRARIES}
+    )
+else()
+    target_link_libraries(inspectrum
+        Qt5::Core Qt5::Widgets Qt5::Concurrent
+        ${FFTW_LIBRARIES}
+        ${LIQUID_LIBRARIES}
+    )
+endif()
 
 set(INSTALL_DEFAULT_BINDIR "bin" CACHE STRING "Appended to CMAKE_INSTALL_PREFIX")
 

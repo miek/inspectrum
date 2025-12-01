@@ -32,7 +32,8 @@ public:
     Cursor(Qt::Orientation orientation, Qt::CursorShape mouseCursorShape, QObject * parent);
     int pos();
     void setPos(int newPos);
-    bool mouseEvent(QEvent::Type type, QMouseEvent event);
+    bool mouseEvent(QEvent::Type type, QMouseEvent *event);
+    void leaveEvent();
 
 signals:
     void posChanged();
@@ -44,6 +45,6 @@ private:
     Qt::Orientation orientation;
     Qt::CursorShape cursorShape;
     bool dragging = false;
-    bool cursorOverrided = false;
+    bool cursorOverriden = false;
     int cursorPosition = 0;
 };

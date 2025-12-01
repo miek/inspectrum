@@ -91,7 +91,11 @@ void PlotView::updateAnnotationTooltip(QMouseEvent *event)
     } else {
         QString* comment = spectrogramPlot->mouseAnnotationComment(event);
         if (comment != nullptr) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QToolTip::showText(event->globalPosition().toPoint(), *comment);
+#else
             QToolTip::showText(event->globalPos(), *comment);
+#endif
         } else {
             QToolTip::hideText();
         }
@@ -253,22 +257,26 @@ bool PlotView::viewportEvent(QEvent *event) {
     // Pass mouse events to individual plot objects
     if (event->type() == QEvent::MouseButtonPress ||
         event->type() == QEvent::MouseMove ||
-        event->type() == QEvent::MouseButtonRelease ||
-        event->type() == QEvent::Leave) {
+        event->type() == QEvent::MouseButtonRelease) {
 
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
 
         int plotY = -verticalScrollBar()->value();
         for (auto&& plot : plots) {
+            auto mouse_event = QMouseEvent(
+                event->type(),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QPoint(mouseEvent->position().x(), mouseEvent->position().y() - plotY),
+#else
+                QPoint(mouseEvent->pos().x(), mouseEvent->pos().y() - plotY),
+#endif
+                mouseEvent->button(),
+                mouseEvent->buttons(),
+                QApplication::keyboardModifiers()
+            );
             bool result = plot->mouseEvent(
                 event->type(),
-                QMouseEvent(
-                    event->type(),
-                    QPoint(mouseEvent->pos().x(), mouseEvent->pos().y() - plotY),
-                    mouseEvent->button(),
-                    mouseEvent->buttons(),
-                    QApplication::keyboardModifiers()
-                )
+                &mouse_event
             );
             if (result)
                 return true;
@@ -276,8 +284,17 @@ bool PlotView::viewportEvent(QEvent *event) {
         }
 
         if (cursorsEnabled)
-            if (cursors.mouseEvent(event->type(), *mouseEvent))
+            if (cursors.mouseEvent(event->type(), mouseEvent))
                 return true;
+    }
+
+    if (event->type() == QEvent::Leave) {
+        for (auto&& plot : plots) {
+            plot->leaveEvent();
+        }
+
+        if (cursorsEnabled)
+            cursors.leaveEvent();
     }
 
     // Handle parent eveents
